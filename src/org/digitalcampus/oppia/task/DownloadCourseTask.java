@@ -26,7 +26,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import org.apache.http.client.ClientProtocolException;
-import org.digitalcampus.mobile.learning.R;
+import org.ujjwal.sathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.InstallCourseListener;
 import org.digitalcampus.oppia.model.Course;

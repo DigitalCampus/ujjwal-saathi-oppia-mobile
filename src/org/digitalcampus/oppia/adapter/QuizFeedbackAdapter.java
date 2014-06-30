@@ -19,7 +19,7 @@ package org.digitalcampus.oppia.adapter;
 
 import java.util.ArrayList;
 
-import org.digitalcampus.mobile.learning.R;
+import org.ujjwal.sathi.oppia.mobile.learning.R;
 import org.digitalcampus.mobile.quiz.Quiz;
 import org.digitalcampus.oppia.model.QuizFeedback;
 

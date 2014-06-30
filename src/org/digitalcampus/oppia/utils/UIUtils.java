@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
-import org.digitalcampus.mobile.learning.R;
+import org.ujjwal.sathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.model.Lang;
 
 import android.app.AlertDialog;

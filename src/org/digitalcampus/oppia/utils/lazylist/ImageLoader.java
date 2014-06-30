@@ -24,7 +24,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.digitalcampus.mobile.learning.R;
+import org.ujjwal.sathi.oppia.mobile.learning.R;
 
 import android.os.Handler;
 import android.content.Context;
