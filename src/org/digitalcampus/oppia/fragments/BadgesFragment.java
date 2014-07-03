@@ -19,7 +19,7 @@ package org.digitalcampus.oppia.fragments;
 
 import java.util.ArrayList;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.BadgesListAdapter;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.APIRequestListener;

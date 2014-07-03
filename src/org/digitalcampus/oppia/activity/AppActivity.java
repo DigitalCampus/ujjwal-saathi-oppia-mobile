@@ -19,7 +19,7 @@ package org.digitalcampus.oppia.activity;
 
 import java.util.ArrayList;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.application.ScheduleReminders;
 
 import com.actionbarsherlock.app.SherlockActivity;

@@ -20,7 +20,7 @@ package org.digitalcampus.oppia.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
 import org.digitalcampus.oppia.fragments.BadgesFragment;
 import org.digitalcampus.oppia.fragments.PointsFragment;

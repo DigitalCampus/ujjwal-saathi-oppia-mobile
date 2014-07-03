@@ -17,7 +17,7 @@
 
 package org.digitalcampus.oppia.fragments;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

@@ -2,7 +2,7 @@ package org.digitalcampus.oppia.application;
 
 import java.util.ArrayList;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.activity.CourseIndexActivity;
 import org.digitalcampus.oppia.adapter.ScheduleReminderListAdapter;
 import org.digitalcampus.oppia.model.Course;

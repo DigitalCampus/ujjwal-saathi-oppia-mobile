@@ -20,7 +20,7 @@ package org.digitalcampus.oppia.activity;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import org.ujjwal.sathi.oppia.mobile.learning.R;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.TagListAdapter;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.APIRequestListener;
