@@ -121,7 +121,7 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 		// set image
 		if (course.getImageFile() != null) {
 			BitmapDrawable bm = ImageUtils.LoadBMPsdcard(course.getImageFile(), this.getResources(),
-					R.drawable.dc_logo);
+					R.drawable.ujjwal_logo);
 			getSupportActionBar().setIcon(bm);
 		}
 
