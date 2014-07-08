@@ -20,7 +20,7 @@ package org.digitalcampus.oppia.fragments;
 import java.util.ArrayList;
 
 import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.activity.OppiaMobileActivity;
+import org.digitalcampus.oppia.activity.RoutingActivity;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.SubmitListener;
 import org.digitalcampus.oppia.model.User;
@@ -120,7 +120,7 @@ public class RegisterFragment extends Fragment implements SubmitListener {
 	    	editor.putBoolean("prefBadgingEnabled", u.isBadgingEnabled());
 	    	editor.commit();
 	    	
-	    	startActivity(new Intent(super.getActivity(), OppiaMobileActivity.class));
+	    	startActivity(new Intent(super.getActivity(), RoutingActivity.class));
 	    	super.getActivity().finish();
 		} else {
 			try {

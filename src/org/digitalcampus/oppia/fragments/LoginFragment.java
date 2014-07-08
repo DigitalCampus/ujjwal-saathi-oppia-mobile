@@ -20,7 +20,7 @@ package org.digitalcampus.oppia.fragments;
 import java.util.ArrayList;
 
 import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.activity.OppiaMobileActivity;
+import org.digitalcampus.oppia.activity.RoutingActivity;
 import org.digitalcampus.oppia.listener.SubmitListener;
 import org.digitalcampus.oppia.model.User;
 import org.digitalcampus.oppia.task.LoginTask;
@@ -135,7 +135,7 @@ public class LoginFragment extends Fragment implements SubmitListener {
 	    	editor.commit();
 	    	
 			// return to main activity
-	    	startActivity(new Intent(super.getActivity(), OppiaMobileActivity.class));
+	    	startActivity(new Intent(super.getActivity(), RoutingActivity.class));
 	    	super.getActivity().finish();
 		} else {
 			UIUtils.showAlert(super.getActivity(), R.string.title_login, response.getResultResponse());

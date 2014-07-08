@@ -115,7 +115,7 @@ public class StartUpActivity extends Activity implements UpgradeListener, PostIn
 			startActivity(new Intent(StartUpActivity.this, WelcomeActivity.class));
 			finish();
 		} else {
-			startActivity(new Intent(StartUpActivity.this, OppiaMobileActivity.class));
+			startActivity(new Intent(StartUpActivity.this, RoutingActivity.class));
 			finish();
 		}
     }
