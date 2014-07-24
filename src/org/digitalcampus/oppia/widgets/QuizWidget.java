@@ -152,7 +152,45 @@ public class QuizWidget extends WidgetFactory {
 		if (this.isOnResultsPage) {
 			this.showResults();
 		} else {
-			this.showQuestion();
+			// determine availability
+			if (this.quiz.getAvailability() == Quiz.AVAILABILITY_ALWAYS){
+				this.showQuestion();
+			} else if (this.quiz.getAvailability() == Quiz.AVAILABILITY_SECTION){
+				
+				// check to see if all previous section activities have been completed
+				DbHelper db = new DbHelper(getView().getContext());
+				long userId = db.getUserId(prefs.getString("prefUsername", ""));
+				boolean completed = db.isPreviousSectionActivitiesCompleted(course, activity, userId);
+				DatabaseManager.getInstance().closeDatabase();
+				
+				if (completed){
+					this.showQuestion();
+				} else {
+					ViewGroup vg = (ViewGroup) getView().findViewById(activity.getActId());
+					vg.removeAllViews();
+					vg.addView(View.inflate(getView().getContext(), R.layout.widget_quiz_unavailable, null));
+					
+					TextView tv = (TextView) getView().findViewById(R.id.quiz_unavailable);
+					tv.setText(R.string.widget_quiz_unavailable_section);
+				}
+			} else if (this.quiz.getAvailability() == Quiz.AVAILABILITY_COURSE){
+				// check to see if all previous course activities have been completed
+				DbHelper db = new DbHelper(getView().getContext());
+				long userId = db.getUserId(prefs.getString("prefUsername", ""));
+				boolean completed = db.isPreviousCourseActivitiesCompleted(course, activity, userId);
+				DatabaseManager.getInstance().closeDatabase();
+				
+				if (completed){
+					this.showQuestion();
+				} else {
+					ViewGroup vg = (ViewGroup) getView().findViewById(activity.getActId());
+					vg.removeAllViews();
+					vg.addView(View.inflate(getView().getContext(), R.layout.widget_quiz_unavailable, null));
+					
+					TextView tv = (TextView) getView().findViewById(R.id.quiz_unavailable);
+					tv.setText(R.string.widget_quiz_unavailable_course);
+				}
+			}
 		}
 	}
 
@@ -187,15 +225,15 @@ public class QuizWidget extends WidgetFactory {
 		if (q instanceof MultiChoice) {
 			qw = new MultiChoiceWidget(super.getActivity(), getView(), container);
 		} else if (q instanceof MultiSelect) {
-			qw = new MultiSelectWidget(super.getActivity(), getView(),container);
+			qw = new MultiSelectWidget(super.getActivity(), getView(), container);
 		} else if (q instanceof ShortAnswer) {
-			qw = new ShortAnswerWidget(super.getActivity(), getView(),container);
+			qw = new ShortAnswerWidget(super.getActivity(), getView(), container);
 		} else if (q instanceof Matching) {
-			qw = new MatchingWidget(super.getActivity(), getView(),container);
+			qw = new MatchingWidget(super.getActivity(), getView(), container);
 		} else if (q instanceof Numerical) {
-			qw = new NumericalWidget(super.getActivity(), getView(),container);
+			qw = new NumericalWidget(super.getActivity(), getView(), container);
 		} else if (q instanceof Description) {
-			qw = new DescriptionWidget(super.getActivity(), getView(),container);
+			qw = new DescriptionWidget(super.getActivity(), getView(), container);
 		} else {
 			return;
 		}
@@ -355,7 +393,7 @@ public class QuizWidget extends WidgetFactory {
 			baselineExtro.setText(super.getActivity().getString(R.string.widget_quiz_baseline_completed));
 		} 
 		
-		// TODO add TextView here to give overall feedback if it's in the quiz
+		// TODO add )TextView here to give overall feedback if it's in the quiz
 		
 		// Show the detail of which questions were right/wrong
 		if (quiz.getShowFeedback() == Quiz.SHOW_FEEDBACK_ALWAYS || quiz.getShowFeedback() == Quiz.SHOW_FEEDBACK_ATEND){
