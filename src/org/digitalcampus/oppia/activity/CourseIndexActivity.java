@@ -224,7 +224,9 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 	}
 
 	private boolean isBaselineCompleted() {
-		ArrayList<Activity> baselineActs = cxr.getBaselineActivities(course.getCourseId());
+		// for this app always needs to return false since always want the baseline to show first
+		return false;
+		/*ArrayList<Activity> baselineActs = cxr.getBaselineActivities(course.getCourseId());
 		// TODO how to handle if more than one baseline activity
 		for (Activity a : baselineActs) {
 			if (!a.isAttempted()) {
@@ -259,7 +261,7 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 				return false;
 			}
 		}
-		return true;
+		return true;*/
 	}
 
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
