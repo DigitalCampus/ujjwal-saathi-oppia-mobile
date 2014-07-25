@@ -68,8 +68,8 @@ public class MobileLearning extends Application {
 	public static final int RESOURCE_READ_TIME = 3;
 	public static final String USER_AGENT = "OppiaMobile Android: ";
 	
-	public static final boolean DEFAULT_DISPLAY_COMPLETED = true;
-	public static final boolean DEFAULT_DISPLAY_PROGRESS_BAR = true;
+	public static final boolean DEFAULT_DISPLAY_COMPLETED = false;
+	public static final boolean DEFAULT_DISPLAY_PROGRESS_BAR = false;
 	
 	public static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 	public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd");

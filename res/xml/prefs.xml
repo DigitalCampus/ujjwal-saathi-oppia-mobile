@@ -23,7 +23,7 @@
         android:title="@string/prefNoScheduleReminders_summary" />
 
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="prefHighlightCompleted"
         android:title="@string/prefHighlightCompleted" />
     
@@ -33,7 +33,7 @@
         android:title="@string/prefShowSectionNumbers" />
     
     <CheckBoxPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="prefShowProgressBar"
         android:title="@string/prefShowProgressBar" />
     
