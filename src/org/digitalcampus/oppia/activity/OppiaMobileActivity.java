@@ -20,7 +20,6 @@ package org.digitalcampus.oppia.activity;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.CourseListAdapter;
@@ -224,15 +223,6 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 				i.putExtras(tb);
 				startActivity(i);
 				return true;
-			case R.id.menu_language:
-				createLanguageDialog();
-				return true;
-			case R.id.menu_monitor:
-				startActivity(new Intent(this, MonitorActivity.class));
-				return true;
-			case R.id.menu_scorecard:
-				startActivity(new Intent(this, ScorecardActivity.class));
-				return true;
 			case R.id.menu_search:
 				startActivity(new Intent(this, SearchActivity.class));
 				return true;
@@ -241,21 +231,6 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 				return true;
 		}
 		return true;
-	}
-
-	private void createLanguageDialog() {
-		ArrayList<Lang> langs = new ArrayList<Lang>();
-		for(Course m: courses){
-			langs.addAll(m.getLangs());
-		}
-		
-		UIUtils ui = new UIUtils();
-    	ui.createLanguageDialog(this, langs, prefs, new Callable<Boolean>() {	
-			public Boolean call() throws Exception {
-				OppiaMobileActivity.this.onStart();
-				return true;
-			}
-		});
 	}
 
 	private void logout() {
