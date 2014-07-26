@@ -35,7 +35,6 @@ import org.digitalcampus.oppia.utils.ImageUtils;
 import org.digitalcampus.oppia.utils.UIUtils;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -56,7 +55,6 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 	private CourseXMLReader cxr;
 	private ArrayList<Section> sections;
 	private SharedPreferences prefs;
-	private Activity baselineActivity;
 	private AlertDialog aDialog;
 		
 	@Override
@@ -68,7 +66,7 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		prefs.registerOnSharedPreferenceChangeListener(this);
-
+		
 		Bundle bundle = this.getIntent().getExtras();
 		if (bundle != null) {
 			course = (Course) bundle.getSerializable(Course.TAG);
@@ -157,6 +155,7 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 			}            
 		 }
 		editor.commit();
+		
 	}
 
 	@Override
@@ -168,6 +167,7 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 		super.onPause();
 	}
 
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
@@ -224,40 +224,22 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 	}
 
 	private boolean isBaselineCompleted() {
-		// for this app always needs to return false since always want the baseline to show first
-		return false;
+		return true;
 		/*ArrayList<Activity> baselineActs = cxr.getBaselineActivities(course.getCourseId());
 		// TODO how to handle if more than one baseline activity
 		for (Activity a : baselineActs) {
-			if (!a.isAttempted()) {
-				this.baselineActivity = a;
-				aDialog = new AlertDialog.Builder(this).create();
-				aDialog.setCancelable(false);
-				aDialog.setTitle(R.string.alert_pretest);
-				aDialog.setMessage(this.getString(R.string.alert_pretest_summary));
-
-				aDialog.setButton(DialogInterface.BUTTON_NEGATIVE, (CharSequence) this.getString(R.string.open),
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								Intent intent = new Intent(CourseIndexActivity.this, CourseActivity.class);
-								Bundle tb = new Bundle();
-								Section section = new Section();
-								section.addActivity(CourseIndexActivity.this.baselineActivity);
-								tb.putSerializable(Section.TAG, section);
-								tb.putSerializable(CourseActivity.BASELINE_TAG, true);
-								tb.putSerializable(SectionListAdapter.TAG_PLACEHOLDER, 0);
-								tb.putSerializable(Course.TAG, CourseIndexActivity.this.course);
-								intent.putExtras(tb);
-								startActivity(intent);
-							}
-						});
-				aDialog.setButton(DialogInterface.BUTTON_POSITIVE, (CharSequence) this.getString(R.string.cancel),
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								CourseIndexActivity.this.finish();
-							}
-						});
-				aDialog.show();
+			this.baselineActivity = a;
+			if (prefs.getBoolean("inFeedback", true)){
+				Intent intent = new Intent(CourseIndexActivity.this, CourseActivity.class);
+				Bundle tb = new Bundle();
+				Section section = new Section();
+				section.addActivity(CourseIndexActivity.this.baselineActivity);
+				tb.putSerializable(Section.TAG, section);
+				tb.putSerializable(CourseActivity.BASELINE_TAG, true);
+				tb.putSerializable(SectionListAdapter.TAG_PLACEHOLDER, 0);
+				tb.putSerializable(Course.TAG, CourseIndexActivity.this.course);
+				intent.putExtras(tb);
+				startActivity(intent);
 				return false;
 			}
 		}

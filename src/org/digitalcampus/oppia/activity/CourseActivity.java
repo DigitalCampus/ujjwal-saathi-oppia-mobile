@@ -26,6 +26,7 @@ import java.util.concurrent.Callable;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
 import org.digitalcampus.oppia.adapter.SectionListAdapter;
+
 import org.digitalcampus.oppia.model.Activity;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Section;
@@ -75,6 +76,8 @@ public class CourseActivity extends SherlockFragmentActivity implements ActionBa
 	private ViewPager viewPager;
 	private ActivityPagerAdapter apAdapter;
 
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,11 +89,15 @@ public class CourseActivity extends SherlockFragmentActivity implements ActionBa
 
 		Bundle bundle = this.getIntent().getExtras();
 		if (bundle != null) {
-			section = (Section) bundle.getSerializable(Section.TAG);
 			course = (Course) bundle.getSerializable(Course.TAG);
-			activities = section.getActivities();
+			if (bundle.containsKey(Activity.TAG)){
+				activities = (ArrayList<Activity>) bundle.getSerializable(Activity.TAG);
+			} else {
+				section = (Section) bundle.getSerializable(Section.TAG);
+				activities = section.getActivities();
+			}
 			currentActivityNo = (Integer) bundle.getSerializable(SectionListAdapter.TAG_PLACEHOLDER);
-			if (bundle.getSerializable(CourseActivity.BASELINE_TAG) != null) {
+			if (bundle.containsKey(CourseActivity.BASELINE_TAG)) {
 				this.isBaseline = (Boolean) bundle.getBoolean(CourseActivity.BASELINE_TAG);
 			}
 			// set image
@@ -109,8 +116,14 @@ public class CourseActivity extends SherlockFragmentActivity implements ActionBa
 	@Override
 	public void onStart() {
 		super.onStart();
-		String actionBarTitle = section.getTitle(prefs.getString("prefLanguage", Locale
-				.getDefault().getLanguage()));
+		String actionBarTitle;
+		if (section != null){
+			actionBarTitle = section.getTitle(prefs.getString("prefLanguage", Locale
+					.getDefault().getLanguage()));
+		} else {
+			actionBarTitle = course.getTitle(prefs.getString("prefLanguage", Locale
+					.getDefault().getLanguage()));
+		}
 		if (actionBarTitle != null) {
 			setTitle(actionBarTitle);
 		} else if (isBaseline) {

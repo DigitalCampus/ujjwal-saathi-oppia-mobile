@@ -23,15 +23,18 @@ import java.util.Locale;
 
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.adapter.CourseListAdapter;
+import org.digitalcampus.oppia.adapter.SectionListAdapter;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.exception.InvalidXMLException;
 import org.digitalcampus.oppia.listener.ScanMediaListener;
 import org.digitalcampus.oppia.model.Activity;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Lang;
 import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.task.ScanMediaTask;
+import org.digitalcampus.oppia.utils.CourseXMLReader;
 import org.digitalcampus.oppia.utils.FileUtils;
 import org.digitalcampus.oppia.utils.UIUtils;
 
@@ -146,10 +149,21 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Course m = (Course) view.getTag();
-				Intent i = new Intent(OppiaMobileActivity.this, CourseIndexActivity.class);
+				Course c = (Course) view.getTag();
+				Intent i = new Intent(OppiaMobileActivity.this, CourseActivity.class);
 				Bundle tb = new Bundle();
-				tb.putSerializable(Course.TAG, m);
+				tb.putSerializable(Course.TAG, c);
+				CourseXMLReader cxr;
+				try {
+					cxr = new CourseXMLReader(c.getCourseXMLLocation(), OppiaMobileActivity.this);
+					ArrayList<Activity> activities = cxr.getBaselineActivities(c.getCourseId());
+					tb.putSerializable(Activity.TAG,activities);
+				} catch (InvalidXMLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				tb.putBoolean(CourseActivity.BASELINE_TAG, true);
+				tb.putSerializable(SectionListAdapter.TAG_PLACEHOLDER,0);
 				i.putExtras(tb);
 				startActivity(i);
 			}

@@ -32,6 +32,7 @@ import org.digitalcampus.mobile.quiz.model.questiontypes.MultiSelect;
 import org.digitalcampus.mobile.quiz.model.questiontypes.Numerical;
 import org.digitalcampus.mobile.quiz.model.questiontypes.ShortAnswer;
 import org.digitalcampus.oppia.activity.CourseActivity;
+import org.digitalcampus.oppia.activity.CourseIndexActivity;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.Tracker;
@@ -47,6 +48,7 @@ import org.digitalcampus.oppia.widgets.quiz.ShortAnswerWidget;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -140,6 +142,7 @@ public class FeedbackWidget extends WidgetFactory {
 			this.showQuestion();
 		}
 	}
+	
 	
 	public void showQuestion() {
 		QuizQuestion q = null;
@@ -251,6 +254,23 @@ public class FeedbackWidget extends WidgetFactory {
 	    parent.removeView(view);
 	    view = super.getActivity().getLayoutInflater().inflate(R.layout.widget_feedback_results, parent, false);
 	    parent.addView(view, index);
+	    
+	    if (this.isBaseline) {
+			Button baselineExtro = (Button) getView().findViewById(R.id.feedback_continue_button);
+			baselineExtro.setVisibility(View.VISIBLE);
+			baselineExtro.setText(super.getActivity().getString(R.string.widget_feedback_continue));
+			baselineExtro.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					// open up the CourseIndexActivity
+					Intent i = new Intent(FeedbackWidget.this.getActivity(), CourseIndexActivity.class);
+					Bundle tb = new Bundle();
+					tb.putSerializable(Course.TAG, course);
+					i.putExtras(tb);
+					startActivity(i);
+					FeedbackWidget.this.getActivity().finish();
+				}
+			});
+		} 
 
 	}
 	
@@ -346,5 +366,6 @@ public class FeedbackWidget extends WidgetFactory {
 			this.isOnResultsPage = (Boolean) config.get("OnResultsPage");
 		}		
 	}
+	
 
 }
