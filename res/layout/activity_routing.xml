@@ -5,27 +5,57 @@
     android:orientation="vertical" >
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/routing_activity_title"
         style="@style/HeaderText"
-        android:layout_marginTop="20dp"/>
-
-    <Button
-        android:id="@+id/button_learning"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/routing_button_mlearning"
-        android:textColor="@color/text_dark" />
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:text="@string/routing_activity_title" />
 
-    <Button
-        android:id="@+id/button_counselling"
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/routing_button_client"
-        android:textColor="@color/text_dark" />
+        android:layout_marginTop="20dp" >
+
+        <ImageView
+            android:id="@+id/mlearning_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/app_logo_alt"
+            android:src="@drawable/mobile_learning_icon" />
+
+        <Button
+            android:id="@+id/button_learning"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/mlearning_image"
+            android:text="@string/routing_button_mlearning"
+            android:textColor="@color/text_dark" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" >
+
+        <ImageView
+            android:id="@+id/counselling_image"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/app_logo_alt"
+            android:src="@drawable/counselling_icon" />
+
+        <Button
+            android:id="@+id/button_counselling"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/counselling_image"
+            android:text="@string/routing_button_client"
+            android:textColor="@color/text_dark" />
+    </RelativeLayout>
 
 </LinearLayout>
