@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="NoScheduleReminders">
         <item name="1">1</item>
         <item name="2">2</item>
@@ -13,5 +14,53 @@
         <item name="3">3</item>
         <item name="4">4</item>
         <item name="5">5</item>
+    </string-array>
+    <string-array name="sex">
+        <item name="0"></item>
+        <item name="1">Female</item>
+        <item name="2">Male</item>
+    </string-array>
+	<string-array name="yesno">
+        <item name="0"></item>
+        <item name="1">Yes</item>
+        <item name="2">No</item>
+    </string-array>
+    <string-array name="parity">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+        <item name="3">3</item>
+        <item name="4">4</item>
+        <item name="5">5+</item>
+    </string-array>
+     <string-array name="lifestage">
+        <item name="0"></item>
+        <item name="1">Adolescent</item>
+        <item name="2">Newly married</item>
+        <item name="3">Pregnant</item>
+        <item name="4">One child</item>
+        <item name="5">Unwanted pregnancy</item>
+        <item name="6">Two or more children</item>
+    </string-array>
+    <string-array name="pretest1">
+        <item name="0"></item>
+        <item name="1">1 year</item>
+        <item name="2">3-5 years</item>
+        <item name="3">6-8 years</item>
+    </string-array>
+    <string-array name="pretest2">
+        <item name="0"></item>
+        <item name="1">Mother’s health</item>
+        <item name="2">Child’s health</item>
+        <item name="3">Economic wellbeing of the family</item>
+        <item name="4">All of the above</item>
+    </string-array>
+    <string-array name="pretest3">
+        <item name="0"></item>
+        <item name="1">OCPs</item>
+        <item name="2">IUCD</item>
+        <item name="3">Injectable</item>
+        <item name="4">Condoms</item>
+         <item name="5">All of the above</item>
     </string-array>
 </resources>

@@ -234,4 +234,15 @@
 	<string name="search_result_summary">%1$d results for \"%2$s\"</string>
 	<string name="search_searching">Searching...</string>
 	<string name="search_no_results">No results found for \"%1$s\"</string>
+
+	
+	<string name="clientreg_form_name_title">Name</string>
+	<string name="clientreg_form_mobile_title">Mobile No</string>
+	<string name="clientreg_form_age_title">Age</string>
+	<string name="clientreg_form_sex_title">Sex</string>
+	<string name="clientreg_form_married_title">Married</string>
+	<string name="clientreg_form_parity_title">Parity</string>
+	<string name="clientreg_form_lifestage_title">Life Stage</string>
+	
+	<string name="submit_btn_text">Next &gt;&gt;</string>
 </resources>

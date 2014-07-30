@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="left"
+        android:orientation="vertical" >
+        
+        
+        
+         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="1. How much gap should there be between 2 children (choose one)" />
+
+        <Spinner
+            android:id="@+id/pretest1_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="2. Spacing children is good for (choose one)" />
+
+        <Spinner
+            android:id="@+id/pretest2_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+         <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="3. Which of the following methods is used for spacing ? " />
+
+        <Spinner
+            android:id="@+id/pretest3_spinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        
+        
+        <Button
+            android:id="@+id/submit_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_btn_text" />
+    </LinearLayout>
+
+</ScrollView>

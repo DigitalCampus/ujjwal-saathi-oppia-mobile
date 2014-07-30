@@ -38,7 +38,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
-public class RoutingActivity  extends AppActivity {
+public class RoutingActivity extends AppActivity {
 
 	public static final String TAG = RoutingActivity.class.getSimpleName();
 	private SharedPreferences prefs;
@@ -65,7 +65,7 @@ public class RoutingActivity  extends AppActivity {
 		Button counselling = (Button) findViewById(R.id.button_counselling);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(RoutingActivity.this, OppiaMobileActivity.class));
+				startActivity(new Intent(RoutingActivity.this, ClientRegActivity.class));
 			}
 		});
 		
