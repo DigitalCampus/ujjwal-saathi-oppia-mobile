@@ -79,7 +79,7 @@ public class ClientRegActivity extends AppActivity {
 		Button counselling = (Button) findViewById(R.id.submit_btn);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(ClientRegActivity.this, CounsellingHomeActivity.class));
+				startActivity(new Intent(ClientRegActivity.this, OppiaMobileActivity.class));
 			}
 		});
 		

@@ -150,22 +150,33 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Course c = (Course) view.getTag();
-				Intent i = new Intent(OppiaMobileActivity.this, CourseActivity.class);
-				Bundle tb = new Bundle();
-				tb.putSerializable(Course.TAG, c);
-				CourseXMLReader cxr;
+				Bundle tb;
+				Intent i;
 				try {
+					CourseXMLReader cxr;
 					cxr = new CourseXMLReader(c.getCourseXMLLocation(), OppiaMobileActivity.this);
 					ArrayList<Activity> activities = cxr.getBaselineActivities(c.getCourseId());
-					tb.putSerializable(Activity.TAG,activities);
+					if(activities.size() >0){
+						i = new Intent(OppiaMobileActivity.this, CourseActivity.class);
+						tb = new Bundle();
+						tb.putSerializable(Course.TAG, c);
+						tb.putSerializable(Activity.TAG,activities);
+						tb.putBoolean(CourseActivity.BASELINE_TAG, true);
+					} else {
+						i = new Intent(OppiaMobileActivity.this, CourseIndexActivity.class);
+						tb = new Bundle();
+						tb.putSerializable(Course.TAG, c);
+						tb.putBoolean(CourseActivity.BASELINE_TAG, false);
+					}
+					tb.putSerializable(SectionListAdapter.TAG_PLACEHOLDER,0);
+					i.putExtras(tb);
+					startActivity(i);
 				} catch (InvalidXMLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				tb.putBoolean(CourseActivity.BASELINE_TAG, true);
-				tb.putSerializable(SectionListAdapter.TAG_PLACEHOLDER,0);
-				i.putExtras(tb);
-				startActivity(i);
+				
+				
 			}
 		});
 

@@ -42,6 +42,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
@@ -78,7 +79,9 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 				boolean baselineCompleted = this.isBaselineCompleted();
 
 				String digest = (String) bundle.getSerializable("JumpTo");
-				if (digest != null && baselineCompleted) {
+				//if (digest != null && baselineCompleted) {
+				if (!baselineCompleted) {
+					Log.d(TAG,"jumping directly into CourseActivity");
 					// code to directly jump to a specific activity
 					sections = cxr.getSections(course.getCourseId());
 					for (Section s : sections) {
@@ -224,8 +227,15 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 	}
 
 	private boolean isBaselineCompleted() {
-		return true;
-		/*ArrayList<Activity> baselineActs = cxr.getBaselineActivities(course.getCourseId());
+		ArrayList<Activity> baselineActs = cxr.getBaselineActivities(course.getCourseId());
+		if ( baselineActs.size() > 0){
+			Log.d (TAG, "isBaselineCompleted returning : false");
+			return false;
+		} else {
+			Log.d (TAG, "isBaselineCompleted returning : true");
+			return true;
+		}
+		/*
 		// TODO how to handle if more than one baseline activity
 		for (Activity a : baselineActs) {
 			this.baselineActivity = a;
