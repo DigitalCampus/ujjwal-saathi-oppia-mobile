@@ -479,10 +479,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		return courses;
 	}
 	
-	public ArrayList<Course> getCourses(long userId) {
+	public ArrayList<Course> getCounsellingCourses(long userId) {
 		ArrayList<Course> courses = new ArrayList<Course>();
 		String order = COURSE_C_ORDER_PRIORITY + " DESC, " + COURSE_C_TITLE + " ASC";
-		Cursor c = db.query(COURSE_TABLE, null, null, null, null, null, order);
+		String where = COURSE_C_SHORTNAME + " IN ("+MobileLearning.CLIENT_COUNSELLING_COURSES+")";
+		Cursor c = db.query(COURSE_TABLE, null, where, null, null, null, order);
 		c.moveToFirst();
 		while (c.isAfterLast() == false) {
 			Course course = new Course();
@@ -501,7 +502,32 @@ public class DbHelper extends SQLiteOpenHelper {
 		}
 		c.close();
 		return courses;
-	}
+	} 
+	
+	public ArrayList<Course> getLearningCourses(long userId) {
+		ArrayList<Course> courses = new ArrayList<Course>();
+		String order = COURSE_C_ORDER_PRIORITY + " DESC, " + COURSE_C_TITLE + " ASC";
+		String where = COURSE_C_SHORTNAME + " NOT IN ("+MobileLearning.CLIENT_COUNSELLING_COURSES+")";
+		Cursor c = db.query(COURSE_TABLE, null, where, null, null, null, order);
+		c.moveToFirst();
+		while (c.isAfterLast() == false) {
+			Course course = new Course();
+			course.setModId(c.getInt(c.getColumnIndex(COURSE_C_ID)));
+			course.setLocation(c.getString(c.getColumnIndex(COURSE_C_LOCATION)));
+			course.setProgress(this.getCourseProgress(course.getCourseId(), userId));
+			course.setVersionId(c.getDouble(c.getColumnIndex(COURSE_C_VERSIONID)));
+			course.setTitlesFromJSONString(c.getString(c.getColumnIndex(COURSE_C_TITLE)));
+			course.setImageFile(c.getString(c.getColumnIndex(COURSE_C_IMAGE)));
+			course.setLangsFromJSONString(c.getString(c.getColumnIndex(COURSE_C_LANGS)));
+			course.setShortname(c.getString(c.getColumnIndex(COURSE_C_SHORTNAME)));
+			course.setPriority(c.getInt(c.getColumnIndex(COURSE_C_ORDER_PRIORITY)));
+			course.setDescriptionsFromJSONString(c.getString(c.getColumnIndex(COURSE_C_DESC)));
+			courses.add(course);
+			c.moveToNext();
+		}
+		c.close();
+		return courses;
+	} 
 	
 	public Course getCourse(long courseId, long userId) {
 		Course course = null;

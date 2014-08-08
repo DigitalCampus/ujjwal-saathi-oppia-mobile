@@ -56,8 +56,7 @@ public class RoutingActivity extends AppActivity {
 		Button mLearning = (Button) findViewById(R.id.button_learning);
 		mLearning.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Toast toast = Toast.makeText(RoutingActivity.this, "Not yet implemented", Toast.LENGTH_SHORT);
-				toast.show();
+				startActivity(new Intent(RoutingActivity.this, OppiaMobileActivity.class));
 			}
 		});
 		

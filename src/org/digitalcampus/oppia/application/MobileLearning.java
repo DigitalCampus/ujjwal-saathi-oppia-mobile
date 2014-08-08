@@ -81,6 +81,12 @@ public class MobileLearning extends Application {
 	// only used in case a course doesn't have any lang specified
 	public static final String DEFAULT_LANG = "en";
 	
+	// Specific settings for Ujjwal
+	public static final String UJJWAL_COMPONENT_TAG = "UJJWAL_COMPONENT_TAG";
+	public static final int MOBILE_LEARNING_COMPONENT = 1;
+	public static final int CLIENT_COUNSELLING_COMPONENT = 2;
+	public static final String CLIENT_COUNSELLING_COURSES = "'us-benefits','us-detect','us-limiting','us-malefocused','us-postabort','us-postpartum','us-spacing','us-unwanted'";
+	
 	// for tracking if SubmitTrackerMultipleTask is already running
 	public SubmitTrackerMultipleTask omSubmitTrackerMultipleTask = null;
 	

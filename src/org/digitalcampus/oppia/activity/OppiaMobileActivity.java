@@ -110,7 +110,7 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 	private void displayCourses(long userId) {
 
 		DbHelper db = new DbHelper(this);
-		courses = db.getCourses(userId);
+		courses = db.getCounsellingCourses(userId);
 		DatabaseManager.getInstance().closeDatabase();
 		
 		LinearLayout llLoading = (LinearLayout) this.findViewById(R.id.loading_courses);
