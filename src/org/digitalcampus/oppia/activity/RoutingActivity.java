@@ -18,6 +18,7 @@ package org.digitalcampus.oppia.activity;
 
 import java.util.ArrayList;
 
+import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Lang;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
@@ -56,7 +57,11 @@ public class RoutingActivity extends AppActivity {
 		Button mLearning = (Button) findViewById(R.id.button_learning);
 		mLearning.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(RoutingActivity.this, OppiaMobileActivity.class));
+				Intent i = new Intent(RoutingActivity.this, OppiaMobileActivity.class);
+				Bundle tb = new Bundle();
+				tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.MOBILE_LEARNING_COMPONENT);
+				i.putExtras(tb);
+				startActivity(i);
 			}
 		});
 		

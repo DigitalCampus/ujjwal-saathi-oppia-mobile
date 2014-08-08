@@ -68,6 +68,7 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 	private ArrayList<Course> courses;
 	private Course tempCourse;
 	private long userId = 0;
+	private int ujjwalComponent = 0;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,11 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 			Editor editor = prefs.edit();
 			editor.putString("prefLanguage", Locale.getDefault().getLanguage());
 			editor.commit();
+		}
+		
+		Bundle bundle = this.getIntent().getExtras();
+		if (bundle != null) {
+			ujjwalComponent = bundle.getInt(MobileLearning.UJJWAL_COMPONENT_TAG);
 		}
 	}
 
@@ -110,7 +116,15 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 	private void displayCourses(long userId) {
 
 		DbHelper db = new DbHelper(this);
-		courses = db.getCounsellingCourses(userId);
+		if (ujjwalComponent == MobileLearning.CLIENT_COUNSELLING_COMPONENT){
+			Log.d(TAG,"in counselling");
+			courses = db.getCounsellingCourses(userId);
+		} else if (ujjwalComponent == MobileLearning.MOBILE_LEARNING_COMPONENT){
+			Log.d(TAG,"in learning");
+			courses = db.getLearningCourses(userId);
+		} else {
+			Log.d(TAG,"in nothing");
+		}
 		DatabaseManager.getInstance().closeDatabase();
 		
 		LinearLayout llLoading = (LinearLayout) this.findViewById(R.id.loading_courses);

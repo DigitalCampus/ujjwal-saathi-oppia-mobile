@@ -17,6 +17,7 @@
 
 package org.digitalcampus.oppia.activity;
 
+import org.digitalcampus.oppia.application.MobileLearning;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import android.content.Intent;
@@ -79,7 +80,11 @@ public class ClientRegActivity extends AppActivity {
 		Button counselling = (Button) findViewById(R.id.submit_btn);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(ClientRegActivity.this, OppiaMobileActivity.class));
+				Intent i = new Intent(ClientRegActivity.this, OppiaMobileActivity.class);
+				Bundle tb = new Bundle();
+				tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
+				i.putExtras(tb);
+				startActivity(i);
 			}
 		});
 		
