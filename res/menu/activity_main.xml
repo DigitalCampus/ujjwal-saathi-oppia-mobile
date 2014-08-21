@@ -10,6 +10,10 @@
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/menu_download"/>
     <item
+        android:id="@+id/menu_language"
+        android:icon="@drawable/ic_menu_start_conversation"
+        android:title="@string/menu_language"/>
+    <item
         android:id="@+id/menu_search"
         android:icon="@drawable/abs__ic_search"
         android:title="@string/menu_search"/>
