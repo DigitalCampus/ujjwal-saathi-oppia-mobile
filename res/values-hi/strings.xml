@@ -210,7 +210,7 @@
 	<string name="login_process">लॉग इन हो रहा है </string>
 	<string name="login_complete">लॉग इन सम्पूर्ण</string>
 	
-	<string name="logout_confirm">आप सुनिश्चित हैं की आपको लॉग आउट करना है \n\ अगर आप लॉग आउट करेंगे तो आपका सारा कार्य स्थगित हो जायेगा और आपको फिर से लॉग इन करने के लिए इंटरनेट की ज़रुरत पड़ेगी.</string>
+	<string name="logout_confirm">आप सुनिश्चित हैं की आपको लॉग आउट करना है \n\n अगर आप लॉग आउट करेंगे तो आपका सारा कार्य स्थगित हो जायेगा और आपको फिर से लॉग इन करने के लिए इंटरनेट की ज़रुरत पड़ेगी.</string>
 	
 	<string name="register_alert_title">Register</string>
 	<string name="register_process">Registering ...</string>

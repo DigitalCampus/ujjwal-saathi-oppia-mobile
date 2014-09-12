@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="NoScheduleReminders">
         <item name="1">1</item>
         <item name="2">2</item>
@@ -20,7 +19,7 @@
         <item name="1">महिला </item>
         <item name="2">पुरुष</item>
     </string-array>
-	<string-array name="yesno">
+    <string-array name="yesno">
         <item name="0"></item>
         <item name="1">हाँ </item>
         <item name="2">नहीं</item>
@@ -33,7 +32,7 @@
         <item name="4">4</item>
         <item name="5">5+</item>
     </string-array>
-     <string-array name="lifestage">
+    <string-array name="lifestage">
         <item name="0"></item>
         <item name="1">किशोरावस्था </item>
         <item name="2">नव विहाहित</item>
@@ -42,25 +41,5 @@
         <item name="5">अनचाहा गर्भ</item>
         <item name="6">दो या दो से अधिक वाले दंपत्ति</item>
     </string-array>
-    <string-array name="pretest1">
-        <item name="0"></item>
-        <item name="1">1 year</item>
-        <item name="2">3-5 years</item>
-        <item name="3">6-8 years</item>
-    </string-array>
-    <string-array name="pretest2">
-        <item name="0"></item>
-        <item name="1">Mother’s health</item>
-        <item name="2">Child’s health</item>
-        <item name="3">Economic wellbeing of the family</item>
-        <item name="4">All of the above</item>
-    </string-array>
-    <string-array name="pretest3">
-        <item name="0"></item>
-        <item name="1">OCPs</item>
-        <item name="2">IUCD</item>
-        <item name="3">Injectable</item>
-        <item name="4">Condoms</item>
-         <item name="5">All of the above</item>
-    </string-array>
+
 </resources>
