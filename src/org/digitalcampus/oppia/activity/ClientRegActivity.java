@@ -19,7 +19,6 @@ package org.digitalcampus.oppia.activity;
 
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
-import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Course;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
@@ -31,7 +30,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class ClientRegActivity extends AppActivity {
 	
@@ -93,6 +91,7 @@ public class ClientRegActivity extends AppActivity {
 				//tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
 				i.putExtras(tb);
 				startActivity(i);
+				ClientRegActivity.this.finish();
 			}
 		});
 		
