@@ -17,7 +17,10 @@
 
 package org.digitalcampus.oppia.activity;
 
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.model.Course;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import android.content.Intent;
@@ -80,9 +83,14 @@ public class ClientRegActivity extends AppActivity {
 		Button counselling = (Button) findViewById(R.id.submit_btn);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				Intent i = new Intent(ClientRegActivity.this, OppiaMobileActivity.class);
+				DbHelper db = new DbHelper(ClientRegActivity.this);
+				Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+				DatabaseManager.getInstance().closeDatabase();
+				
+				Intent i = new Intent(ClientRegActivity.this, CourseIndexActivity.class);
 				Bundle tb = new Bundle();
-				tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
+				tb.putSerializable(Course.TAG, c);
+				//tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
 				i.putExtras(tb);
 				startActivity(i);
 			}
