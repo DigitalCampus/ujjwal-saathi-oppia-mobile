@@ -123,6 +123,14 @@ public class UpgradeManagerTask extends AsyncTask<Payload, String, Payload> {
 			payload.setResult(true);
 		}
 		
+		if(!prefs.getBoolean("upgradeV55",false)){
+			Editor editor = prefs.edit();
+			editor.putBoolean("upgradeV55", true);
+			editor.commit();
+			publishProgress(this.ctx.getString(R.string.info_upgrading,"v55"));
+			payload.setResult(true);
+		}
+		
 		return payload;
 	}
 	
