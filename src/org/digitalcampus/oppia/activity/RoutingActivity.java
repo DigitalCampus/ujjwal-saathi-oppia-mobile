@@ -18,8 +18,14 @@ package org.digitalcampus.oppia.activity;
 
 import java.util.ArrayList;
 
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.listener.ScanMediaListener;
+import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Lang;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.task.ScanMediaTask;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
@@ -35,14 +41,19 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
-public class RoutingActivity extends AppActivity {
+
+public class RoutingActivity extends AppActivity implements ScanMediaListener {
 
 	public static final String TAG = RoutingActivity.class.getSimpleName();
 	private SharedPreferences prefs;
+	private ArrayList<Course> courses = new ArrayList<Course>() ;
+	private long userId = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,8 +83,16 @@ public class RoutingActivity extends AppActivity {
 				startActivity(new Intent(RoutingActivity.this, ClientRegActivity.class));
 			}
 		});
-		
-		
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		DbHelper db = new DbHelper(this);
+		userId = db.getUserId(prefs.getString("prefUsername", ""));
+		courses = db.getAllCourses();
+		DatabaseManager.getInstance().closeDatabase();	
+		this.scanMedia();
 	}
 	
 	@Override
@@ -144,5 +163,67 @@ public class RoutingActivity extends AppActivity {
 			}
 		});
 		builder.show();
+	}
+	
+	private void scanMedia() {
+		long now = System.currentTimeMillis()/1000;
+		/*if (prefs.getLong("prefLastMediaScan", 0)+3600 > now) {
+			Log.d(TAG,"no scan needed");
+			LinearLayout ll = (LinearLayout) this.findViewById(R.id.home_messages);
+			ll.setVisibility(View.GONE);
+			return;
+		}*/
+		Log.d(TAG,"starting scan");
+		ScanMediaTask task = new ScanMediaTask(this);
+		Payload p = new Payload(this.courses);
+		task.setScanMediaListener(this);
+		task.execute(p);
+	}
+	
+	public void scanStart() {
+		TextView tv = (TextView) this.findViewById(R.id.home_message);
+		tv.setText(this.getString(R.string.info_scan_media_start));
+	}
+
+	public void scanProgressUpdate(String msg) {
+		TextView tv = (TextView) this.findViewById(R.id.home_message);
+		tv.setText(this.getString(R.string.info_scan_media_checking, msg));
+	}
+
+	public void scanComplete(Payload response) {
+		Editor e = prefs.edit();
+		LinearLayout ll = (LinearLayout) this.findViewById(R.id.home_messages);
+		TextView tv = (TextView) this.findViewById(R.id.home_message);
+		Button btn = (Button) this.findViewById(R.id.message_action_button);
+		
+		if (response.getResponseData().size() > 0) {
+			ll.setVisibility(View.VISIBLE);
+			tv.setText(this.getString(R.string.info_scan_media_missing));
+			btn.setText(this.getString(R.string.scan_media_download_button));
+			btn.setTag(response.getResponseData());
+			btn.setOnClickListener(new OnClickListener() {
+
+				public void onClick(View view) {
+					@SuppressWarnings("unchecked")
+					ArrayList<Object> m = (ArrayList<Object>) view.getTag();
+					Intent i = new Intent(RoutingActivity.this, DownloadMediaActivity.class);
+					Bundle tb = new Bundle();
+					tb.putSerializable(DownloadMediaActivity.TAG, m);
+					i.putExtras(tb);
+					startActivity(i);
+				}
+			});
+			e.putLong("prefLastMediaScan", 0);
+			e.commit();
+		} else {
+			ll.setVisibility(View.GONE);
+			tv.setText("");
+			btn.setText("");
+			btn.setOnClickListener(null);
+			btn.setTag(null);
+			long now = System.currentTimeMillis()/1000;
+			e.putLong("prefLastMediaScan", now);
+			e.commit();
+		}
 	}
 }

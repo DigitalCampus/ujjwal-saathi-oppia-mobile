@@ -111,14 +111,17 @@ public class DownloadMediaTask extends AsyncTask<Payload, DownloadProgress, Payl
 					resultMD5 += Integer.toString( ( digest[i] & 0xff ) + 0x100, 16).substring( 1 );
 			    }
 				
-				if(!resultMD5.contains(m.getDigest())){
+				// for now just set as downloaded and ignore the md5
+				payload.setResult(true);
+				payload.setResultResponse(ctx.getString(R.string.success_media_download,m.getFilename()));
+				/*if(!resultMD5.contains(m.getDigest())){
 					this.deleteFile(file);
 					payload.setResult(false);
 					payload.setResultResponse(ctx.getString(R.string.error_media_download));
 				} else {
 					payload.setResult(true);
 					payload.setResultResponse(ctx.getString(R.string.success_media_download,m.getFilename()));
-				}
+				}*/
 			} catch (ClientProtocolException e1) { 
 				e1.printStackTrace(); 
 				payload.setResult(false);
