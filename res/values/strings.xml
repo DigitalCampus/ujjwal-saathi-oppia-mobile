@@ -258,4 +258,7 @@
 	
 	<string name="submit_btn_text">Next &gt;&gt;</string>
 	<string name="submit_stats_btn_text">Send now</string>
+	
+	
+	<string name="media_player_description">Oppia Media Player</string>
 </resources>

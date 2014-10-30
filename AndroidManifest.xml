@@ -103,6 +103,11 @@
           <activity
             android:name="org.digitalcampus.oppia.activity.PreTestActivity"
             android:label="Pre-test" />
+		<activity
+            android:name="org.digitalcampus.oppia.utils.mediaplayer.VideoPlayerActivity"
+            android:label="@string/media_player_description"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <service
             android:name="org.digitalcampus.oppia.service.TrackerService"
             android:icon="@drawable/ujjwal_logo"
