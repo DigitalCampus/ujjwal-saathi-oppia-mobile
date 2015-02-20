@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <RelativeLayout
+        android:id="@+id/list_rl_header"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:layout_margin="10dp">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="List of your clients"
+        android:textSize="20dp"/>
+    <Button
+        android:id="@+id/list_create_client"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:text="Add New"/>
+    </RelativeLayout>
+    <View
+        android:id="@+id/list_v_hr"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/list_rl_header"
+        android:background="#000000" />
+    <ListView
+        android:id="@+id/list_lv_clients"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list_v_hr"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/background_change_pressed"
+        android:cacheColorHint="#00000000" />
+    <TextView
+        android:id="@+id/tv_no_clients"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:layout_below="@id/list_v_hr"
+        android:layout_centerInParent="true"
+        android:text="You don't have any existing clients"
+        android:textSize="40dp"/>
+    <!--<Button-->
+        <!--android:id="@+id/list_back"-->
+        <!--android:layout_width="120dp"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_margin="20dp"-->
+        <!--android:text="Go Back"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerInParent="true"/>-->
+</RelativeLayout>

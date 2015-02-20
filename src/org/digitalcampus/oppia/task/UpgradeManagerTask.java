@@ -17,9 +17,12 @@
 
 package org.digitalcampus.oppia.task;
 
-import java.io.File;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
-import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
@@ -32,12 +35,9 @@ import org.digitalcampus.oppia.utils.CourseTrackerXMLReader;
 import org.digitalcampus.oppia.utils.CourseXMLReader;
 import org.digitalcampus.oppia.utils.FileUtils;
 import org.digitalcampus.oppia.utils.SearchUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
+import java.io.File;
 
 public class UpgradeManagerTask extends AsyncTask<Payload, String, Payload> {
 	
@@ -140,7 +140,7 @@ public class UpgradeManagerTask extends AsyncTask<Payload, String, Payload> {
 	protected void upgradeV17(){
 		File dir = new File(MobileLearning.COURSES_PATH);
 		String[] children = dir.list();
-		if (children != null) {
+        if (children != null) {
 			for (int i = 0; i < children.length; i++) {
 				publishProgress("checking: " + children[i]);
 				String courseXMLPath = "";

@@ -53,7 +53,7 @@
     <string name="title_welcome">उज्जवल साथी </string>
     <string name="version">Version: %1$s</string>
     <string name="title_download_media">फिल्में डाउनलोड करें</string>
-    
+
     
     
     <string name="widget_feedback_submit">प्रस्तुत</string>
@@ -190,13 +190,14 @@
 	<string name="error_register_password_no_match">Your passwords don\'t match</string>
 	<string name="error_register_no_firstname">Please enter your first name</string>
 	<string name="error_register_no_lastname">Please enter your last name</string>
-	<string name="error_register_no_username">Please enter a username</string>
+    <string name="error_register_no_username">Please enter a username</string>
 	<string name="error_register_username_spaces">Your username cannot contain spaces</string>
 	<string name="error_resource_app_not_found">You don\'t seem to have an app installed to open \'%1$s\'. Please install an app capable of opening this type of file.</string>
 	<string name="error_resource_not_found">File: \'%1$s\' not found.</string>
-	
-	
-	<string name="error_sdcard">Your SD card is not available - please restart this app when the SD card is available.\nThe app will now close.</string>
+    <!--Client Reg. Details -->
+    <string name="error_register_no_name">Please enter name</string>
+
+    <string name="error_sdcard">Your SD card is not available - please restart this app when the SD card is available.\nThe app will now close.</string>
 	<string name="error_media_not_found">\'%1$s\' फ़िल्म उपलब्ध नहीं है. कृपया दोबारा डाउनलोड करें.</string>
 	<string name="error_media_unsupported">\'%1$s\' does not appear to be a supported media file type.</string>
 	<string name="error_download_failure">Download failed</string>

@@ -17,16 +17,6 @@
 
 package org.digitalcampus.oppia.fragments;
 
-import java.util.ArrayList;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.activity.RoutingActivity;
-import org.digitalcampus.oppia.listener.SubmitListener;
-import org.digitalcampus.oppia.model.User;
-import org.digitalcampus.oppia.task.LoginTask;
-import org.digitalcampus.oppia.task.Payload;
-import org.digitalcampus.oppia.utils.UIUtils;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +30,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout.LayoutParams;
+
+import org.digitalcampus.oppia.activity.RoutingActivity;
+import org.digitalcampus.oppia.listener.SubmitListener;
+import org.digitalcampus.oppia.model.User;
+import org.digitalcampus.oppia.task.LoginTask;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.utils.UIUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
 
 public class LoginFragment extends Fragment implements SubmitListener {
 

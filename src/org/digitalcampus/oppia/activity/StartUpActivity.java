@@ -18,10 +18,18 @@
 package org.digitalcampus.oppia.activity;
 
 
-import java.io.File;
-import java.util.ArrayList;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.TextView;
 
-import org.ujjwal.saathi.oppia.mobile.learning.R;
+import com.bugsense.trace.BugSenseHandler;
 
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.InstallCourseListener;
@@ -32,18 +40,10 @@ import org.digitalcampus.oppia.task.InstallDownloadedCoursesTask;
 import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.task.PostInstallTask;
 import org.digitalcampus.oppia.task.UpgradeManagerTask;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.widget.TextView;
-
-import com.bugsense.trace.BugSenseHandler;
+import java.io.File;
+import java.util.ArrayList;
 
 public class StartUpActivity extends Activity implements UpgradeListener, PostInstallListener, InstallCourseListener{
 
@@ -56,6 +56,8 @@ public class StartUpActivity extends Activity implements UpgradeListener, PostIn
         super.onCreate(savedInstanceState);
         BugSenseHandler.initAndStartSession(this, MobileLearning.BUGSENSE_API_KEY);
         setContentView(R.layout.start_up);
+        Log.d("111", MobileLearning.COURSES_PATH);
+
         tvProgress = (TextView) this.findViewById(R.id.start_up_progress);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         

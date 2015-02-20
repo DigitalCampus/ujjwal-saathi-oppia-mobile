@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/client_row"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <RelativeLayout
+        android:id="@+id/detail_container"
+        android:layout_width="fill_parent"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/client_title"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            android:paddingLeft="15dp"
+            android:maxLines="1"
+            android:gravity="center"
+            android:text="Details"/>
+        <Button
+            android:id="@+id/client_detail_visit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:text="Make Visit"/>
+    </RelativeLayout>
+    <View
+        android:id="@+id/info_v_hr"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/detail_container"
+        android:background="#000000" />
+    <ScrollView
+        android:layout_below="@id/detail_container"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:orientation="vertical" >
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_name"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/clientreg_form_name_title" />
+
+                <TextView
+                    android:id="@+id/client_name_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minHeight="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_toRightOf="@id/client_name"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_mobile_number"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:gravity="left|center_vertical"
+                    android:text="Mobile Number" />
+
+                <TextView
+                    android:id="@+id/client_mobile_number_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_sex"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:gravity="left|center_vertical"
+                    android:text="Gender/Sex" />
+
+                <TextView
+                    android:id="@+id/client_sex_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_is_married"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:gravity="left|center_vertical"
+                    android:text="Marital Status" />
+
+                <TextView
+                    android:id="@+id/client_is_married_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_age"
+                    android:layout_width="150dp"
+                    android:textStyle="bold"
+                    android:layout_height="40dp"
+                    android:gravity="left|center_vertical"
+                    android:text="Age" />
+
+                <TextView
+                    android:id="@+id/client_age_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_parity"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:gravity="left|center_vertical"
+                    android:text="Number of Children" />
+
+                <TextView
+                    android:id="@+id/client_parity_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_life_stage"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:textStyle="bold"
+                    android:gravity="left|center_vertical"
+                    android:text="Life Stage" />
+
+                <TextView
+                    android:id="@+id/client_life_stage_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
+</RelativeLayout>

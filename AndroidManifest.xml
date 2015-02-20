@@ -48,6 +48,16 @@
             android:theme="@style/Oppia.Theme.Dark">
         </activity>
         <activity
+            android:name="org.digitalcampus.oppia.activity.ClientListActivity"
+            android:label="@string/title_activity_client_list"
+            android:theme="@style/Oppia.Theme">
+        </activity>
+        <activity
+            android:name="org.digitalcampus.oppia.activity.ClientInfoActivity"
+            android:label="@string/title_activity_client_info"
+            android:theme="@style/Oppia.Theme">
+        </activity>
+        <activity
             android:name="org.digitalcampus.oppia.activity.CourseActivity"
             android:label="@string/title_activity_course" 
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -119,7 +129,25 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <receiver android:name="org.digitalcampus.oppia.service.TrackerStartServiceReceiver" >
+        </receiver>
+
+        <service
+            android:name="org.digitalcampus.oppia.service.SyncDataService"
+            android:icon="@drawable/ujjwal_logo"
+            android:label="@string/service_tracker" >
+        </service>
+
+        <receiver android:name="org.digitalcampus.oppia.service.SyncDataReceiver" >
+            <intent-filter>
+                <!--Receiver triggered with change in connectivity status and wifi state-->
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.digitalcampus.oppia.service.SyncDataServiceReceiver" >
         </receiver>
 
     </application>

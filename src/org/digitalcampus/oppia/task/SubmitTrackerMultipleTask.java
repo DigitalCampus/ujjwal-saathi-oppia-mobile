@@ -17,13 +17,14 @@
 
 package org.digitalcampus.oppia.task;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.bugsense.trace.BugSenseHandler;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -41,14 +42,13 @@ import org.digitalcampus.oppia.utils.MetaDataUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.util.Log;
-
-import com.bugsense.trace.BugSenseHandler;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class SubmitTrackerMultipleTask extends AsyncTask<Payload, Integer, Payload> {
 
@@ -68,7 +68,6 @@ public class SubmitTrackerMultipleTask extends AsyncTask<Payload, Integer, Paylo
 		Payload payload = new Payload();
 		
 		try {
-				
 				DbHelper db = new DbHelper(ctx);
 				long userId = db.getUserId(prefs.getString("prefUsername", ""));
 				Log.d(TAG,"userId: " + userId);

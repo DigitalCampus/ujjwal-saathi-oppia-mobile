@@ -16,22 +16,6 @@
  */
 package org.digitalcampus.oppia.activity;
 
-import java.util.ArrayList;
-
-import org.digitalcampus.oppia.application.DatabaseManager;
-import org.digitalcampus.oppia.application.DbHelper;
-import org.digitalcampus.oppia.application.MobileLearning;
-import org.digitalcampus.oppia.listener.ScanMediaListener;
-import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.Lang;
-import org.digitalcampus.oppia.task.Payload;
-import org.digitalcampus.oppia.task.ScanMediaTask;
-import org.digitalcampus.oppia.utils.UIUtils;
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,6 +29,22 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.listener.ScanMediaListener;
+import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.Lang;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.task.ScanMediaTask;
+import org.digitalcampus.oppia.utils.UIUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
 
 
 
@@ -80,7 +80,8 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		Button counselling = (Button) findViewById(R.id.button_counselling);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				startActivity(new Intent(RoutingActivity.this, ClientRegActivity.class));
+//				startActivity(new Intent(RoutingActivity.this, ClientRegActivity.class));
+                startActivity(new Intent(RoutingActivity.this, ClientListActivity.class));
 			}
 		});
 	}

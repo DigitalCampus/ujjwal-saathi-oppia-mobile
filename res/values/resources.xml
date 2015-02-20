@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="prefServerDefault">https://ujjwal.oppia-mobile.org/</string>
-    <string name="prefServerTimeoutConnectionDefault">10000</string>
-    <string name="prefServerTimeoutResponseDefault">20000</string>
+    <string name="prefServerDefault">http://183.82.96.201:8000/</string>
+    <string name="prefServerTimeoutConnectionDefault">100000</string>
+    <!--<string name="prefServerTimeoutConnectionDefault">10000</string>-->
+    <string name="prefServerTimeoutResponseDefault">200000</string>
+    <!--<string name="prefServerTimeoutResponseDefault">20000</string>-->
 
 </resources>

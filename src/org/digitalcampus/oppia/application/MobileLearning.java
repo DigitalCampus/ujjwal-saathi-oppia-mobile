@@ -17,19 +17,19 @@
 
 package org.digitalcampus.oppia.application;
 
-import java.io.File;
-import java.io.IOException;
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 
 import org.digitalcampus.oppia.task.SubmitQuizTask;
 import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Environment;
-import android.preference.PreferenceManager;
+import java.io.File;
+import java.io.IOException;
 
 public class MobileLearning extends Application {
 
@@ -60,10 +60,13 @@ public class MobileLearning extends Application {
 	public static final String SERVER_POINTS_PATH = OPPIAMOBILE_API + "points/";
 	public static final String SERVER_AWARDS_PATH = OPPIAMOBILE_API + "awards/";
 	public static final String SERVER_COURSES_NAME = "courses";
+    public static final String SYNC_CLIENTS_DATA = OPPIAMOBILE_API + "clients";
 	
 	// general other settings
-	public static final String BUGSENSE_API_KEY = "d023ff88";
-	public static final int DOWNLOAD_COURSES_DISPLAY = 1; //this no of courses must be displayed for the 'download more courses' option to disappear
+//	public static final String BUGSENSE_API_KEY = "d023ff88";
+//  Mint.initAndStartSession(MyActivity.this, "4e0b90e1");
+    public static final String BUGSENSE_API_KEY = "4e0b90e1";
+    public static final int DOWNLOAD_COURSES_DISPLAY = 1; //this no of courses must be displayed for the 'download more courses' option to disappear
 	public static final int PASSWORD_MIN_LENGTH = 6;
 	public static final int PAGE_READ_TIME = 3;
 	public static final int RESOURCE_READ_TIME = 3;
@@ -90,7 +93,7 @@ public class MobileLearning extends Application {
 	
 	// for tracking if SubmitTrackerMultipleTask is already running
 	public SubmitTrackerMultipleTask omSubmitTrackerMultipleTask = null;
-	
+
 	// for tracking if SubmitQuizTask is already running
 	public SubmitQuizTask omSubmitQuizTask = null;
 	
@@ -129,7 +132,6 @@ public class MobileLearning extends Application {
 				e.printStackTrace();
 			}
 		}
-		
 		return true;
 	}
 	
@@ -143,5 +145,4 @@ public class MobileLearning extends Application {
 			return true;
 		}
 	}
-
 }
