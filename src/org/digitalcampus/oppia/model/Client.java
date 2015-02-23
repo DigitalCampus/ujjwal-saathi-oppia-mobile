@@ -9,10 +9,10 @@ public class Client implements Serializable{
 
     private long clientId;
     private String clientName;
-    private String clientMobileNumber;
+    private long clientMobileNumber;
     private String clientGender;
     private String clientMaritalStatus;
-    private String clientAge;
+    private int clientAge;
     private String clientParity;
     private String clientLifeStage;
     private String healthWorker; // User
@@ -59,11 +59,11 @@ public class Client implements Serializable{
         this.clientName = clientName;
     }
 
-    public String getClientMobileNumber() {
+    public long getClientMobileNumber() {
         return clientMobileNumber;
     }
 
-    public void setClientMobileNumber(String mobileNumber) {
+    public void setClientMobileNumber(long mobileNumber) {
         this.clientMobileNumber = mobileNumber;
     }
 
@@ -83,11 +83,11 @@ public class Client implements Serializable{
         this.clientMaritalStatus = clientMaritalStatus;
     }
 
-    public String getClientAge() {
+    public int getClientAge() {
         return clientAge;
     }
 
-    public void setClientAge(String clientAge) {
+    public void setClientAge(int clientAge) {
         this.clientAge = clientAge;
     }
 

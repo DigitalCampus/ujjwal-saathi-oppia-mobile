@@ -7,7 +7,6 @@ public class ClientDTO {
 	private ArrayList<Client> clients = new ArrayList<Client>();
 	private long previousSyncTime;
 
-
     public ArrayList<Client> getClients() {
         return clients;
     }

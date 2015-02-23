@@ -46,8 +46,6 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
 //        clientListBackButton = (Button) findViewById(R.id.list_back);
         noClientsText = (TextView)findViewById(R.id.tv_no_clients);
         listView = (ListView) findViewById(R.id.list_lv_clients);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
         clientRegistrationButton.setOnClickListener(new View.OnClickListener() {

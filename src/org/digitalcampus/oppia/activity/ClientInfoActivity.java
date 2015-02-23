@@ -1,7 +1,6 @@
 package org.digitalcampus.oppia.activity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +28,6 @@ import java.util.Map;
 
 public class ClientInfoActivity extends AppActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = CourseIndexActivity.class.getSimpleName();
-    private Context context;
     private DbHelper db;
     private Client client;
     private SharedPreferences prefs;
@@ -48,7 +46,6 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_detail);
-        context = this;
         clientNameTextView = (TextView) findViewById(R.id.client_name_value);
         clientMobileTextView = (TextView) findViewById(R.id.client_mobile_number_value);
         clientGenderTextView = (TextView) findViewById(R.id.client_sex_value);
@@ -60,10 +57,10 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+//                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
                 Intent i = new Intent(ClientInfoActivity.this, CourseIndexActivity.class);
                 Bundle tb = new Bundle();
-                tb.putSerializable(Course.TAG, c);
+//                tb.putSerializable(Course.TAG, c);
                 i.putExtras(tb);
                 startActivity(i);
                 ClientInfoActivity.this.finish();
@@ -86,10 +83,10 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         long userId = prefs.getLong("prefClientLocalID", 0L);
         client = db.getClient(userId);
         clientNameTextView.setText(client.getClientName());
-        clientMobileTextView.setText(client.getClientMobileNumber());
+        clientMobileTextView.setText(Long.toString(client.getClientMobileNumber()));
         clientGenderTextView.setText(client.getClientGender());
         clientMaritalStatusTextView.setText(client.getClientMaritalStatus());
-        clientAgeTextView.setText(client.getClientAge());
+        clientAgeTextView.setText(Integer.toString(client.getClientAge()));
         clientParityTextView.setText(client.getClientParity());
         clientLifeStageTextView.setText(client.getClientLifeStage());
     }

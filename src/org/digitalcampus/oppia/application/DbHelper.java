@@ -221,10 +221,10 @@ public class DbHelper extends SQLiteOpenHelper {
         String sql = "CREATE TABLE ["+CLIENT_TABLE +"] (" +
                 "["+CLIENT_C_ID+"]" + " integer primary key autoincrement, " +
                 "["+CLIENT_C_NAME +"]" + " TEXT , "+
-                "["+CLIENT_C_MOBILENUMBER +"] TEXT , " +
+                "["+CLIENT_C_MOBILENUMBER +"] integer , " +
                 "["+CLIENT_C_GENDER+"] TEXT , " +
                 "["+CLIENT_C_MARITALSTATUS +"] TEXT , " +
-                "["+CLIENT_C_AGE +"] TEXT ," +
+                "["+CLIENT_C_AGE +"] integer ," +
                 "["+CLIENT_C_PARITY +"] TEXT ," +
                 "["+CLIENT_C_LIFESTAGE +"] TEXT ," +
 //                "["+CLIENT_C_MODIFIED_DATE + "] datetime null, " +
@@ -415,11 +415,11 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
     // returns id of the row
-    public long addOrUpdateClient(Client client) {
+    public long addClient(Client client) {
         ContentValues values = new ContentValues();
         values.put(CLIENT_C_NAME, client.getClientName());
         values.put(CLIENT_C_MOBILENUMBER, client.getClientMobileNumber());
-        values.put(CLIENT_C_GENDER, client.getClientMobileNumber());
+        values.put(CLIENT_C_GENDER, client.getClientGender());
         values.put(CLIENT_C_MARITALSTATUS, client.getClientMaritalStatus());
         values.put(CLIENT_C_AGE, client.getClientAge());
         values.put(CLIENT_C_PARITY, client.getClientParity());
@@ -430,7 +430,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         Log.v(TAG, "Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
-
     }
 	
 	public long isUser(String username){
@@ -784,10 +783,10 @@ public class DbHelper extends SQLiteOpenHelper {
             client = new Client();
             client.setClientId(c.getInt(c.getColumnIndex(CLIENT_C_ID)));
             client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
-            client.setClientMobileNumber(c.getString(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
+            client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
             client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
             client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
-            client.setClientAge(c.getString(c.getColumnIndex(CLIENT_C_AGE)));
+            client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
@@ -810,10 +809,10 @@ public class DbHelper extends SQLiteOpenHelper {
         while (c.isAfterLast() == false) {
             client.setClientId(c.getInt(c.getColumnIndex(CLIENT_C_ID)));
             client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
-            client.setClientMobileNumber(c.getString(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
+            client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
             client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
             client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
-            client.setClientAge(c.getString(c.getColumnIndex(CLIENT_C_AGE)));
+            client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
@@ -1220,9 +1219,6 @@ public class DbHelper extends SQLiteOpenHelper {
 	    }
 	}
 	
-	/*
-	 * 
-	 */
 	public boolean isPreviousCourseActivitiesCompleted(Course course, Activity activity, long userId){
 		
 		Log.d(TAG,"this digest = " + activity.getDigest());
@@ -1266,49 +1262,77 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public ArrayList<Client> getClientsForUpdates(String userName, long previousSyncTime){
         ArrayList<Client> clients = new ArrayList<Client>();
-//        ArrayList<Long> clientList = new ArrayList<Long>();
         Client client;
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
-//        Date d=new Date();
-//        try {
-//            d=  dateFormat.parse(Long.toString(previousUpdateDateTime));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
                 " WHERE " + CLIENT_C_HEALTHWORKER + " = ? and (" +
                 CLIENT_C_SERVER_ID + " is null or " + CLIENT_C_MODIFIED_DATE + " >= " +
                 Long.toString(previousSyncTime) + ");";
 
-
         Cursor c = db.rawQuery(sql,new String[] { userName });
         c.moveToFirst();
 
-        String str;
         while (c.isAfterLast() == false) {
             client = new Client();
-//            str = (c.getString(c.getColumnIndex(CLIENT_C_SYNCED_DATE)));
-//            try {
-//                d=  dateFormat.parse(str);
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
             client.setLastModifiedDate(c.getLong(c.getColumnIndex(CLIENT_C_MODIFIED_DATE)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientId(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
             client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
-            client.setClientMobileNumber(c.getString(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
+            client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
             client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
             client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
-            client.setClientAge(c.getString(c.getColumnIndex(CLIENT_C_AGE)));
+            client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
-
             clients.add(client);
-//            clientList.add(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
             c.moveToNext();
         }
         return clients;
+    }
+
+    public void addOrUpdateClient(ArrayList<Client> ClientList){
+        String sql;
+        ContentValues values;
+        long localId;
+        for (Client client: ClientList) {
+            localId = isClientBasedOnServerId(client.getClientServerId());
+            values = new ContentValues();
+            values.put(CLIENT_C_NAME, client.getClientName());
+            values.put(CLIENT_C_MOBILENUMBER, client.getClientMobileNumber());
+            values.put(CLIENT_C_GENDER, client.getClientMobileNumber());
+            values.put(CLIENT_C_MARITALSTATUS, client.getClientMaritalStatus());
+            values.put(CLIENT_C_AGE, client.getClientAge());
+            values.put(CLIENT_C_PARITY, client.getClientParity());
+            values.put(CLIENT_C_LIFESTAGE, client.getClientLifeStage());
+            values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
+            values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
+            values.put(CLIENT_C_MODIFIED_DATE, client.getLastModifiedDate());
+            if (localId == -1) {
+                db.insertOrThrow(CLIENT_TABLE, null, values);
+            } else {
+                db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + localId, null);
+            }
+        }
+    }
+
+    public void deleteUnregisteredClients(long clientId){
+        String s = CLIENT_C_ID+"=?";
+        String[] args = new String[] { String.valueOf(clientId) };
+        db.delete(CLIENT_TABLE, s, args);
+    }
+
+    public long isClientBasedOnServerId(long clientServerId){
+        String s = CLIENT_C_SERVER_ID + "=?";
+        String[] args = new String[] { String.valueOf(clientServerId) };
+        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
+        if(c.getCount() == 0){
+            c.close();
+            return -1;
+        } else {
+            c.moveToFirst();
+            int userId = c.getInt(c.getColumnIndex(CLIENT_C_ID));
+            c.close();
+            return userId;
+        }
     }
 }

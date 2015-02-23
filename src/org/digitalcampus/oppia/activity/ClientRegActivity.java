@@ -115,10 +115,10 @@ public class ClientRegActivity extends AppActivity {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_phone_number);
                     return;
                 }
-//                if (clientPhoneNumber.length() != 10) {
-//                    UIUtils.showAlert(context, R.string.error, R.string.error_register_format_phone_number);
-//                    return;
-//                }
+                if (clientPhoneNumber.length() != 10) {
+                    UIUtils.showAlert(context, R.string.error, R.string.error_register_format_phone_number);
+                    return;
+                }
                 if (clientGender.length() == 0) {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_gender);
                     return;
@@ -140,17 +140,10 @@ public class ClientRegActivity extends AppActivity {
                     return;
                 }
 
-//                pDialog = new ProgressDialog(context);
-//                pDialog.setTitle(R.string.register_alert_title);
-//                pDialog.setMessage(getString(R.string.register_process));
-//                pDialog.setCancelable(true);
-//                pDialog.show();
-
-//                ArrayList<Object> clients = new ArrayList<Object>();
                 Client client = new Client();
                 client.setClientName(clientName);
-                client.setClientMobileNumber(clientPhoneNumber);
-                client.setClientAge(clientAge);
+                client.setClientMobileNumber(Long.parseLong(clientPhoneNumber));
+                client.setClientAge(Integer.parseInt(clientAge));
                 client.setClientGender(clientGender);
                 client.setClientMaritalStatus(clientMarried);
                 client.setClientParity(clientParity);
@@ -158,7 +151,7 @@ public class ClientRegActivity extends AppActivity {
                 client.setLastModifiedDate(System.currentTimeMillis());
                 client.setHealthWorker(prefs.getString("prefUsername", ""));
 
-                client.setClientId(db.addOrUpdateClient(client));
+                client.setClientId(db.addClient(client));
                 DatabaseManager.getInstance().closeDatabase();
 
                 SharedPreferences.Editor editor = prefs.edit();
@@ -173,7 +166,6 @@ public class ClientRegActivity extends AppActivity {
 				i.putExtras(tb);
 				startActivity(i);
 				ClientRegActivity.this.finish();
-//                startActivity(new Intent(ClientRegActivity.this, ClientInfoActivity.class));
 			}
 		});
 	}
