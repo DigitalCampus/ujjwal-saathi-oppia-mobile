@@ -2,7 +2,6 @@ package org.digitalcampus.oppia.model;
 
 import java.util.ArrayList;
 
-
 public class ClientDTO {
 	private ArrayList<Client> clients = new ArrayList<Client>();
 	private long previousSyncTime;

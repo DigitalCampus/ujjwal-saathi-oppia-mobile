@@ -271,4 +271,9 @@
 	<string name="media_player_description">Oppia Media Player</string>
 
     <string name="client_data_sync">Client Data sync in progress</string>
+    <string name="details">Details</string>
+    <string name="makevisit">Make Visit</string>
+    <string name="clients_list">List of your clients</string>
+    <string name="client_add_new">Add New Client</string>
+    <string name="no_client_message">You don\'t have any existing clients</string>
 </resources>

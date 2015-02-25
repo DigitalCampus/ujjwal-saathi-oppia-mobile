@@ -49,7 +49,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	static final String TAG = DbHelper.class.getSimpleName();
 	static final String DB_NAME = "ujjwal-sathi.db";
-	static final int DB_VERSION = 18;
+	static final int DB_VERSION = 19;
 
 	private static SQLiteDatabase db;
 	private SharedPreferences prefs;
@@ -111,6 +111,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	private static final String USER_C_PASSWORD = "passwordencrypted";
 	private static final String USER_C_APIKEY = "apikey";
 
+    // string constants for database client table
     private static final String CLIENT_TABLE = "client";
     private static final String CLIENT_C_ID = BaseColumns._ID;
     private static final String CLIENT_C_NAME = "clientname";
@@ -130,6 +131,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 		DatabaseManager.initializeInstance(this);
 		db = DatabaseManager.getInstance().openDatabase();
+
 	}
 
 	@Override
@@ -140,8 +142,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		createQuizResultsTable(db);
 		createSearchTable(db);
 		createUserTable(db);
-        db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
-        createClientTable(db);
+        createClientTable(db); // create client table
 	}
 
 	public void createCourseTable(SQLiteDatabase db){
@@ -227,9 +228,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 "["+CLIENT_C_AGE +"] integer ," +
                 "["+CLIENT_C_PARITY +"] TEXT ," +
                 "["+CLIENT_C_LIFESTAGE +"] TEXT ," +
-//                "["+CLIENT_C_MODIFIED_DATE + "] datetime null, " +
-                "["+CLIENT_C_MODIFIED_DATE + "] integer null, " +
-                "["+CLIENT_C_SERVER_ID +"] integer , "+
+                "["+CLIENT_C_MODIFIED_DATE + "] integer , " +
+                "["+CLIENT_C_SERVER_ID +"] integer null , "+
                 "["+CLIENT_C_HEALTHWORKER+"] TEXT  "+
                 ");";
         db.execSQL(sql);
@@ -335,15 +335,15 @@ public class DbHelper extends SQLiteOpenHelper {
 			db.execSQL(sql2);
 			
 			// create user table
-            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
 			this.createUserTable(db);
-            this.createClientTable(db);
-			
-		}
-//        if(oldVersion <= 18 && newVersion >= 19){
-//            //create search table
+//            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
 //            this.createClientTable(db);
-//        }
+		}
+        if(oldVersion <= 18 && newVersion >= 19){
+            //create client table
+            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
+            this.createClientTable(db);
+        }
 
     }
 
@@ -414,7 +414,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		} 
 	}
 
-    // returns id of the row
+    // returns id of the new client row, adding new client
     public long addClient(Client client) {
         ContentValues values = new ContentValues();
         values.put(CLIENT_C_NAME, client.getClientName());
@@ -426,7 +426,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_LIFESTAGE, client.getClientLifeStage());
         values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
-        values.put(CLIENT_C_MODIFIED_DATE, client.getLastModifiedDate());
+        values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
 
         Log.v(TAG, "Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
@@ -772,6 +772,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		return users;
 	}
 
+    // return all the clients pertaining to a particular health worker / user
     public ArrayList<Client> getAllClients(String userName){
         String s = CLIENT_C_HEALTHWORKER + "=? ";
         String[] args = new String[] { userName };
@@ -791,7 +792,6 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
-            client.setLastModifiedDate(c.getLong(c.getColumnIndex(CLIENT_C_MODIFIED_DATE)));
 
             clients.add(client);
             c.moveToNext();
@@ -800,6 +800,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return clients;
     }
 
+    // return client based on local client id
     public Client getClient(long clientID){
         String s = CLIENT_C_ID + "=? ";
         String[] args = new String[] { Long.toString(clientID) };
@@ -817,7 +818,6 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
-            client.setLastModifiedDate(c.getLong(c.getColumnIndex(CLIENT_C_MODIFIED_DATE)));
 
             c.moveToNext();
         }
@@ -1260,6 +1260,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	    }
 	}
 
+    // sync-up process, select clients for update for given user
     public ArrayList<Client> getClientsForUpdates(String userName, long previousSyncTime){
         ArrayList<Client> clients = new ArrayList<Client>();
         Client client;
@@ -1273,7 +1274,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         while (c.isAfterLast() == false) {
             client = new Client();
-            client.setLastModifiedDate(c.getLong(c.getColumnIndex(CLIENT_C_MODIFIED_DATE)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientId(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
@@ -1290,6 +1290,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return clients;
     }
 
+    // add or update clients
     public void addOrUpdateClient(ArrayList<Client> ClientList){
         String sql;
         ContentValues values;
@@ -1306,7 +1307,6 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CLIENT_C_LIFESTAGE, client.getClientLifeStage());
             values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
             values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
-            values.put(CLIENT_C_MODIFIED_DATE, client.getLastModifiedDate());
             if (localId == -1) {
                 db.insertOrThrow(CLIENT_TABLE, null, values);
             } else {
@@ -1315,12 +1315,14 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+//    deleting clients newly created clients and replacing them with registered clients
     public void deleteUnregisteredClients(long clientId){
         String s = CLIENT_C_ID+"=?";
         String[] args = new String[] { String.valueOf(clientId) };
         db.delete(CLIENT_TABLE, s, args);
     }
 
+    // check if registered client or not
     public long isClientBasedOnServerId(long clientServerId){
         String s = CLIENT_C_SERVER_ID + "=?";
         String[] args = new String[] { String.valueOf(clientServerId) };

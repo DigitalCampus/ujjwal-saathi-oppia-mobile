@@ -44,12 +44,12 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         HTTPConnectionUtils client = new HTTPConnectionUtils(ctx);
-        ClientDTO clientDTO = new ClientDTO();
+        ClientDTO clientDTO = new ClientDTO(); // POJO object used to exchange data
         Payload payload = params[0];
         ArrayList<Client> clients = (ArrayList<Client>) payload.getData();
-        String url = "http://183.82.96.201:8000/api/v1/client/";
+        String url = client.getFullURL(payload.getUrl());
         HttpPost httpPost = new HttpPost(url);
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper(); // using jackson to create json and exchange data
         long lastRun = prefs.getLong("lastClientDataSync", 0);
         try {
             clientDTO.getClients().addAll(clients);
@@ -60,9 +60,9 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
             StringEntity se = new StringEntity( str,"utf8");
 
             se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-            httpPost.addHeader(client.getAuthHeader());
-//            httpPost.setEntity(new StringEntity(str));
+            httpPost.addHeader(client.getAuthHeader()); // authorization
             httpPost.setEntity(se);
+            // send request
             HttpResponse response = client.execute(httpPost);
 
             // read response
@@ -74,20 +74,8 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
             while ((s = buffer.readLine()) != null) {
                 responseStr += s;
             }
-            Log.d("jsonFromServer2", responseStr);
-            //s = "{\"clients\":[{\"clientAge\":32,\"clientGender\":\"2\",\"healthWorker\":\"raunak\",\"clientLifeStage\":\"One child\",\"clientMaritalStatus\":\"No\",\"clientMobileNumber\":2,\"clientName\":\"Wo\",\"clientParity\":\"3\",\"clientServerId\":0,\"clientId\":1,\"lastModifiedDate\":1424678026579}],\"previousSyncTime\":1424686630}";
-//            Log.d("json received",s);
-//            ClientDTO clientDTO2 = mapper.readValue(s,ClientDTO.class);
-//            DbHelper db = new DbHelper(ctx);
-//
-//            for (Client client1: clients) {
-//                if (client1.getClientServerId() == 1) {
-//                    db.deleteUnregisteredClients(client1.getClientId());
-//                }
-//            }
-//            ArrayList<Client> clients2 = clientDTO2.getClients();
-//            db.addOrUpdateClient(clients2);
-//            DatabaseManager.getInstance().closeDatabase();
+            Log.d("jsonFromServer", responseStr);
+
             switch (response.getStatusLine().getStatusCode()){
                 case 400: // unauthorised
                     payload.setResult(false);
@@ -105,12 +93,16 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
                     ArrayList<Client> clients2 = clientDTO2.getClients();
                     db.addOrUpdateClient(clients2);
                     DatabaseManager.getInstance().closeDatabase();
+//                    correctly setting the previous sync time
+                    long now = System.currentTimeMillis()/1000;
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putLong("lastClientDataSync", now);
+                    editor.commit();
                     break;
                 default:
                     payload.setResult(false);
                     payload.setResultResponse(ctx.getString(R.string.error_connection));
             }
-
 
         } catch (UnsupportedEncodingException e) {
             payload.setResult(false);

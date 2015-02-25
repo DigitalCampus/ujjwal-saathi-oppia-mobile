@@ -15,6 +15,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Activity;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.Course;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ClientInfoActivity extends AppActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final String TAG = CourseIndexActivity.class.getSimpleName();
+    public static final String TAG = ClientInfoActivity.class.getSimpleName();
     private DbHelper db;
     private Client client;
     private SharedPreferences prefs;
@@ -40,7 +41,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     private TextView clientAgeTextView;
     private TextView clientParityTextView;
     private TextView clientLifeStageTextView;
-    private Button makeVisitButton;
+    private Button makeVisitButton; // goes to course index activity as per previous flow
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,10 +58,11 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
                 Intent i = new Intent(ClientInfoActivity.this, CourseIndexActivity.class);
                 Bundle tb = new Bundle();
-//                tb.putSerializable(Course.TAG, c);
+                tb.putSerializable(Course.TAG, c);
+                tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
                 i.putExtras(tb);
                 startActivity(i);
                 ClientInfoActivity.this.finish();
@@ -78,6 +80,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
 
     @Override
     public void onStart() {
+        // setting the values for various fields
         super.onStart();
         db = new DbHelper(this);
         long userId = prefs.getLong("prefClientLocalID", 0L);

@@ -36,14 +36,12 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
     private Button clientRegistrationButton;
     private ListView listView;
     private TextView noClientsText;
-//    private Button clientListBackButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         clientRegistrationButton = (Button) findViewById(R.id.list_create_client);
-//        clientListBackButton = (Button) findViewById(R.id.list_back);
         noClientsText = (TextView)findViewById(R.id.tv_no_clients);
         listView = (ListView) findViewById(R.id.list_lv_clients);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -74,11 +72,9 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         DatabaseManager.getInstance().closeDatabase();
         Log.i("info", Integer.toString(clients.size()) );
         if (clients.size() < 1) {
-//            clientListBackButton.setVisibility(View.VISIBLE);
             listView.setVisibility(View.GONE);
             noClientsText.setVisibility(View.VISIBLE);
         } else {
-//            clientListBackButton.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
             noClientsText.setVisibility(View.GONE);
         }

@@ -17,15 +17,6 @@ public class Client implements Serializable{
     private String clientLifeStage;
     private String healthWorker; // User
     private long clientServerId;
-    private long lastModifiedDate;
-
-    public long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
 
     public long getClientServerId() {
         return clientServerId;

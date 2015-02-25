@@ -98,7 +98,7 @@ public class ClientRegActivity extends AppActivity {
 			public void onClick(View v) {
 				DbHelper db = new DbHelper(ClientRegActivity.this);
 				Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
-
+                // capturing the data from the form
                 String clientName = (String) nameClientEditText.getText().toString().trim();
                 String clientPhoneNumber = (String) phoneNumberClientEditText.getText().toString();
                 String clientAge = (String) ageClientEditText.getText().toString();
@@ -106,7 +106,7 @@ public class ClientRegActivity extends AppActivity {
                 String clientMarried = (String) marriedSpinner.getSelectedItem().toString();
                 String clientParity = (String) paritySpinner.getSelectedItem().toString();
                 String clientLifeStage = (String) plsSpinner.getSelectedItem().toString();
-
+//                validatiing the input information
                 if (clientName.length() == 0) {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_name);
                     return;
@@ -139,7 +139,7 @@ public class ClientRegActivity extends AppActivity {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_lifestage);
                     return;
                 }
-
+//                creating client object and saving the information to local db
                 Client client = new Client();
                 client.setClientName(clientName);
                 client.setClientMobileNumber(Long.parseLong(clientPhoneNumber));
@@ -148,8 +148,7 @@ public class ClientRegActivity extends AppActivity {
                 client.setClientMaritalStatus(clientMarried);
                 client.setClientParity(clientParity);
                 client.setClientLifeStage(clientLifeStage);
-                client.setLastModifiedDate(System.currentTimeMillis());
-                client.setHealthWorker(prefs.getString("prefUsername", ""));
+                client.setHealthWorker(prefs.getString("prefUsername", "")); //USER
 
                 client.setClientId(db.addClient(client));
                 DatabaseManager.getInstance().closeDatabase();

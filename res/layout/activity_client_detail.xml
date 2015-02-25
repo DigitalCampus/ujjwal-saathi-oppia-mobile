@@ -6,29 +6,29 @@
     <RelativeLayout
         android:id="@+id/detail_container"
         android:layout_width="fill_parent"
-        android:padding="10dp"
+        android:padding="@dimen/layout_padding"
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/client_title"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:textSize="20sp"
-            android:textStyle="normal"
-            android:paddingLeft="15dp"
+            android:layout_height="@dimen/client_fields_title_height"
+            android:textSize="@dimen/title_text_size"
+            android:textStyle="bold"
+            android:paddingLeft="@dimen/padding_left"
             android:maxLines="1"
             android:gravity="center"
-            android:text="Details"/>
+            android:text="@string/details"/>
         <Button
             android:id="@+id/client_detail_visit_button"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/client_fields_title_height"
             android:layout_alignParentRight="true"
-            android:text="Make Visit"/>
+            android:text="@string/makevisit"/>
     </RelativeLayout>
     <View
         android:id="@+id/info_v_hr"
         android:layout_width="fill_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/border_size"
         android:layout_below="@id/detail_container"
         android:background="#000000" />
     <ScrollView
@@ -38,17 +38,17 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/layout_margin"
             android:orientation="vertical" >
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_name"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
                     android:text="@string/clientreg_form_name_title" />
 
@@ -56,7 +56,7 @@
                     android:id="@+id/client_name_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:minHeight="40dp"
+                    android:minHeight="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_toRightOf="@id/client_name"
                     android:layout_alignParentRight="true"/>
@@ -66,17 +66,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_mobile_number"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
-                    android:text="Mobile Number" />
+                    android:text="@string/clientreg_form_mobile_title" />
 
                 <TextView
                     android:id="@+id/client_mobile_number_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -85,16 +85,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_sex"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
-                    android:text="Gender/Sex" />
+                    android:text="@string/clientreg_form_sex_title" />
 
                 <TextView
                     android:id="@+id/client_sex_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -103,16 +104,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_is_married"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
-                    android:text="Marital Status" />
+                    android:text="@string/clientreg_form_married_title" />
 
                 <TextView
                     android:id="@+id/client_is_married_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -121,16 +123,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_age"
-                    android:layout_width="150dp"
+                    android:layout_width="@dimen/client_fields_title_width"
                     android:textStyle="bold"
-                    android:layout_height="40dp"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="left|center_vertical"
-                    android:text="Age" />
+                    android:text="@string/clientreg_form_age_title" />
 
                 <TextView
                     android:id="@+id/client_age_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -139,16 +142,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_parity"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
-                    android:text="Number of Children" />
+                    android:text="@string/clientreg_form_parity_title" />
 
                 <TextView
                     android:id="@+id/client_parity_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -157,16 +161,17 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:id="@+id/client_life_stage"
-                    android:layout_width="150dp"
-                    android:layout_height="40dp"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:gravity="left|center_vertical"
-                    android:text="Life Stage" />
+                    android:text="@string/clientreg_form_lifestage_title" />
 
                 <TextView
                     android:id="@+id/client_life_stage_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="40dp"
+                    android:layout_height="@dimen/client_fields_title_height"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>

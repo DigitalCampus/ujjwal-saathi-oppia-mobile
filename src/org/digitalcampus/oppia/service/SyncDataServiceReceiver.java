@@ -7,9 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-/**
- * Created by ronak on 13/2/15.
- */
 public class SyncDataServiceReceiver extends BroadcastReceiver {
 
     public final static String TAG = SyncDataServiceReceiver.class.getSimpleName();

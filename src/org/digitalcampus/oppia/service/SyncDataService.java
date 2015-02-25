@@ -10,6 +10,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.bugsense.trace.BugSenseHandler;
 
@@ -36,7 +37,7 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        Log.d("SyncDataService","SyncDataService");
+        Log.d("SyncDataService", "SyncDataService");
         boolean backgroundData = true;
         Bundle b = intent.getExtras();
         if (b != null) {
@@ -47,21 +48,20 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
             Payload p = null;
 
             prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            long lastRun = prefs.getLong("lastClientDataSync", 0);
+            long lastRun = prefs.getLong("lastClientDataSync", 0L);
 
             long now = System.currentTimeMillis()/1000;
-//            if((lastRun + 3600*24 ) < now){
-            if((lastRun) < now){
+            if((lastRun + 3600*24 ) < now){ // checking when the last sync was done
+//            if(lastRun < now){
                 DbHelper db = new DbHelper(this);
+                // getting the list of clients to be synced
                 ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastRun));
                 ClientDataSyncTask task = new ClientDataSyncTask(this);
                 p = new Payload(clients);
+                p.setUrl(MobileLearning.SYNC_CLIENTS_DATA);
+//                in the payload object, sent client arraylist and URL to the client sync task
                 task.setClientDataSyncListener(this);
                 task.execute(p);
-
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong("lastClientDataSync", now);
-                editor.commit();
             }
         }
         return Service.START_NOT_STICKY;
