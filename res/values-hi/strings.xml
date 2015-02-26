@@ -245,10 +245,10 @@
 	<string name="clientreg_form_parity_title">बच्चों की संख्या </string>
 	<string name="clientreg_form_lifestage_title">जीवनशैली</string>
 	
-	<string name="submit_btn_text">आगे बढें &gt;&gt;</string>
-    <string name="details">Details</string>
-    <string name="makevisit">Make Visit</string>
-    <string name="clients_list">List of your clients</string>
-    <string name="client_add_new">Add New Client</string>
-    <string name="no_client_message">You don\'t have any existing clients</string>
+	<string name="submit_btn_text">लोगों की जानकारी भेजी जा रही है</string>
+    <string name="details">विवरण</string>
+    <string name="makevisit">भेंट करें</string>
+    <string name="clients_list">आपके लोग</string>
+    <string name="client_add_new">नए लोगों को जोड़ने के लिए</string>
+    <string name="no_client_message">आपके लिए कोई भी व्यक्ति मौजूद नही है</string>
 </resources>

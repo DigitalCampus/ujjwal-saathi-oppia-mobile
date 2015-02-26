@@ -12,7 +12,7 @@ import java.util.Calendar;
 public class SyncDataReceiver extends BroadcastReceiver {
     public static final String TAG = SyncDataReceiver.class.getSimpleName();
 
-    private static final long REPEAT_TIME = 1000;
+    private static final long REPEAT_TIME = 1000 * 3600;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -22,7 +22,7 @@ public class SyncDataReceiver extends BroadcastReceiver {
         Log.d("SyncDataReceiver", "SyncDataReceiver");
         PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 30);
+        cal.add(Calendar.SECOND, 5);
         service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT_TIME, pending);
     }
 }

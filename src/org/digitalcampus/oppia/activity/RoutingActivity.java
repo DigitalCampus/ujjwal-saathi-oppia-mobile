@@ -45,7 +45,7 @@ import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
-
+import java.util.Map;
 
 
 public class RoutingActivity extends AppActivity implements ScanMediaListener {
@@ -227,4 +227,29 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 			e.commit();
 		}
 	}
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences.Editor editor = prefs.edit();
+//        if (prefs.getBoolean("prefSyncService", false)) {
+//            Intent service = new Intent(this, SyncDataService.class);
+//
+//            Bundle tb = new Bundle();
+//            tb.putBoolean("backgroundData", true);
+//            service.putExtras(tb);
+//            // start a new sync service
+//            this.startService(service);
+//        }
+
+        // remove any saved state info from shared prefs in case they interfere with subsequent page views
+        Map<String,?> keys = prefs.getAll();
+
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            if (entry.getKey().startsWith("widget_")){
+                editor.remove(entry.getKey());
+            }
+        }
+        editor.commit();
+    }
 }

@@ -336,8 +336,6 @@ public class DbHelper extends SQLiteOpenHelper {
 			
 			// create user table
 			this.createUserTable(db);
-//            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
-//            this.createClientTable(db);
 		}
         if(oldVersion <= 18 && newVersion >= 19){
             //create client table
@@ -375,7 +373,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		values.put(COURSE_C_ORDER_PRIORITY, course.getPriority());
 		
 		if (!this.isInstalled(course.getShortname())) {
-			Log.v(TAG, "Record added");
+			Log.v(TAG, "Course Record added");
 			return db.insertOrThrow(COURSE_TABLE, null, values);
 		} else if(this.toUpdate(course.getShortname(), course.getVersionId())){
 			long toUpdate = this.getCourseID(course.getShortname());
@@ -406,7 +404,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		
 		long userId = this.isUser(user.getUsername());
 		if (userId == -1) {
-			Log.v(TAG, "Record added");
+			Log.v(TAG, "User Record added");
 			return db.insertOrThrow(USER_TABLE, null, values);
 		} else {
 			db.update(USER_TABLE, values, USER_C_ID + "=" + userId, null);
@@ -428,7 +426,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
 
-        Log.v(TAG, "Record added");
+        Log.v(TAG, "Client Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
     }
 	

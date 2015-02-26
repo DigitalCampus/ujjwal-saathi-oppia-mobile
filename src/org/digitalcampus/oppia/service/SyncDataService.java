@@ -38,6 +38,10 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("SyncDataService", "SyncDataService");
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.putBoolean("prefSyncService", true);
+//        editor.commit();
         boolean backgroundData = true;
         Bundle b = intent.getExtras();
         if (b != null) {
@@ -47,12 +51,10 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
 
             Payload p = null;
 
-            prefs = PreferenceManager.getDefaultSharedPreferences(this);
             long lastRun = prefs.getLong("lastClientDataSync", 0L);
 
             long now = System.currentTimeMillis()/1000;
-            if((lastRun + 3600*24 ) < now){ // checking when the last sync was done
-//            if(lastRun < now){
+            if((lastRun + 3600*12 ) < now){
                 DbHelper db = new DbHelper(this);
                 // getting the list of clients to be synced
                 ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastRun));
@@ -89,5 +91,12 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
     }
 
     public void clientDataSyncComplete(Payload response) {
+    }
+
+    @Override
+    public void onDestroy(){
+        Log.v("SYNC-SERVICE","Sync Service killed");
+//        player.stop();
+        super.onDestroy();
     }
 }
