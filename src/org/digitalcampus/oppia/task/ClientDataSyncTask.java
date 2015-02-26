@@ -47,7 +47,7 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         ClientDTO clientDTO = new ClientDTO(); // POJO object used to exchange data
         Payload payload = params[0];
         ArrayList<Client> clients = (ArrayList<Client>) payload.getData();
-        String url = client.getFullURL(payload.getUrl());
+        String url = client.getFullURLClientSync(payload.getUrl());
         HttpPost httpPost = new HttpPost(url);
         ObjectMapper mapper = new ObjectMapper(); // using jackson to create json and exchange data
         long lastRun = prefs.getLong("lastClientDataSync", 0);
@@ -143,4 +143,9 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
             clientDataSyncListener = srl;
         }
     }
+
+//    // Method to stop the service
+//    public void stopService(View view) {
+//        stopService(new Intent(this, SyncDataService.class));
+//    }
 }

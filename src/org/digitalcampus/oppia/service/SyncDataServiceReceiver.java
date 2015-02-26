@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
-import java.util.Calendar;
-
 public class SyncDataServiceReceiver extends BroadcastReceiver {
 
     public final static String TAG = SyncDataServiceReceiver.class.getSimpleName();
@@ -26,8 +24,8 @@ public class SyncDataServiceReceiver extends BroadcastReceiver {
 
         ctx.startService(service);
 
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 30);
+//        Calendar cal = Calendar.getInstance();
+//        cal.add(Calendar.SECOND, 30);
 //        ctx.stopService(service);
     }
 }

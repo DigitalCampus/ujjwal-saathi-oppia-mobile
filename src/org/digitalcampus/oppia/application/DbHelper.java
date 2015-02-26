@@ -336,6 +336,8 @@ public class DbHelper extends SQLiteOpenHelper {
 			
 			// create user table
 			this.createUserTable(db);
+//            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
+//            this.createClientTable(db);
 		}
         if(oldVersion <= 18 && newVersion >= 19){
             //create client table

@@ -37,7 +37,6 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("SyncDataService", "SyncDataService");
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        SharedPreferences.Editor editor = prefs.edit();
 //        editor.putBoolean("prefSyncService", true);
@@ -54,7 +53,8 @@ public class SyncDataService extends Service implements ClientDataSyncListener {
             long lastRun = prefs.getLong("lastClientDataSync", 0L);
 
             long now = System.currentTimeMillis()/1000;
-            if((lastRun + 3600*12 ) < now){
+            if((lastRun + 3600 * 12 ) < now){
+            // checking when the last sync was done
                 DbHelper db = new DbHelper(this);
                 // getting the list of clients to be synced
                 ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastRun));

@@ -118,6 +118,7 @@ public class UpgradeManagerTask extends AsyncTask<Payload, String, Payload> {
 			Editor editor = prefs.edit();
 			editor.putBoolean("upgradeV46", true);
 			editor.putString("prefServer", ctx.getString(R.string.prefServerDefault));
+            editor.putString("prefServerClient", ctx.getString(R.string.prefServerClientSync));
 			editor.commit();
 			publishProgress(this.ctx.getString(R.string.info_upgrading,"v46"));
 			payload.setResult(true);
@@ -201,6 +202,7 @@ public class UpgradeManagerTask extends AsyncTask<Payload, String, Payload> {
 	protected void upgradeV20(){
 		Editor editor = prefs.edit();
 		editor.putString("prefServer", ctx.getString(R.string.prefServerDefault));
+        editor.putString("prefServerClient", ctx.getString(R.string.prefServerClientSync));
 		editor.commit();
 	}
 	

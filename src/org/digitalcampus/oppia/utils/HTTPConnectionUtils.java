@@ -1,7 +1,9 @@
 package org.digitalcampus.oppia.utils;
 
-import java.util.LinkedList;
-import java.util.List;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.preference.PreferenceManager;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -12,13 +14,11 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
+import java.util.LinkedList;
+import java.util.List;
 
 public class HTTPConnectionUtils extends DefaultHttpClient {
 	
@@ -65,6 +65,10 @@ public class HTTPConnectionUtils extends DefaultHttpClient {
 	public String getFullURL(String apiPath){
 		return prefs.getString("prefServer", ctx.getString(R.string.prefServerDefault)) + apiPath;
 	}
+
+    public String getFullURLClientSync(String apiPath){
+        return prefs.getString("prefServerClient", ctx.getString(R.string.prefServerClientSync)) + apiPath;
+    }
 
 	public String createUrlWithCredentials(String baseUrl){
 		List<NameValuePair> pairs = new LinkedList<NameValuePair>();
