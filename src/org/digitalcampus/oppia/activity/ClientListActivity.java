@@ -21,12 +21,10 @@ import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.Lang;
-import org.digitalcampus.oppia.service.TrackerService;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class ClientListActivity extends AppActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = CourseIndexActivity.class.getSimpleName();
@@ -48,18 +46,18 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         prefs.registerOnSharedPreferenceChangeListener(this);
         clientRegistrationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(ClientListActivity.this, ClientRegActivity.class));
+            	startActivity(new Intent(ClientListActivity.this, ClientRegActivity.class));
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-                Client client = (Client) listView.getItemAtPosition(position);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong("prefClientLocalID",client.getClientId() );
-                editor.commit();
-                startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class));
+	            @Override
+	            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+	            Client client = (Client) listView.getItemAtPosition(position);
+	            SharedPreferences.Editor editor = prefs.edit();
+	            editor.putLong("prefClientLocalID",client.getClientId() );
+	            editor.commit();
+	            startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class));
             }
         });
     }
@@ -80,29 +78,6 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         }
         ClientListAdapter cla = new ClientListAdapter(this, clients);
         listView.setAdapter(cla);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // start a new tracker service
-        Intent service = new Intent(this, TrackerService.class);
-
-        Bundle tb = new Bundle();
-        tb.putBoolean("backgroundData", true);
-        service.putExtras(tb);
-        this.startService(service);
-
-        // remove any saved state info from shared prefs in case they interfere with subsequent page views
-        SharedPreferences.Editor editor = prefs.edit();
-        Map<String,?> keys = prefs.getAll();
-
-        for(Map.Entry<String,?> entry : keys.entrySet()){
-            if (entry.getKey().startsWith("widget_")){
-                editor.remove(entry.getKey());
-            }
-        }
-        editor.commit();
     }
 
     @Override
@@ -175,6 +150,7 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
                 editor.putString("prefApiKey", "");
                 editor.putInt("prefBadges", 0);
                 editor.putInt("prefPoints", 0);
+                editor.putLong("lastClientSync", 0L);
                 editor.commit();
 
                 // restart the app

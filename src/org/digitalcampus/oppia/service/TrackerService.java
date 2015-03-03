@@ -17,22 +17,6 @@
 
 package org.digitalcampus.oppia.service;
 
-import java.util.ArrayList;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.activity.DownloadActivity;
-import org.digitalcampus.oppia.application.DatabaseManager;
-import org.digitalcampus.oppia.application.DbHelper;
-import org.digitalcampus.oppia.application.MobileLearning;
-import org.digitalcampus.oppia.listener.APIRequestListener;
-import org.digitalcampus.oppia.model.TrackerLog;
-import org.digitalcampus.oppia.task.APIRequestTask;
-import org.digitalcampus.oppia.task.Payload;
-import org.digitalcampus.oppia.task.SubmitQuizTask;
-import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -40,7 +24,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -53,6 +36,23 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.bugsense.trace.BugSenseHandler;
+
+import org.digitalcampus.oppia.activity.DownloadActivity;
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.listener.APIRequestListener;
+import org.digitalcampus.oppia.model.TrackerLog;
+import org.digitalcampus.oppia.task.APIRequestTask;
+import org.digitalcampus.oppia.task.ClientDataSyncTask;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.task.SubmitQuizTask;
+import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
 
 public class TrackerService extends Service implements APIRequestListener {
 
@@ -79,25 +79,27 @@ public class TrackerService extends Service implements APIRequestListener {
 		if (isOnline() && backgroundData) {
 			
 			Payload p = null;
-			
-			// check for updated courses
-			// should only do this once a day or so....
+            MobileLearning app = (MobileLearning) this.getApplication();
+
 			prefs = PreferenceManager.getDefaultSharedPreferences(this);
 			long lastRun = prefs.getLong("lastCourseUpdateCheck", 0);
-			long now = System.currentTimeMillis()/1000;
-			if((lastRun + (3600*12)) < now){
-				APIRequestTask task = new APIRequestTask(this);
+            long lastSyncDate = prefs.getLong("lastClientSync", 0L);
+            long now = System.currentTimeMillis()/1000;
+            if((lastRun + 3600 * 12) < now){
+            	APIRequestTask task = new APIRequestTask(this);
 				p = new Payload(MobileLearning.SERVER_COURSES_PATH);
 				task.setAPIRequestListener(this);
 				task.execute(p);
-				
-				Editor editor = prefs.edit();
-				editor.putLong("lastCourseUpdateCheck", now);
-				editor.commit();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putLong("lastCourseUpdateCheck", now);
+                editor.commit();
 			}
-
+            if (((lastSyncDate + 3600 * 12) < now) && (app.omSubmitClientSyncTask == null)) {
+                Log.d(TAG,"Syncing and updating client task");
+                app.omSubmitClientSyncTask = new ClientDataSyncTask(this);
+                app.omSubmitClientSyncTask.execute();
+            }
 			// send activity trackers
-			MobileLearning app = (MobileLearning) this.getApplication();
 			if(app.omSubmitTrackerMultipleTask == null){
 				Log.d(TAG,"Sumitting trackers multiple task");
 				app.omSubmitTrackerMultipleTask = new SubmitTrackerMultipleTask(this);
@@ -118,9 +120,6 @@ public class TrackerService extends Service implements APIRequestListener {
 					app.omSubmitQuizTask.execute(p);
 				}
 			}
-
-			
-
 		}
 		return Service.START_NOT_STICKY;
 	}
@@ -147,11 +146,8 @@ public class TrackerService extends Service implements APIRequestListener {
 	}
 
 	public void apiRequestComplete(Payload response) {
-		
-		
 		boolean updateAvailable = false;
 		try {
-			
 			JSONObject json = new JSONObject(response.getResultResponse());
 			Log.d(TAG,json.toString(4));
 			for (int i = 0; i < (json.getJSONArray("courses").length()); i++) {
@@ -200,6 +196,4 @@ public class TrackerService extends Service implements APIRequestListener {
 			notificationManager.notify(mId, notification);
 		}
 	}
-
-
 }

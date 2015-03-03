@@ -17,7 +17,6 @@
 
 package org.digitalcampus.oppia.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,12 +44,10 @@ public class ClientRegActivity extends AppActivity {
     private Button counsellingButton;
     private EditText nameClientEditText, phoneNumberClientEditText, ageClientEditText;
     private Context context;
-    private ProgressDialog pDialog;
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		setContentView(R.layout.activity_clientreg);
         context = this;
 
@@ -62,7 +59,6 @@ public class ClientRegActivity extends AppActivity {
         nameClientEditText = (EditText) findViewById(R.id.clientreg_form_name_field);
         phoneNumberClientEditText = (EditText) findViewById(R.id.clientreg_form_mobile_field);
         ageClientEditText = (EditText) findViewById(R.id.clientreg_form_age_field);
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
 
@@ -99,14 +95,15 @@ public class ClientRegActivity extends AppActivity {
 				DbHelper db = new DbHelper(ClientRegActivity.this);
 				Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
                 // capturing the data from the form
-                String clientName = (String) nameClientEditText.getText().toString().trim();
+				String clientName = (String) nameClientEditText.getText().toString().trim();
                 String clientPhoneNumber = (String) phoneNumberClientEditText.getText().toString();
                 String clientAge = (String) ageClientEditText.getText().toString();
                 String clientGender = (String) sexSpinner.getSelectedItem().toString();
                 String clientMarried = (String) marriedSpinner.getSelectedItem().toString();
                 String clientParity = (String) paritySpinner.getSelectedItem().toString();
                 String clientLifeStage = (String) plsSpinner.getSelectedItem().toString();
-//                validatiing the input information
+//              validatiing the input information
+
                 if (clientName.length() == 0) {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_name);
                     return;
@@ -127,7 +124,7 @@ public class ClientRegActivity extends AppActivity {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_marital_status);
                     return;
                 }
-                if (clientAge.length() == 0) {
+                if (clientAge.length() == 0 || Integer.parseInt(clientAge) > 100) {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_age);
                     return;
                 }
@@ -139,7 +136,8 @@ public class ClientRegActivity extends AppActivity {
                     UIUtils.showAlert(context, R.string.error, R.string.error_register_no_lifestage);
                     return;
                 }
-//                creating client object and saving the information to local db
+//              creating client object and saving the information to local db
+
                 Client client = new Client();
                 client.setClientName(clientName);
                 client.setClientMobileNumber(Long.parseLong(clientPhoneNumber));
@@ -149,15 +147,12 @@ public class ClientRegActivity extends AppActivity {
                 client.setClientParity(clientParity);
                 client.setClientLifeStage(clientLifeStage);
                 client.setHealthWorker(prefs.getString("prefUsername", "")); //USER
-
                 client.setClientId(db.addClient(client));
                 DatabaseManager.getInstance().closeDatabase();
-
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putLong("prefClientLocalID", client.getClientId());
                 editor.commit();
 
-//                Intent i = new Intent(ClientRegActivity.this, CourseIndexActivity.class);
                 Intent i = new Intent(ClientRegActivity.this, ClientInfoActivity.class);
 				Bundle tb = new Bundle();
 				tb.putSerializable(Course.TAG, c);

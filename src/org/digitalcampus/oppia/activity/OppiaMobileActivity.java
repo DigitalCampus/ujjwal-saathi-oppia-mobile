@@ -17,28 +17,6 @@
 
 package org.digitalcampus.oppia.activity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.concurrent.Callable;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.adapter.CourseListAdapter;
-import org.digitalcampus.oppia.adapter.SectionListAdapter;
-import org.digitalcampus.oppia.application.DatabaseManager;
-import org.digitalcampus.oppia.application.DbHelper;
-import org.digitalcampus.oppia.application.MobileLearning;
-import org.digitalcampus.oppia.exception.InvalidXMLException;
-import org.digitalcampus.oppia.listener.ScanMediaListener;
-import org.digitalcampus.oppia.model.Activity;
-import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.Lang;
-import org.digitalcampus.oppia.task.Payload;
-import org.digitalcampus.oppia.task.ScanMediaTask;
-import org.digitalcampus.oppia.utils.CourseXMLReader;
-import org.digitalcampus.oppia.utils.FileUtils;
-import org.digitalcampus.oppia.utils.UIUtils;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,6 +39,28 @@ import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+
+import org.digitalcampus.oppia.adapter.CourseListAdapter;
+import org.digitalcampus.oppia.adapter.SectionListAdapter;
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.exception.InvalidXMLException;
+import org.digitalcampus.oppia.listener.ScanMediaListener;
+import org.digitalcampus.oppia.model.Activity;
+import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.Lang;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.task.ScanMediaTask;
+import org.digitalcampus.oppia.utils.CourseXMLReader;
+import org.digitalcampus.oppia.utils.FileUtils;
+import org.digitalcampus.oppia.utils.UIUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.concurrent.Callable;
 
 public class OppiaMobileActivity extends AppActivity implements OnSharedPreferenceChangeListener, ScanMediaListener {
 
@@ -304,7 +304,8 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 				editor.putString("prefApiKey", "");
 				editor.putInt("prefBadges", 0);
 				editor.putInt("prefPoints", 0);
-				editor.commit();
+                editor.putLong("lastClientSync", 0L);
+                editor.commit();
 
 				// restart the app
 				OppiaMobileActivity.this.startActivity(new Intent(OppiaMobileActivity.this, StartUpActivity.class));

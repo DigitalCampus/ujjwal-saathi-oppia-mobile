@@ -147,74 +147,74 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	public void createCourseTable(SQLiteDatabase db){
 		String m_sql = "create table " + COURSE_TABLE + " (" + COURSE_C_ID + " integer primary key autoincrement, "
-				+ COURSE_C_VERSIONID + " int, " + COURSE_C_TITLE + " text, " + COURSE_C_LOCATION + " text, "
-				+ COURSE_C_SHORTNAME + " text," + COURSE_C_SCHEDULE + " int,"
-				+ COURSE_C_IMAGE + " text,"
-				+ COURSE_C_DESC + " text,"
-				+ COURSE_C_ORDER_PRIORITY + " integer default 0, " 
-				+ COURSE_C_LANGS + " text)";
+            + COURSE_C_VERSIONID + " int, " + COURSE_C_TITLE + " text, " + COURSE_C_LOCATION + " text, "
+            + COURSE_C_SHORTNAME + " text," + COURSE_C_SCHEDULE + " int,"
+            + COURSE_C_IMAGE + " text,"
+            + COURSE_C_DESC + " text,"
+            + COURSE_C_ORDER_PRIORITY + " integer default 0, "
+            + COURSE_C_LANGS + " text)";
 		db.execSQL(m_sql);
 	}
 	
 	public void createActivityTable(SQLiteDatabase db){
 		String a_sql = "create table " + ACTIVITY_TABLE + " (" + 
-									ACTIVITY_C_ID + " integer primary key autoincrement, " + 
-									ACTIVITY_C_COURSEID + " int, " + 
-									ACTIVITY_C_SECTIONID + " int, " + 
-									ACTIVITY_C_ACTID + " int, " + 
-									ACTIVITY_C_ACTTYPE + " text, " + 
-									ACTIVITY_C_STARTDATE + " datetime null, " + 
-									ACTIVITY_C_ENDDATE + " datetime null, " + 
-									ACTIVITY_C_ACTIVITYDIGEST + " text, "+
-									ACTIVITY_C_TITLE + " text)";
+            ACTIVITY_C_ID + " integer primary key autoincrement, " +
+            ACTIVITY_C_COURSEID + " int, " +
+            ACTIVITY_C_SECTIONID + " int, " +
+            ACTIVITY_C_ACTID + " int, " +
+            ACTIVITY_C_ACTTYPE + " text, " +
+            ACTIVITY_C_STARTDATE + " datetime null, " +
+            ACTIVITY_C_ENDDATE + " datetime null, " +
+            ACTIVITY_C_ACTIVITYDIGEST + " text, "+
+            ACTIVITY_C_TITLE + " text)";
 		db.execSQL(a_sql);
 	}
 	
 	public void createLogTable(SQLiteDatabase db){
 		String l_sql = "create table " + TRACKER_LOG_TABLE + " (" + 
-				TRACKER_LOG_C_ID + " integer primary key autoincrement, " + 
-				TRACKER_LOG_C_COURSEID + " integer, " + 
-				TRACKER_LOG_C_DATETIME + " datetime default current_timestamp, " + 
-				TRACKER_LOG_C_ACTIVITYDIGEST + " text, " + 
-				TRACKER_LOG_C_DATA + " text, " + 
-				TRACKER_LOG_C_SUBMITTED + " integer default 0, " + 
-				TRACKER_LOG_C_INPROGRESS + " integer default 0, " +
-				TRACKER_LOG_C_COMPLETED + " integer default 0, " + 
-				TRACKER_LOG_C_USERID + " integer default 0 " +
-				")";
+            TRACKER_LOG_C_ID + " integer primary key autoincrement, " +
+            TRACKER_LOG_C_COURSEID + " integer, " +
+            TRACKER_LOG_C_DATETIME + " datetime default current_timestamp, " +
+            TRACKER_LOG_C_ACTIVITYDIGEST + " text, " +
+            TRACKER_LOG_C_DATA + " text, " +
+            TRACKER_LOG_C_SUBMITTED + " integer default 0, " +
+            TRACKER_LOG_C_INPROGRESS + " integer default 0, " +
+            TRACKER_LOG_C_COMPLETED + " integer default 0, " +
+            TRACKER_LOG_C_USERID + " integer default 0 " +
+            ")";
 		db.execSQL(l_sql);
 	}
 
 	public void createQuizResultsTable(SQLiteDatabase db){
 		String sql = "create table " + QUIZRESULTS_TABLE + " (" + 
-							QUIZRESULTS_C_ID + " integer primary key autoincrement, " + 
-							QUIZRESULTS_C_DATETIME + " datetime default current_timestamp, " + 
-							QUIZRESULTS_C_DATA + " text, " +  
-							QUIZRESULTS_C_SENT + " integer default 0, "+
-							QUIZRESULTS_C_COURSEID + " integer, " +
-							QUIZRESULTS_C_USERID + " integer default 0 )";
+            QUIZRESULTS_C_ID + " integer primary key autoincrement, " +
+            QUIZRESULTS_C_DATETIME + " datetime default current_timestamp, " +
+            QUIZRESULTS_C_DATA + " text, " +
+            QUIZRESULTS_C_SENT + " integer default 0, "+
+            QUIZRESULTS_C_COURSEID + " integer, " +
+            QUIZRESULTS_C_USERID + " integer default 0 )";
 		db.execSQL(sql);
 	}
 	
 	public void createSearchTable(SQLiteDatabase db){
 		String sql = "CREATE VIRTUAL TABLE "+SEARCH_TABLE+" USING FTS3 (" +
-                SEARCH_C_TEXT + " text, " +
-                SEARCH_C_COURSETITLE + " text, " +
-                SEARCH_C_SECTIONTITLE + " text, " +
-                SEARCH_C_ACTIVITYTITLE + " text " +
-            ")";
+            SEARCH_C_TEXT + " text, " +
+            SEARCH_C_COURSETITLE + " text, " +
+            SEARCH_C_SECTIONTITLE + " text, " +
+            SEARCH_C_ACTIVITYTITLE + " text " +
+        ")";
 		db.execSQL(sql);
 	}
 	
 	public void createUserTable(SQLiteDatabase db){
 		String sql = "CREATE TABLE ["+USER_TABLE+"] (" +
-                "["+USER_C_ID+"]" + " integer primary key autoincrement, " +
-                "["+USER_C_USERNAME +"]" + " integer default 0, "+
-                "["+USER_C_FIRSTNAME +"] TEXT, " +
-                "["+USER_C_LASTNAME+"] TEXT, " +
-                "["+USER_C_PASSWORD +"] TEXT, " +
-                "["+USER_C_APIKEY +"] TEXT " +
-            ");";
+            "["+USER_C_ID+"]" + " integer primary key autoincrement, " +
+            "["+USER_C_USERNAME +"]" + " integer default 0, "+
+            "["+USER_C_FIRSTNAME +"] TEXT, " +
+            "["+USER_C_LASTNAME+"] TEXT, " +
+            "["+USER_C_PASSWORD +"] TEXT, " +
+            "["+USER_C_APIKEY +"] TEXT " +
+        ");";
 		db.execSQL(sql);
 	}
 
@@ -1292,7 +1292,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     // add or update clients
     public void addOrUpdateClient(ArrayList<Client> ClientList){
-        String sql;
         ContentValues values;
         long localId;
         for (Client client: ClientList) {
@@ -1300,7 +1299,7 @@ public class DbHelper extends SQLiteOpenHelper {
             values = new ContentValues();
             values.put(CLIENT_C_NAME, client.getClientName());
             values.put(CLIENT_C_MOBILENUMBER, client.getClientMobileNumber());
-            values.put(CLIENT_C_GENDER, client.getClientMobileNumber());
+            values.put(CLIENT_C_GENDER, client.getClientGender());
             values.put(CLIENT_C_MARITALSTATUS, client.getClientMaritalStatus());
             values.put(CLIENT_C_AGE, client.getClientAge());
             values.put(CLIENT_C_PARITY, client.getClientParity());
@@ -1322,7 +1321,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.delete(CLIENT_TABLE, s, args);
     }
 
-    // check if registered client or not
+    // check if registered client or not, return local id
     public long isClientBasedOnServerId(long clientServerId){
         String s = CLIENT_C_SERVER_ID + "=?";
         String[] args = new String[] { String.valueOf(clientServerId) };

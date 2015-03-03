@@ -126,21 +126,6 @@
         
 		<receiver android:name="org.digitalcampus.oppia.service.TrackerScheduleReceiver" >
             <intent-filter>                
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name="org.digitalcampus.oppia.service.TrackerStartServiceReceiver" >
-        </receiver>
-
-        <service
-            android:name="org.digitalcampus.oppia.service.SyncDataService"
-            android:icon="@drawable/ujjwal_logo"
-            android:label="@string/service_tracker" >
-        </service>
-
-        <receiver android:name="org.digitalcampus.oppia.service.SyncDataReceiver" >
-            <intent-filter>
                 <!--Receiver triggered with change in connectivity status and wifi state-->
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
@@ -149,9 +134,8 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="org.digitalcampus.oppia.service.SyncDataServiceReceiver" >
+        <receiver android:name="org.digitalcampus.oppia.service.TrackerStartServiceReceiver" >
         </receiver>
-
     </application>
 
 </manifest>

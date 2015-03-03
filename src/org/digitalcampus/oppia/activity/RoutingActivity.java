@@ -39,6 +39,7 @@ import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.ScanMediaListener;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Lang;
+import org.digitalcampus.oppia.service.TrackerService;
 import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.task.ScanMediaTask;
 import org.digitalcampus.oppia.utils.UIUtils;
@@ -150,6 +151,7 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 				editor.putString("prefApiKey", "");
 				editor.putInt("prefBadges", 0);
 				editor.putInt("prefPoints", 0);
+                editor.putLong("lastClientSync", 0L);
 				editor.commit();
 
 				// restart the app
@@ -231,18 +233,16 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
     @Override
     public void onResume() {
         super.onResume();
-        SharedPreferences.Editor editor = prefs.edit();
-//        if (prefs.getBoolean("prefSyncService", false)) {
-//            Intent service = new Intent(this, SyncDataService.class);
-//
-//            Bundle tb = new Bundle();
-//            tb.putBoolean("backgroundData", true);
-//            service.putExtras(tb);
-//            // start a new sync service
-//            this.startService(service);
-//        }
+        // start a new tracker service
+        Intent service = new Intent(this, TrackerService.class);
+
+        Bundle tb = new Bundle();
+        tb.putBoolean("backgroundData", true);
+        service.putExtras(tb);
+        this.startService(service);
 
         // remove any saved state info from shared prefs in case they interfere with subsequent page views
+        SharedPreferences.Editor editor = prefs.edit();
         Map<String,?> keys = prefs.getAll();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){

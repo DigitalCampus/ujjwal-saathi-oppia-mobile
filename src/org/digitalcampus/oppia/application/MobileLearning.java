@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import org.digitalcampus.oppia.task.ClientDataSyncTask;
 import org.digitalcampus.oppia.task.SubmitQuizTask;
 import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
 import org.joda.time.format.DateTimeFormat;
@@ -96,7 +97,10 @@ public class MobileLearning extends Application {
 
 	// for tracking if SubmitQuizTask is already running
 	public SubmitQuizTask omSubmitQuizTask = null;
-	
+
+    // for tracking if SubmitTrackerMultipleTask is already running
+    public ClientDataSyncTask omSubmitClientSyncTask = null;
+
 	public static boolean createDirs() {
 		String cardstatus = Environment.getExternalStorageState();
 		if (cardstatus.equals(Environment.MEDIA_REMOVED)

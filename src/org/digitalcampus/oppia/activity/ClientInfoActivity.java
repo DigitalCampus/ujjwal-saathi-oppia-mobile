@@ -20,12 +20,10 @@ import org.digitalcampus.oppia.model.Activity;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Lang;
-import org.digitalcampus.oppia.service.TrackerService;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class ClientInfoActivity extends AppActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String TAG = ClientInfoActivity.class.getSimpleName();
@@ -41,7 +39,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     private TextView clientAgeTextView;
     private TextView clientParityTextView;
     private TextView clientLifeStageTextView;
-    private Button makeVisitButton; // goes to course index activity as per previous flow
+    private Button makeVisitButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,15 +56,14 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
-                Intent i = new Intent(ClientInfoActivity.this, CourseIndexActivity.class);
-                Bundle tb = new Bundle();
-                tb.putSerializable(Course.TAG, c);
-                tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
-                i.putExtras(tb);
-                startActivity(i);
-                ClientInfoActivity.this.finish();
-//                startActivity(new Intent(ClientInfoActivity.this, CourseIndexActivity.class));
+	            Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+	            Intent i = new Intent(ClientInfoActivity.this, CourseIndexActivity.class);
+	            Bundle tb = new Bundle();
+	            tb.putSerializable(Course.TAG, c);
+	            tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
+	            i.putExtras(tb);
+	            startActivity(i);
+	            ClientInfoActivity.this.finish();
             }
         });
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -80,11 +77,11 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
 
     @Override
     public void onStart() {
-        // setting the values for various fields
         super.onStart();
+        // setting the values for various fields
         db = new DbHelper(this);
-        long userId = prefs.getLong("prefClientLocalID", 0L);
-        client = db.getClient(userId);
+        long clientId = prefs.getLong("prefClientLocalID", 0L);
+        client = db.getClient(clientId);
         clientNameTextView.setText(client.getClientName());
         clientMobileTextView.setText(Long.toString(client.getClientMobileNumber()));
         clientGenderTextView.setText(client.getClientGender());
@@ -92,26 +89,6 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         clientAgeTextView.setText(Integer.toString(client.getClientAge()));
         clientParityTextView.setText(client.getClientParity());
         clientLifeStageTextView.setText(client.getClientLifeStage());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // start a new tracker service
-        Intent service = new Intent(this, TrackerService.class);
-        Bundle tb = new Bundle();
-        tb.putBoolean("backgroundData", true);
-        service.putExtras(tb);
-        this.startService(service);
-        // remove any saved state info from shared prefs in case they interfere with subsequent page views
-        SharedPreferences.Editor editor = prefs.edit();
-        Map<String,?> keys = prefs.getAll();
-        for(Map.Entry<String,?> entry : keys.entrySet()){
-            if (entry.getKey().startsWith("widget_")){
-                editor.remove(entry.getKey());
-            }
-        }
-        editor.commit();
     }
 
     @Override
@@ -178,18 +155,18 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         builder.setMessage(R.string.logout_confirm);
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                // wipe user prefs
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("prefUsername", "");
-                editor.putString("prefApiKey", "");
-                editor.putInt("prefBadges", 0);
-                editor.putInt("prefPoints", 0);
-                editor.commit();
-
+            // wipe user prefs
+	            SharedPreferences.Editor editor = prefs.edit();
+	            editor.putString("prefUsername", "");
+	            editor.putString("prefApiKey", "");
+	            editor.putInt("prefBadges", 0);
+	            editor.putInt("prefPoints", 0);
+	            editor.putLong("lastClientSync", 0L);
+	
+	            editor.commit();
                 // restart the app
-                ClientInfoActivity.this.startActivity(new Intent(ClientInfoActivity.this, StartUpActivity.class));
-                ClientInfoActivity.this.finish();
-
+	            ClientInfoActivity.this.startActivity(new Intent(ClientInfoActivity.this, StartUpActivity.class));
+	            ClientInfoActivity.this.finish();
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
