@@ -86,9 +86,7 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
                     DbHelper db = new DbHelper(ctx);
 
                     for (Client client1: clients) {
-                        if (client1.getClientServerId() == 1) {
-                            db.deleteUnregisteredClients(client1.getClientId());
-                        }
+                        db.deleteUnregisteredClients(client1.getClientId());
                     }
                     ArrayList<Client> clients2 = clientDTO2.getClients();
                     db.addOrUpdateClient(clients2);

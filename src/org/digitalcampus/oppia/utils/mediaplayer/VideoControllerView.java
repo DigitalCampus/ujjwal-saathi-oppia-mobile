@@ -16,6 +16,7 @@
 
 package org.digitalcampus.oppia.utils.mediaplayer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Handler;
@@ -36,11 +37,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-
 import java.lang.ref.WeakReference;
 import java.util.Formatter;
 import java.util.Locale;
-
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 
@@ -170,7 +169,8 @@ public class VideoControllerView extends FrameLayout {
         return mRoot;
     }
 
-    private void initControllerView(View v) {
+    @SuppressLint("WrongViewCast")
+	private void initControllerView(View v) {
         mPauseButton = (ImageButton) v.findViewById(R.id.pause);
         if (mPauseButton != null) {
             mPauseButton.requestFocus();
