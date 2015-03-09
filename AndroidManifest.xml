@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:icon="@drawable/ujjwal_logo"
@@ -118,6 +119,7 @@
             android:label="@string/media_player_description"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
         <service
             android:name="org.digitalcampus.oppia.service.TrackerService"
             android:icon="@drawable/ujjwal_logo"
@@ -126,11 +128,9 @@
         
 		<receiver android:name="org.digitalcampus.oppia.service.TrackerScheduleReceiver" >
             <intent-filter>                
-                <!--Receiver triggered with change in connectivity status and wifi state-->
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
-                 <!--trigger when booted-->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <!--<action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
+                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
             </intent-filter>
         </receiver>
 

@@ -46,8 +46,8 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         HTTPConnectionUtils client = new HTTPConnectionUtils(ctx);
         ClientDTO clientDTO = new ClientDTO();
         DbHelper db = new DbHelper(ctx);
-        long lastSyncDate = prefs.getLong("lastClientSync", 0L);
-        ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastSyncDate));
+        long lastRun = prefs.getLong("lastClientSync", 0L);
+        ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastRun));
         Payload payload = new Payload();
         String url = client.getFullURL(MobileLearning.SYNC_CLIENTS_DATA);
         HttpPost httpPost = new HttpPost(url);
@@ -55,7 +55,7 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
 
         try {
             clientDTO.getClients().addAll(clients);
-            clientDTO.setPreviousSyncTime(lastSyncDate);
+            clientDTO.setPreviousSyncTime(lastRun);
             publishProgress(ctx.getString(R.string.client_data_sync));
             String str = mapper.writeValueAsString(clientDTO);
             StringEntity se = new StringEntity( str,"utf8");

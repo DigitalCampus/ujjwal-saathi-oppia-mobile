@@ -273,4 +273,6 @@
     <string name="error_register_no_age">Please enter client\'s age correctly</string>
     <string name="error_register_no_parity">Please take client\'s children count</string>
     <string name="error_register_no_lifestage">Please take client\'s life stage info</string>
+    <string name="edit_information">Edit Information</string>
+    <string name="make_call">Start call</string>
 </resources>

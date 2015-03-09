@@ -46,18 +46,25 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         prefs.registerOnSharedPreferenceChangeListener(this);
         clientRegistrationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-            	startActivity(new Intent(ClientListActivity.this, ClientRegActivity.class));
+//            startActivity(new Intent(ClientListActivity.this, ClientRegActivity.class));
+            Intent i = new Intent(ClientListActivity.this, ClientRegActivity.class);
+            Bundle tb = new Bundle();
+            tb.putLong("localClientID", 0L);
+            i.putExtras(tb);
+            startActivity(i);
+            ClientListActivity.this.finish();
             }
         });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	            @Override
-	            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-	            Client client = (Client) listView.getItemAtPosition(position);
-	            SharedPreferences.Editor editor = prefs.edit();
-	            editor.putLong("prefClientLocalID",client.getClientId() );
-	            editor.commit();
-	            startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class));
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+            Client client = (Client) listView.getItemAtPosition(position);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putLong("prefClientLocalID",client.getClientId() );
+            editor.commit();
+            startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class));
+            ClientListActivity.this.finish();
             }
         });
     }
@@ -166,4 +173,26 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         });
         builder.show();
     }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        // start a new tracker service
+//        Intent service = new Intent(this, TrackerService.class);
+//
+//        Bundle tb = new Bundle();
+//        tb.putBoolean("backgroundData", true);
+//        service.putExtras(tb);
+//        this.startService(service);
+//
+//        // remove any saved state info from shared prefs in case they interfere with subsequent page views
+//        SharedPreferences.Editor editor = prefs.edit();
+//        Map<String,?> keys = prefs.getAll();
+//
+//        for(Map.Entry<String,?> entry : keys.entrySet()){
+//            if (entry.getKey().startsWith("widget_")){
+//                editor.remove(entry.getKey());
+//            }
+//        }
+//        editor.commit();
+//    }
 }

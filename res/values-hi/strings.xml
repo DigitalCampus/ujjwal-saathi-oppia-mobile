@@ -242,7 +242,7 @@
 	
 	<string name="client_data_sync">लोगों की जानकारी भेजी जा रही है</string>
     <string name="details">विवरण</string>
-    <string name="makevisit">भेंट करें</string>
+    <string name="makevisit">परामर्श दे</string>
     <string name="clients_list">आपके लोग</string>
     <string name="client_add_new">नए लोगों को जोड़ने के लिए</string>
     <string name="no_client_message">आपके लिए कोई भी व्यक्ति मौजूद नही है</string>
@@ -273,6 +273,6 @@
 	<string name="submit_stats_btn_text">Send now</string>
     <string name="media_player_description">Oppia Media Player</string>
     <string name="tab_title_activity">Activity</string>
-    
-    
+    <string name="edit_information">विवरण परिवर्तित करें</string>
+    <string name="make_call">कॉल करें</string>
 </resources>
