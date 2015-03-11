@@ -257,6 +257,9 @@
     <string name="error_register_no_lifestage"> ग्राहक के जीवनशैली की जानकारी लें</string>
     <string name="title_activity_client_list">ग्राहक सूची</string>
     <string name="title_activity_client_info">ग्राहक की जानकारी</string>
+    <string name="edit_information">विवरण परिवर्तित करें</string>
+    <string name="make_call">कॉल करें</string>
+    <string name="submit_btn_text">अगला स्क्रीन &gt;&gt;</string>
     
     <!-- Hindi translations, redundant information-->
     <string name="about_logged_in">Logged in as: %1$s</string>
@@ -269,10 +272,8 @@
     <string name="prefTextSize">Text size</string>
 	<string name="prefUser">Username</string>
 	<string name="prefUserHint">(read only)</string>
-    <string name="submit_btn_text">Next &gt;&gt;</string>
-	<string name="submit_stats_btn_text">Send now</string>
+    <string name="submit_stats_btn_text">Send now</string>
     <string name="media_player_description">Oppia Media Player</string>
     <string name="tab_title_activity">Activity</string>
-    <string name="edit_information">विवरण परिवर्तित करें</string>
-    <string name="make_call">कॉल करें</string>
+    
 </resources>
