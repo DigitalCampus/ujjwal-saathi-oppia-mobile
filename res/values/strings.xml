@@ -5,6 +5,7 @@
     <string name="about_logged_in">Logged in as: %1$s</string>
     <string name="about_not_logged_in">Not logged in</string>
     
+    
     <string name="menu_download">Download Courses</string>
     <string name="menu_language">Change language</string>
     <string name="menu_settings">Settings</string>
@@ -30,6 +31,7 @@
     <string name="routing_activity_title">Please select what you would like to do:</string>
     <string name="routing_button_mlearning">mLearning</string>
     <string name="routing_button_client">Client Counselling</string>
+    
     
     <string name="tab_title_about">About</string>
     <string name="tab_title_badges">Badges</string>
@@ -252,13 +254,21 @@
 	<string name="clientreg_form_married_title">Married</string>
 	<string name="clientreg_form_parity_title">Parity</string>
 	<string name="clientreg_form_lifestage_title">Life Stage</string>
+    <string name="clientreg_form_husband_title">Husband\'s name (For female)</string>
+    <string name="clientreg_form_childage_title">Age of Youngest Child (For female)</string>
+    <string name="clientreg_form_husband_title_info_page">Husband\'s name </string>
+    <string name="clientreg_form_childage_title_info_page">Youngest Child </string>
+    <string name="clientreg_form_method_name_title">Method name</string>
+    <string name="clientreg_form_using_method_title">Using any method</string>
+
+    <string name="year">Year</string>
+    <string name="month">Month</string>
 	
 	<string name="submit_btn_text">Next &gt;&gt;</string>
 	<string name="submit_stats_btn_text">Send now</string>
 	
 	<string name="media_player_description">Oppia Media Player</string>
 
-    <string name="client_data_sync">Client Data sync in progress</string>
     <string name="details">Details</string>
     <string name="makevisit">Make Visit</string>
     <string name="clients_list">List of your clients</string>
@@ -273,6 +283,13 @@
     <string name="error_register_no_age">Please enter client\'s age correctly</string>
     <string name="error_register_no_parity">Please take client\'s children count</string>
     <string name="error_register_no_lifestage">Please take client\'s life stage info</string>
+    <string name="error_register_no_method">Please take client\'s method info</string>
+    <string name="error_register_no_husband_name">Please take client\'s husband\'s name</string>
+    <string name="error_register_no_child_age">Please take client\'s youngest child\'s age</string>
     <string name="edit_information">Edit Information</string>
     <string name="make_call">Start call</string>
+
+    <string name="client_data_sync">Client Data sync in progress</string>
+    <string name="client_tracker">Client Tracker info being sent</string>
+
 </resources>

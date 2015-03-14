@@ -46,7 +46,6 @@ import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 
 public class RoutingActivity extends AppActivity implements ScanMediaListener {
@@ -54,15 +53,13 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 	public static final String TAG = RoutingActivity.class.getSimpleName();
 	private SharedPreferences prefs;
 	private ArrayList<Course> courses = new ArrayList<Course>() ;
-	private long userId = 0;
-	
-	@Override
+	private DbHelper db;
+    @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_routing);
-		
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+	    prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
 		
 		
@@ -76,8 +73,7 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 				startActivity(i);
 			}
 		});
-		
-		
+
 		Button counselling = (Button) findViewById(R.id.button_counselling);
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -90,12 +86,11 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 	@Override
 	public void onStart() {
 		super.onStart();
-		DbHelper db = new DbHelper(this);
-		userId = db.getUserId(prefs.getString("prefUsername", ""));
+		db = new DbHelper(this);
 		courses = db.getAllCourses();
-		DatabaseManager.getInstance().closeDatabase();	
 		this.scanMedia();
-	}
+        DatabaseManager.getInstance().closeDatabase();
+    }
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -233,6 +228,17 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
     @Override
     public void onResume() {
         super.onResume();
+//        completeClientSession(prefs,db);
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+//            if counselling is on(1) and we come back to the routing screen , save session
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+//            db = new DbHelper(ctx);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
         // start a new tracker service
         Intent service = new Intent(this, TrackerService.class);
 
@@ -240,16 +246,18 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
         tb.putBoolean("backgroundData", true);
         service.putExtras(tb);
         this.startService(service);
-
-        // remove any saved state info from shared prefs in case they interfere with subsequent page views
-        SharedPreferences.Editor editor = prefs.edit();
-        Map<String,?> keys = prefs.getAll();
-
-        for(Map.Entry<String,?> entry : keys.entrySet()){
-            if (entry.getKey().startsWith("widget_")){
-                editor.remove(entry.getKey());
-            }
-        }
-        editor.commit();
     }
+
+//    public static void completeClientSession(SharedPreferences prefs,DbHelper db ) {
+//        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+////            if counselling is on(1) and we come back to the routing screen , save session
+//            SharedPreferences.Editor editor = prefs.edit();
+//            editor.putInt("prefClientSessionActive", 0);
+////            db = new DbHelper(ctx);
+//            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+//            editor.putLong("prefClientSessionId", 0L);
+//            editor.commit();
+//            DatabaseManager.getInstance().closeDatabase();
+//        }
+//    }
 }

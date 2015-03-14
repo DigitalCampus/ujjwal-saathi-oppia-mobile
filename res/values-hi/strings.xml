@@ -26,6 +26,7 @@
     <string name="routing_button_mlearning">मोबाइल द्वारा शिक्षा</string>
     <string name="routing_button_client">लाभारती के लिए परामर्श</string>
     
+    
     <string name="tab_title_about">प्रोग्राम के बारे में जाने</string>
     <string name="tab_title_badges">बिल्ला</string>
     <string name="tab_title_help">मदद</string>
@@ -53,6 +54,8 @@
     <string name="version">Version: %1$s</string>
     <string name="title_download_media">फिल्में डाउनलोड करें</string>
 
+    
+    
     <string name="widget_feedback_submit">प्रस्तुत</string>
     <string name="widget_feedback_submit_title">धन्यवाद!</string>
     <string name="widget_feedback_continue">जारी रखें &gt;&gt;</string>
@@ -239,7 +242,16 @@
 	<string name="clientreg_form_married_title">क्या आपकी शादी हो चुकी है</string>
 	<string name="clientreg_form_parity_title">बच्चों की संख्या </string>
 	<string name="clientreg_form_lifestage_title">जीवनशैली</string>
-	
+    <string name="clientreg_form_husband_title">पति का नाम (महिला के लिए)</string>
+    <string name="clientreg_form_childage_title">सबसे छोटे बच्चे की आयु (महिला के लिए)</string>
+    <string name="clientreg_form_husband_title_info_page">पति का नाम </string>
+    <string name="clientreg_form_childage_title_info_page">सबसे छोटा बच्चा </string>
+    <string name="year">साल</string>
+    <string name="month">महीना</string>
+    <string name="clientreg_form_method_name_title">विधि का नाम</string>
+    <string name="clientreg_form_using_method_title">किसी भी विधि का प्रयोग</string>
+	<string name="title_activity_client_list">ग्राहक सूची</string>
+    <string name="title_activity_client_info">ग्राहक की जानकारी</string>
 	<string name="client_data_sync">लोगों की जानकारी भेजी जा रही है</string>
     <string name="details">विवरण</string>
     <string name="makevisit">परामर्श दे</string>
@@ -255,25 +267,29 @@
     <string name="error_register_no_age">सही ढंग से ग्राहक की उम्र दर्ज करें</string>
     <string name="error_register_no_parity">ग्राहक के बच्चों की संख्या लें</string>
     <string name="error_register_no_lifestage"> ग्राहक के जीवनशैली की जानकारी लें</string>
-    <string name="title_activity_client_list">ग्राहक सूची</string>
-    <string name="title_activity_client_info">ग्राहक की जानकारी</string>
+    <string name="error_register_no_method">ग्राहक के वर्तमान विधि की जानकारी लें</string>
+    <string name="error_register_no_husband_name">ग्राहक के पति का नाम लें </string>
+    <string name="error_register_no_child_age">ग्राहक के सबसे छोटे बच्चे की उमर लें</string>
+
     <string name="edit_information">विवरण परिवर्तित करें</string>
     <string name="make_call">कॉल करें</string>
     <string name="submit_btn_text">अगला स्क्रीन &gt;&gt;</string>
-    
-    <!-- Hindi translations, redundant information-->
-    <string name="about_logged_in">Logged in as: %1$s</string>
+	
+	<string name="about_logged_in">Logged in as: %1$s</string>
     <string name="about_not_logged_in">Not logged in</string>
     <string name="menu_font_increase">Increase text size</string>
     <string name="menu_font_decrease">Decrease text size</string>
+    <string name="tab_title_activity">Activity</string>
     <string name="title_stats_submitted">No activities submitted to server</string>
     <string name="title_stats_unsubmitted">No activities waiting to submit</string>
     <string name="prefShowCourseDescription">Show course description</string>
+    
     <string name="prefTextSize">Text size</string>
 	<string name="prefUser">Username</string>
 	<string name="prefUserHint">(read only)</string>
     <string name="submit_stats_btn_text">Send now</string>
-    <string name="media_player_description">Oppia Media Player</string>
-    <string name="tab_title_activity">Activity</string>
+	
+	<string name="media_player_description">Oppia Media Player</string>
+    <string name="client_tracker">Client Tracker info being sent</string>
     
 </resources>

@@ -17,27 +17,6 @@
 
 package org.digitalcampus.oppia.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.Callable;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
-import org.digitalcampus.oppia.adapter.SectionListAdapter;
-
-import org.digitalcampus.oppia.model.Activity;
-import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.Section;
-import org.digitalcampus.oppia.utils.ImageUtils;
-import org.digitalcampus.oppia.utils.UIUtils;
-import org.digitalcampus.oppia.widgets.FeedbackWidget;
-import org.digitalcampus.oppia.widgets.PageWidget;
-import org.digitalcampus.oppia.widgets.QuizWidget;
-import org.digitalcampus.oppia.widgets.ResourceWidget;
-import org.digitalcampus.oppia.widgets.WidgetFactory;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
@@ -56,6 +35,28 @@ import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+
+import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
+import org.digitalcampus.oppia.adapter.SectionListAdapter;
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.model.Activity;
+import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.Section;
+import org.digitalcampus.oppia.utils.ImageUtils;
+import org.digitalcampus.oppia.utils.UIUtils;
+import org.digitalcampus.oppia.widgets.FeedbackWidget;
+import org.digitalcampus.oppia.widgets.PageWidget;
+import org.digitalcampus.oppia.widgets.QuizWidget;
+import org.digitalcampus.oppia.widgets.ResourceWidget;
+import org.digitalcampus.oppia.widgets.WidgetFactory;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Callable;
 
 public class CourseActivity extends SherlockFragmentActivity implements ActionBar.TabListener, OnInitListener {
 
@@ -207,6 +208,15 @@ public class CourseActivity extends SherlockFragmentActivity implements ActionBa
 			myTTS.shutdown();
 			myTTS = null;
 		}
+        DbHelper db = new DbHelper(this);
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
 		super.onDestroy();
 	}
 	

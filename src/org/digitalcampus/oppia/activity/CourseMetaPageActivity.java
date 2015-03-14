@@ -17,20 +17,22 @@
 
 package org.digitalcampus.oppia.activity;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Locale;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.CourseMetaPage;
-import org.digitalcampus.oppia.utils.FileUtils;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.webkit.WebView;
 import android.widget.TextView;
+
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.CourseMetaPage;
+import org.digitalcampus.oppia.utils.FileUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Locale;
 
 public class CourseMetaPageActivity extends AppActivity {
 
@@ -85,5 +87,18 @@ public class CourseMetaPageActivity extends AppActivity {
 		}
 	    
 	}
+    @Override
+    public void onDestroy() {
+        DbHelper db = new DbHelper(this);
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
+        super.onPause();
+    }
 	
 }

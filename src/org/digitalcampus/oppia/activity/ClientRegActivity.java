@@ -40,14 +40,16 @@ public class ClientRegActivity extends AppActivity {
 	
 	public static final String TAG = ClientRegActivity.class.getSimpleName();
 	private SharedPreferences prefs;
-    private Spinner sexSpinner, marriedSpinner, paritySpinner, plsSpinner;
+    private Spinner sexSpinner, marriedSpinner, paritySpinner, plsSpinner,usingMethodSpinner,methodNameSpinner;
     private Button counsellingButton;
-    private EditText nameClientEditText, phoneNumberClientEditText, ageClientEditText;
+    private EditText nameClientEditText, phoneNumberClientEditText, ageClientEditText, husbandNameClientEditText, youngestChildAgeYearClientEditText, youngestChildAgeMonthClientEditText;
     private Context context;
     public long clientId;
+    public boolean husbandNameRequired, childAgeRequired, methodRequired;
 
-    String clientName, clientPhoneNumber, clientAge, clientGender, clientMarried, clientParity, clientLifeStage;
-    ArrayAdapter<CharSequence> cwfadapter, cwfadapter2, cwfadapter3, cwfadapter4;
+    String clientName, clientPhoneNumber, clientAge, clientGender, clientMarried, clientParity, clientLifeStage, clientHusbandName, clientChildAgeYear, clientChildAgeMonth;
+    String usingMethod, methodName;
+    ArrayAdapter<CharSequence> cwfadapter, cwfadapter2, cwfadapter3, cwfadapter4, cwfadapter5, cwfadapter6;
     DbHelper db;
 
     @Override
@@ -60,10 +62,19 @@ public class ClientRegActivity extends AppActivity {
         marriedSpinner = (Spinner) findViewById(R.id.clientreg_form_married_spinner);
         paritySpinner = (Spinner) findViewById(R.id.clientreg_form_parity_spinner);
         plsSpinner = (Spinner) findViewById(R.id.clientreg_form_lifestage_spinner);
+        usingMethodSpinner = (Spinner) findViewById(R.id.clientreg_form_using_method_spinner);
+        methodNameSpinner = (Spinner) findViewById(R.id.clientreg_form_method_name_spinner);
+
         counsellingButton = (Button) findViewById(R.id.submit_btn);
         nameClientEditText = (EditText) findViewById(R.id.clientreg_form_name_field);
         phoneNumberClientEditText = (EditText) findViewById(R.id.clientreg_form_mobile_field);
         ageClientEditText = (EditText) findViewById(R.id.clientreg_form_age_field);
+
+        husbandNameRequired = childAgeRequired = methodRequired = false;
+        husbandNameClientEditText = (EditText) findViewById(R.id.clientreg_form_husband_name_field);
+        youngestChildAgeYearClientEditText = (EditText) findViewById(R.id.clientreg_form_age_youngest_child_field_years);
+        youngestChildAgeMonthClientEditText = (EditText) findViewById(R.id.clientreg_form_age_youngest_child_field_months);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
 
@@ -73,27 +84,42 @@ public class ClientRegActivity extends AppActivity {
 		cwfadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		sexSpinner.setAdapter(cwfadapter);
-		
+
 		cwfadapter2 = ArrayAdapter.createFromResource(this,
 		        R.array.yesno, android.R.layout.simple_spinner_item);
 		// Specify the layout to use when the list of choices appears
 		cwfadapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		marriedSpinner.setAdapter(cwfadapter2);
-		
+
 		cwfadapter3 = ArrayAdapter.createFromResource(this,
 		        R.array.parity, android.R.layout.simple_spinner_item);
 		// Specify the layout to use when the list of choices appears
 		cwfadapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		paritySpinner.setAdapter(cwfadapter3);
-		
+
 		cwfadapter4 = ArrayAdapter.createFromResource(this,
 		        R.array.lifestage, android.R.layout.simple_spinner_item);
 		// Specify the layout to use when the list of choices appears
 		cwfadapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		plsSpinner.setAdapter(cwfadapter4);
+
+        cwfadapter5 = ArrayAdapter.createFromResource(this,
+                R.array.method, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        cwfadapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        usingMethodSpinner.setAdapter(cwfadapter5);
+
+        cwfadapter6 = ArrayAdapter.createFromResource(this,
+                R.array.methodName, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        cwfadapter6.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        methodNameSpinner.setAdapter(cwfadapter6);
+
         db = new DbHelper(ClientRegActivity.this);
 
         counsellingButton.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +132,27 @@ public class ClientRegActivity extends AppActivity {
                 clientMarried = (String) marriedSpinner.getSelectedItem().toString();
                 clientParity = (String) paritySpinner.getSelectedItem().toString();
                 clientLifeStage = (String) plsSpinner.getSelectedItem().toString();
+                usingMethod = (String) usingMethodSpinner.getSelectedItem().toString();
+                methodName = (String) methodNameSpinner.getSelectedItem().toString();
+                clientHusbandName = (String) husbandNameClientEditText.getText().toString().trim();
+                clientChildAgeYear = (String) youngestChildAgeYearClientEditText.getText().toString().trim();
+                clientChildAgeMonth = (String) youngestChildAgeMonthClientEditText.getText().toString().trim();
+                if (sexSpinner.getSelectedItemPosition() == 1) {
+                    if (marriedSpinner.getSelectedItemPosition() == 1) {
+                        husbandNameRequired = true;
+                    } else {
+                        husbandNameRequired = false;
+                    }
+                    if (paritySpinner.getSelectedItemPosition() != 0) {
+                        childAgeRequired = true;
+                    } else {
+                        childAgeRequired = false;
+                    }
+                }
+                if (usingMethodSpinner.getSelectedItemPosition() == 1) {
+                    methodRequired = true;
+                } else
+                    methodRequired = false;
 
                 if (verificationClientData()) {
                     Client client = new Client();
@@ -117,6 +164,23 @@ public class ClientRegActivity extends AppActivity {
                     client.setClientParity(clientParity);
                     client.setClientLifeStage(clientLifeStage);
                     client.setHealthWorker(prefs.getString("prefUsername", "")); //USER
+
+
+                    if (childAgeRequired) {
+                        client.setAgeYoungestChild(Integer.parseInt(clientChildAgeMonth) + Integer.parseInt(clientChildAgeYear)*12);
+                    } else {
+                        client.setAgeYoungestChild(0);
+                    }
+                    if (husbandNameRequired) {
+                        client.setHusbandName(clientHusbandName);
+                    } else {
+                        client.setHusbandName("");
+                    }
+                    if (methodRequired) {
+                        client.setMethodName(methodName);
+                    } else
+                        client.setMethodName("");
+
                     Intent intent = getIntent();
                     Bundle bundle=intent.getExtras();
                     Boolean b = bundle.getBoolean("editClient");
@@ -168,9 +232,30 @@ public class ClientRegActivity extends AppActivity {
             paritySpinner.setSelection(spinnerPosition);
             spinnerPosition = cwfadapter4.getPosition(client.getClientLifeStage());
             plsSpinner.setSelection(spinnerPosition);
+
+            if (client.getMethodName().equals("")) {
+                usingMethodSpinner.setSelection(0);
+                methodNameSpinner.setSelection(0);
+            } else {
+                usingMethodSpinner.setSelection(1);
+                spinnerPosition = cwfadapter6.getPosition(client.getMethodName());
+                methodNameSpinner.setSelection(spinnerPosition);
+            }
+
+
+            husbandNameClientEditText.setText(client.getHusbandName());
+
+            if (client.getAgeYoungestChild() / 12 != 0) {
+                youngestChildAgeYearClientEditText.setText(Long.toString(client.getAgeYoungestChild() / 12));
+            } else {
+                youngestChildAgeYearClientEditText.setText("");
+            }
+            if (client.getAgeYoungestChild() % 12 != 0) {
+                youngestChildAgeMonthClientEditText.setText(Long.toString(client.getAgeYoungestChild() % 12));
+            } else {
+                youngestChildAgeMonthClientEditText.setText("");
+            }
         }
-
-
     }
 
     public boolean verificationClientData() {
@@ -206,8 +291,30 @@ public class ClientRegActivity extends AppActivity {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_lifestage);
             return false;
         }
+        if (husbandNameRequired && clientHusbandName.length() == 0) {
+            UIUtils.showAlert(context, R.string.error, R.string.error_register_no_husband_name);
+            return false;
+        }
+        if (childAgeRequired) {
+            if (clientChildAgeYear.length() == 0 && clientChildAgeMonth.length() == 0) {
+                UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
+                return false;
+            }
+            if (clientChildAgeYear.length() == 0) {
+                clientChildAgeYear = "0";
+            }
+            if (clientChildAgeMonth.length() == 0) {
+                clientChildAgeMonth = "0";
+            }
+            if (Integer.parseInt(clientChildAgeMonth) > 11) {
+                UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
+                return false;
+            }
+        }
+        if (methodRequired && methodName.length() == 0) {
+            UIUtils.showAlert(context, R.string.error, R.string.error_register_no_method);
+            return false;
+        }
         return true;
     }
-
-
 }

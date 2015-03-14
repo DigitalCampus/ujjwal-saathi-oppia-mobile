@@ -17,17 +17,6 @@
 
 package org.digitalcampus.oppia.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
-import org.digitalcampus.oppia.fragments.AboutFragment;
-import org.digitalcampus.oppia.fragments.OppiaWebViewFragment;
-import org.digitalcampus.oppia.fragments.StatsFragment;
-import org.digitalcampus.oppia.utils.FileUtils;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -39,6 +28,19 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+
+import org.digitalcampus.oppia.adapter.ActivityPagerAdapter;
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.fragments.AboutFragment;
+import org.digitalcampus.oppia.fragments.OppiaWebViewFragment;
+import org.digitalcampus.oppia.fragments.StatsFragment;
+import org.digitalcampus.oppia.utils.FileUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class AboutActivity extends SherlockFragmentActivity implements ActionBar.TabListener {
 
@@ -172,4 +174,18 @@ public class AboutActivity extends SherlockFragmentActivity implements ActionBar
 		}
 		return true;
 	}
+
+    @Override
+    public void onDestroy() {
+        DbHelper db = new DbHelper(this);
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
+        super.onPause();
+    }
 }

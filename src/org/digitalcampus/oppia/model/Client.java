@@ -17,21 +17,32 @@ public class Client implements Serializable{
     private String clientLifeStage;
     private String healthWorker; // User
     private long clientServerId;
+    private int ageYoungestChild; //  take the input in no. of months
+    private String husbandName;
+    private String methodName;
 
-    public long getClientServerId() {
-        return clientServerId;
+    public String getMethodName() {
+        return methodName;
     }
 
-    public void setClientServerId(long clientServerId) {
-        this.clientServerId = clientServerId;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
-    public String getHealthWorker() {
-        return healthWorker;
+    public int getAgeYoungestChild() {
+        return ageYoungestChild;
     }
 
-    public void setHealthWorker(String healthWorker) {
-        this.healthWorker = healthWorker;
+    public void setAgeYoungestChild(int ageYoungestChild) {
+        this.ageYoungestChild = ageYoungestChild;
+    }
+
+    public String getHusbandName() {
+        return husbandName;
+    }
+
+    public void setHusbandName(String husbandName) {
+        this.husbandName = husbandName;
     }
 
     public long getClientId() {
@@ -54,8 +65,8 @@ public class Client implements Serializable{
         return clientMobileNumber;
     }
 
-    public void setClientMobileNumber(long mobileNumber) {
-        this.clientMobileNumber = mobileNumber;
+    public void setClientMobileNumber(long clientMobileNumber) {
+        this.clientMobileNumber = clientMobileNumber;
     }
 
     public String getClientGender() {
@@ -96,5 +107,21 @@ public class Client implements Serializable{
 
     public void setClientLifeStage(String clientLifeStage) {
         this.clientLifeStage = clientLifeStage;
+    }
+
+    public String getHealthWorker() {
+        return healthWorker;
+    }
+
+    public void setHealthWorker(String healthWorker) {
+        this.healthWorker = healthWorker;
+    }
+
+    public long getClientServerId() {
+        return clientServerId;
+    }
+
+    public void setClientServerId(long clientServerId) {
+        this.clientServerId = clientServerId;
     }
 }

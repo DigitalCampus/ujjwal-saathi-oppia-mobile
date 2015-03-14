@@ -17,24 +17,8 @@
 
 package org.digitalcampus.oppia.activity;
 
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.Callable;
-
-import org.ujjwal.saathi.oppia.mobile.learning.R;
-import org.digitalcampus.oppia.adapter.SectionListAdapter;
-import org.digitalcampus.oppia.exception.InvalidXMLException;
-import org.digitalcampus.oppia.model.Activity;
-import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.CourseMetaPage;
-import org.digitalcampus.oppia.model.Section;
-import org.digitalcampus.oppia.service.TrackerService;
-import org.digitalcampus.oppia.utils.CourseXMLReader;
-import org.digitalcampus.oppia.utils.ImageUtils;
-import org.digitalcampus.oppia.utils.UIUtils;
-
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -48,6 +32,25 @@ import android.widget.ListView;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import org.digitalcampus.oppia.adapter.SectionListAdapter;
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.exception.InvalidXMLException;
+import org.digitalcampus.oppia.model.Activity;
+import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.CourseMetaPage;
+import org.digitalcampus.oppia.model.Section;
+import org.digitalcampus.oppia.service.TrackerService;
+import org.digitalcampus.oppia.utils.CourseXMLReader;
+import org.digitalcampus.oppia.utils.ImageUtils;
+import org.digitalcampus.oppia.utils.UIUtils;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 public class CourseIndexActivity extends AppActivity implements OnSharedPreferenceChangeListener {
 
 	public static final String TAG = CourseIndexActivity.class.getSimpleName();
@@ -57,9 +60,11 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 	private ArrayList<Section> sections;
 	private SharedPreferences prefs;
 	private AlertDialog aDialog;
+    private Context context;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+        context = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_course_index);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -129,7 +134,6 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 		ListView listView = (ListView) findViewById(R.id.section_list);
 		SectionListAdapter sla = new SectionListAdapter(this, course, sections);
 		listView.setAdapter(sla);
-
 	}
 
 	@Override
@@ -158,19 +162,34 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 			}            
 		 }
 		editor.commit();
-		
 	}
 
 	@Override
 	public void onPause() {
-		if (aDialog != null) {
+        if (aDialog != null) {
 			aDialog.dismiss();
 			aDialog = null;
 		}
-		super.onPause();
+        super.onPause();
 	}
 
-	
+    @Override
+    public void onDestroy() {
+//        DbHelper db = new DbHelper(context);
+        DbHelper db = new DbHelper(this);
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+//            if counselling is on(1) and we come back to the routing screen , save session
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+//            db = new DbHelper(ctx);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
+        super.onPause();
+    }
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();

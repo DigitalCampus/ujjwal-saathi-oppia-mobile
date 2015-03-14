@@ -2,6 +2,7 @@ package org.digitalcampus.oppia.activity;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,14 +12,17 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
+import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Client;
+import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.Lang;
 import org.digitalcampus.oppia.service.TrackerService;
@@ -32,6 +36,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     public static final String TAG = ClientInfoActivity.class.getSimpleName();
     private DbHelper db;
     private Client client;
+    private Context ctx;
     private SharedPreferences prefs;
     private AlertDialog aDialog;
     private ArrayList<Course> courses = new ArrayList<Course>() ;
@@ -42,11 +47,15 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     private TextView clientAgeTextView;
     private TextView clientParityTextView;
     private TextView clientLifeStageTextView;
+    private TextView clientChildAgeTextView;
+    private TextView clientHusbandNameTextView, clientMethodNameTextView;
+    private RelativeLayout clientChildAgeRelativeLayout, husbandNameRelativeLayout, methodNameRelativeLayout;
     private Button makeVisitButton, editClientInfoButton, makeCallButton;//button_client_edit
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ctx = this;
         setContentView(R.layout.activity_client_detail);
         clientNameTextView = (TextView) findViewById(R.id.client_name_value);
         clientMobileTextView = (TextView) findViewById(R.id.client_mobile_number_value);
@@ -55,9 +64,18 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         clientAgeTextView = (TextView) findViewById(R.id.client_age_value);
         clientParityTextView = (TextView) findViewById(R.id.client_parity_value);
         clientLifeStageTextView = (TextView) findViewById(R.id.client_life_stage_value);
+        clientChildAgeTextView = (TextView) findViewById(R.id.client_youngest_child_age_value);
+        clientHusbandNameTextView = (TextView) findViewById(R.id.client_husband_value);
+        clientMethodNameTextView = (TextView) findViewById(R.id.client_method_name_value);
+
         makeVisitButton = (Button) findViewById(R.id.client_detail_visit_button);
         editClientInfoButton = (Button) findViewById(R.id.client_edit_info_button);
         makeCallButton = (Button) findViewById(R.id.client_call_button);
+
+        clientChildAgeRelativeLayout = (RelativeLayout) findViewById(R.id.child_age_layout);
+        husbandNameRelativeLayout = (RelativeLayout) findViewById(R.id.husband_name_layout);
+        methodNameRelativeLayout = (RelativeLayout) findViewById(R.id.method_name_layout);
+
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,8 +85,28 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
                 tb.putSerializable(Course.TAG, c);
                 tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
                 i.putExtras(tb);
+
+                db = new DbHelper(ctx);
+                ClientSession clientSession = new ClientSession();
+
+                clientSession.setHealthWorker(prefs.getString("prefUsername", ""));
+                clientSession.setStartDateTime(System.currentTimeMillis()/1000);
+                if (db.isClientSyncedWithServer(client.getClientServerId(), client.getClientId(),client.getHealthWorker()) > 0) {
+                    clientSession.setClientId(client.getClientServerId());
+                    clientSession.setIsSynced(true);
+                } else {
+                    clientSession.setClientId(client.getClientId());
+                    clientSession.setIsSynced(false);
+                }
+                clientSession.setId(db.addStartClientSession(clientSession));
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putLong("prefClientSessionId", clientSession.getId());
+                editor.putInt("prefClientSessionActive", 1);// client counselling session started
+                editor.commit();
+
                 startActivity(i);
-                ClientInfoActivity.this.finish();
+//                ClientInfoActivity.this.finish();
             }
         });
         editClientInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +156,36 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         clientAgeTextView.setText(Integer.toString(client.getClientAge()));
         clientParityTextView.setText(client.getClientParity());
         clientLifeStageTextView.setText(client.getClientLifeStage());
+        if (client.getHusbandName().equals("")) {
+            husbandNameRelativeLayout.setVisibility(View.GONE);
+            clientHusbandNameTextView.setText("");
+        } else {
+            husbandNameRelativeLayout.setVisibility(View.VISIBLE);
+            clientHusbandNameTextView.setText(client.getHusbandName());
+        }
+        if (client.getAgeYoungestChild() > 0) {
+            int year, month;
+            year = client.getAgeYoungestChild() / 12;
+            month = client.getAgeYoungestChild() % 12;
+            if (month == 0) {
+                clientChildAgeTextView.setText(Integer.toString(year) + " year");
+            } else if (year == 0) {
+                clientChildAgeTextView.setText(Integer.toString(month) + " month");
+            } else {
+                clientChildAgeTextView.setText(Integer.toString(year) + " year" + Integer.toString(month) + " month");
+            }
+            clientChildAgeRelativeLayout.setVisibility(View.VISIBLE);
+        } else {
+            clientChildAgeRelativeLayout.setVisibility(View.GONE);
+            clientChildAgeTextView.setText("0");
+        }
+        if (client.getMethodName().equals("")) {
+            methodNameRelativeLayout.setVisibility(View.GONE);
+            clientMethodNameTextView.setText("");
+        } else {
+            methodNameRelativeLayout.setVisibility(View.VISIBLE);
+            clientMethodNameTextView.setText(client.getMethodName());
+        }
     }
 
     @Override
@@ -191,11 +259,11 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
             editor.putInt("prefBadges", 0);
             editor.putInt("prefPoints", 0);
             editor.putLong("lastClientSync", 0L);
-
+            editor.putLong("lastClientTracker", 0L);
             editor.commit();
 
             ClientInfoActivity.this.startActivity(new Intent(ClientInfoActivity.this, StartUpActivity.class));
-//            ClientInfoActivity.this.finish();
+                ClientInfoActivity.this.finish();
             }
         });
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
@@ -209,6 +277,16 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     @Override
     public void onResume() {
         super.onResume();
+
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+//            if counselling is on(1) and we come back to the routing screen , save session
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
         // start a new tracker service
         Intent service = new Intent(this, TrackerService.class);
 
@@ -216,7 +294,6 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         tb.putBoolean("backgroundData", true);
         service.putExtras(tb);
         this.startService(service);
-
         // remove any saved state info from shared prefs in case they interfere with subsequent page views
         SharedPreferences.Editor editor = prefs.edit();
         Map<String,?> keys = prefs.getAll();

@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import org.digitalcampus.oppia.task.ClientDataSyncTask;
+import org.digitalcampus.oppia.task.ClientTrackerTask;
 import org.digitalcampus.oppia.task.SubmitQuizTask;
 import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
 import org.joda.time.format.DateTimeFormat;
@@ -62,6 +63,7 @@ public class MobileLearning extends Application {
 	public static final String SERVER_AWARDS_PATH = OPPIAMOBILE_API + "awards/";
 	public static final String SERVER_COURSES_NAME = "courses";
     public static final String SYNC_CLIENTS_DATA = OPPIAMOBILE_API + "client/";
+    public static final String CLIENT_TRACKER_DATA = OPPIAMOBILE_API + "clienttracker/";
 	
 	// general other settings
 //	public static final String BUGSENSE_API_KEY = "d023ff88";
@@ -100,6 +102,8 @@ public class MobileLearning extends Application {
 
     // for tracking if SubmitTrackerMultipleTask is already running
     public ClientDataSyncTask omSubmitClientSyncTask = null;
+
+    public ClientTrackerTask omSubmitClientTrackerTask = null;
 
 	public static boolean createDirs() {
 		String cardstatus = Environment.getExternalStorageState();

@@ -11,7 +11,7 @@
         <TextView
             android:id="@+id/client_title"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/client_header_height"
+            android:layout_height="@dimen/client_fields_title_height"
             android:textSize="@dimen/title_text_size"
             android:textStyle="bold"
             android:paddingLeft="@dimen/padding_left"
@@ -21,7 +21,7 @@
         <Button
             android:id="@+id/client_detail_visit_button"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/client_header_height"
+            android:layout_height="@dimen/client_fields_title_height"
             android:layout_alignParentRight="true"
             android:text="@string/makevisit"/>
     </RelativeLayout>
@@ -56,7 +56,9 @@
                     android:id="@+id/client_name_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/client_fields_title_text_size"
                     android:minHeight="@dimen/client_fields_title_height"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_toRightOf="@id/client_name"
                     android:layout_alignParentRight="true"/>
@@ -77,6 +79,8 @@
                     android:id="@+id/client_mobile_number_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -96,6 +100,8 @@
                     android:id="@+id/client_sex_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -115,6 +121,8 @@
                     android:id="@+id/client_is_married_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -134,6 +142,8 @@
                     android:id="@+id/client_age_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -153,6 +163,8 @@
                     android:id="@+id/client_parity_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>
@@ -172,6 +184,77 @@
                     android:id="@+id/client_life_stage_value"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/husband_name_layout"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_husband"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/clientreg_form_husband_title_info_page" />
+
+                <TextView
+                    android:id="@+id/client_husband_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/child_age_layout"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_youngest_child_age"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/clientreg_form_childage_title_info_page" />
+
+                <TextView
+                    android:id="@+id/client_youngest_child_age_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
+                    android:gravity="right|center_vertical"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/method_name_layout"
+                android:layout_width="fill_parent"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/client_method_name"
+                    android:layout_width="@dimen/client_fields_title_width"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:gravity="left|center_vertical"
+                    android:text="@string/clientreg_form_method_name_title" />
+
+                <TextView
+                    android:id="@+id/client_method_name_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/client_fields_title_height"
+                    android:textSize="@dimen/client_fields_title_text_size"
+                    android:maxLength="9000"
                     android:gravity="right|center_vertical"
                     android:layout_alignParentRight="true"/>
             </RelativeLayout>

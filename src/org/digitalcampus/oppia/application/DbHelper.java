@@ -33,6 +33,7 @@ import org.digitalcampus.oppia.exception.InvalidXMLException;
 import org.digitalcampus.oppia.model.Activity;
 import org.digitalcampus.oppia.model.ActivitySchedule;
 import org.digitalcampus.oppia.model.Client;
+import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.model.SearchResult;
 import org.digitalcampus.oppia.model.TrackerLog;
@@ -49,7 +50,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	static final String TAG = DbHelper.class.getSimpleName();
 	static final String DB_NAME = "ujjwal-sathi.db";
-	static final int DB_VERSION = 19;
+	static final int DB_VERSION = 20;
 
 	private static SQLiteDatabase db;
 	private SharedPreferences prefs;
@@ -123,7 +124,10 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLIENT_C_LIFESTAGE = "clientlifestage";
     private static final String CLIENT_C_SERVER_ID = "clientserverid";
     private static final String CLIENT_C_MODIFIED_DATE = "clientsynceddate";
+    private static final String CLIENT_C_AGEYOUNGESTCHILD = "clientageyoungestchild";
     private static final String CLIENT_C_HEALTHWORKER = "clienthealthworker";
+    private static final String CLIENT_C_HUSBANDNAME = "clienthusbandname";
+    private static final String CLIENT_C_METHODNAME = "clientmethodname";
 
     // string constants for database client table
     private static final String CLIENT_TRACKER_TABLE = "clienttracker";
@@ -132,8 +136,8 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLIENT_TRACKER_C_END = "clienttrackerend";
     private static final String CLIENT_TRACKER_C_CLIENT = "clienttrackerclient";
     private static final String CLIENT_TRACKER_C_USER = "clienttrackeruser";
-    private static final String CLIENT_TRACKER_C_ISSENT = "clienttrackerissent";
-    private static final String CLIENT_TRACKER_C_ISSYNCED = "clienttrackerissynced";
+//    private static final String CLIENT_TRACKER_C_ISSENT = "clienttrackerissent";
+    private static final String CLIENT_TRACKER_C_CLIENTSTATUS = "clienttrackerisclientsynced";
 
 	// Constructor
 	public DbHelper(Context ctx) { //
@@ -153,6 +157,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		createSearchTable(db);
 		createUserTable(db);
         createClientTable(db); // create client table
+        createClientTrackerTable(db); // create client table
 	}
 
 	public void createCourseTable(SQLiteDatabase db){
@@ -240,7 +245,10 @@ public class DbHelper extends SQLiteOpenHelper {
                 "["+CLIENT_C_LIFESTAGE +"] TEXT ," +
                 "["+CLIENT_C_MODIFIED_DATE + "] integer , " +
                 "["+CLIENT_C_SERVER_ID +"] integer null , "+
-                "["+CLIENT_C_HEALTHWORKER+"] TEXT  "+
+                "["+CLIENT_C_HEALTHWORKER+"] TEXT ,"+
+                "["+CLIENT_C_AGEYOUNGESTCHILD+"] integer default 0 ,"+
+                "["+CLIENT_C_HUSBANDNAME+"] TEXT null , "+
+                "["+CLIENT_C_METHODNAME+"] TEXT null  "+
                 ");";
         db.execSQL(sql);
     }
@@ -248,12 +256,12 @@ public class DbHelper extends SQLiteOpenHelper {
     public void createClientTrackerTable(SQLiteDatabase db){
         String sql = "CREATE TABLE ["+CLIENT_TRACKER_TABLE +"] (" +
                 "["+CLIENT_TRACKER_C_ID+"]" + " integer primary key autoincrement, " +
-                "["+CLIENT_TRACKER_C_START +"]" + " datetime default current_timestamp , "+
-                "["+CLIENT_TRACKER_C_END +"] datetime default current_timestamp , " +
+                "["+CLIENT_TRACKER_C_START +"]" + " integer default 0, "+
+                "["+CLIENT_TRACKER_C_END +"] integer default 0, " +
                 "["+CLIENT_TRACKER_C_CLIENT+"] integer , " +
-                "["+CLIENT_TRACKER_C_USER +"] integer , " +
-                "["+CLIENT_TRACKER_C_ISSENT +"] integer default 0 ," +
-                "["+CLIENT_TRACKER_C_ISSYNCED +"] integer default 0 " +
+                "["+CLIENT_TRACKER_C_USER +"] text , " +
+//                "["+CLIENT_TRACKER_C_ISSENT +"] integer default 0 ," +
+                "["+CLIENT_TRACKER_C_CLIENTSTATUS +"] integer default 0 " +
                 ");";
         db.execSQL(sql);
     }
@@ -359,15 +367,29 @@ public class DbHelper extends SQLiteOpenHelper {
 			
 			// create user table
 			this.createUserTable(db);
-//            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
-//            this.createClientTable(db);
 		}
         if(oldVersion <= 18 && newVersion >= 19){
             //create client table
             db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
             this.createClientTable(db);
-            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TRACKER_TABLE);
-            this.createClientTrackerTable(db);
+        }
+
+        if(oldVersion <= 19 && newVersion >= 20){
+            String sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_C_AGEYOUNGESTCHILD + " integer default 0;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_C_HUSBANDNAME + " text null ;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_C_METHODNAME + " text null ;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            }
         }
     }
 
@@ -451,6 +473,16 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
+        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
+        if (client.getMethodName() != null)
+            values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        else
+            values.put(CLIENT_C_METHODNAME, "");
+
+        if (client.getHusbandName() != null)
+            values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
+        else
+            values.put(CLIENT_C_HUSBANDNAME, "");
 
         Log.v(TAG, "Client Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
@@ -763,19 +795,19 @@ public class DbHelper extends SQLiteOpenHelper {
 		return userId;
 	}
 
-//    public long getClientId(String username){
-//        String s = CLIENT_C_NAME + "=? ";
-//        String[] args = new String[] { username };
-//        Cursor c = db.query(CLIENT_TABLE , null, s, args, null, null, null);
-//        c.moveToFirst();
-//        long clientId = -1;
-//        while (c.isAfterLast() == false) {
-//            clientId = c.getLong(c.getColumnIndex(CLIENT_C_ID));
-//            c.moveToNext();
-//        }
-//        c.close();
-//        return clientId;
-//    }
+    public long getClientId(String username){
+        String s = CLIENT_C_NAME + "=? ";
+        String[] args = new String[] { username };
+        Cursor c = db.query(CLIENT_TABLE , null, s, args, null, null, null);
+        c.moveToFirst();
+        long clientId = -1;
+        while (c.isAfterLast() == false) {
+            clientId = c.getLong(c.getColumnIndex(CLIENT_C_ID));
+            c.moveToNext();
+        }
+        c.close();
+        return clientId;
+    }
 	
 	public ArrayList<User> getAllUsers(){
 		Cursor c = db.query(USER_TABLE, null, null, null, null, null, null);
@@ -816,6 +848,9 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
+            client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
+            client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
+            client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
 
             clients.add(client);
             c.moveToNext();
@@ -842,6 +877,9 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
             client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
+            client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
+            client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
+            client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
 
             c.moveToNext();
         }
@@ -1184,59 +1222,34 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 
     public ArrayList<Client> searchClients(String searchText, int limit, String userName){
-//        ArrayList<Client> clients = new ArrayList<Client>();
-//        Client client;
-//        String sql = String.format("SELECT * FROM %s where %s = %s and %s like '%s' ;",
-//                CLIENT_TABLE,CLIENT_C_HEALTHWORKER,userName,CLIENT_C_NAME, searchText);
-//        Log.d("query", sql);
-//        String sql1 = "SELECT * FROM  "+ CLIENT_TABLE +
-//                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? and " +
-//                CLIENT_C_NAME + " match '?' ;";
-//
-////        Cursor c = db.rawQuery(sql,new String[] { userName,searchText});
-//        Cursor c = db.rawQuery(sql,null);
-//        c.moveToFirst();
-//
-//        while (c.isAfterLast() == false) {
-//            client = new Client();
-//            client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
-//            client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
-//            client.setClientId(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
-//            client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
-//            client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
-//            client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
-//            client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
-//            client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
-//            client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
-//            client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
-//            clients.add(client);
-//            c.moveToNext();
-//        }
-//        return clients;
-
-        String s = CLIENT_C_HEALTHWORKER + "=? ";
-        String[] args = new String[] { userName };
-        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
-        c.moveToFirst();
-        Client client;
         ArrayList<Client> clients = new ArrayList<Client>();
+        Client client;
+        String sql = String.format("SELECT * FROM %s where %s == %s AND %s like '%s' ;",
+                CLIENT_TABLE,CLIENT_C_HEALTHWORKER,userName,CLIENT_C_NAME, searchText);
+        Log.d("query", sql);
+        String sql1 = "SELECT * FROM  "+ CLIENT_TABLE +
+                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND " +
+                CLIENT_C_NAME + " match '?' ;";
+
+//        Cursor c = db.rawQuery(sql,new String[] { userName,searchText});
+        Cursor c = db.rawQuery(sql,null);
+        c.moveToFirst();
+
         while (c.isAfterLast() == false) {
             client = new Client();
-            client.setClientId(c.getInt(c.getColumnIndex(CLIENT_C_ID)));
+            client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
+            client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
+            client.setClientId(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
             client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
             client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
             client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
             client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
             client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
-            client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
-            client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
-            client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
-
+            client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
             clients.add(client);
             c.moveToNext();
         }
-        c.close();
         return clients;
     }
 	/*
@@ -1345,7 +1358,7 @@ public class DbHelper extends SQLiteOpenHelper {
         ArrayList<Client> clients = new ArrayList<Client>();
         Client client;
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
-                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? and (" +
+                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND (" +
                 CLIENT_C_SERVER_ID + " is null or " + CLIENT_C_MODIFIED_DATE + " > " +
                 Long.toString(previousSyncTime) + ");";
 
@@ -1364,6 +1377,9 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
+            client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
+            client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
+
             clients.add(client);
             c.moveToNext();
         }
@@ -1371,11 +1387,11 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // add or update clients
-    public void addOrUpdateClient(ArrayList<Client> ClientList){
+    public void addOrUpdateClientAfterSync(ArrayList<Client> ClientList){
         ContentValues values;
         long localId;
         for (Client client: ClientList) {
-            localId = isClientBasedOnServerId(client.getClientServerId());
+            localId = isClientSyncedWithServer(client.getClientServerId(), client.getClientId(), client.getHealthWorker());
             values = new ContentValues();
             values.put(CLIENT_C_NAME, client.getClientName());
             values.put(CLIENT_C_MOBILENUMBER, client.getClientMobileNumber());
@@ -1387,11 +1403,54 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
             values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
             values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
+            values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
+
+            if (client.getMethodName() != null)
+                values.put(CLIENT_C_METHODNAME, client.getMethodName());
+            else
+                values.put(CLIENT_C_METHODNAME, "");
+
+            if (client.getHusbandName() != null)
+                values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
+            else
+                values.put(CLIENT_C_HUSBANDNAME, "");
+
             if (localId == -1) {
                 db.insertOrThrow(CLIENT_TABLE, null, values);
             } else {
                 db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + localId, null);
             }
+        }
+    }
+
+    public void updateClientSession(ArrayList<Client> ClientList){
+        ContentValues values;
+        long localId;
+        for (Client client: ClientList) {
+            localId = checkSessionCorrected(client.getClientId(), client.getHealthWorker());
+            values = new ContentValues();
+            values.put(CLIENT_TRACKER_C_CLIENT, client.getClientServerId());
+            if (localId > 0) {
+                db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + localId, null);
+            }
+        }
+    }
+
+    public long checkSessionCorrected(long clientId, String username) {
+        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
+                " WHERE (" + CLIENT_TRACKER_C_CLIENTSTATUS + " = 0 AND " + CLIENT_TRACKER_C_CLIENT + " = ? AND " +
+                CLIENT_TRACKER_C_USER + " = ? );";
+
+        Cursor c = db.rawQuery(sql,new String[] { Long.toString(clientId), username});
+
+        if(c.getCount() == 0){
+            c.close();
+            return -1;
+        } else {
+            c.moveToFirst();
+            long userId = c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID));
+            c.close();
+            return userId;
         }
     }
 
@@ -1408,6 +1467,17 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
+        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
+        if (client.getMethodName() != null)
+            values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        else
+            values.put(CLIENT_C_METHODNAME, "");
+
+        if (client.getHusbandName() != null)
+            values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
+        else
+            values.put(CLIENT_C_HUSBANDNAME, "");
+
         db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
     }
 
@@ -1419,10 +1489,16 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // check if registered client or not, return local id
-    public long isClientBasedOnServerId(long clientServerId){
-        String s = CLIENT_C_SERVER_ID + "=?";
-        String[] args = new String[] { String.valueOf(clientServerId) };
-        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
+    public long isClientSyncedWithServer(long clientServerId, long clientLocalId, String username){
+//        String s = CLIENT_C_SERVER_ID + "=?";
+//        String[] args = new String[] { String.valueOf(clientServerId) };
+//        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
+
+        String sql = "SELECT * FROM  "+ CLIENT_TABLE +
+                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND (" + CLIENT_C_SERVER_ID + " = ? or " + CLIENT_C_ID + " = ? );";
+
+        Cursor c = db.rawQuery(sql,new String[] { username, Long.toString(clientServerId), Long.toString(clientLocalId)});
+
         if(c.getCount() == 0){
             c.close();
             return -1;
@@ -1432,5 +1508,70 @@ public class DbHelper extends SQLiteOpenHelper {
             c.close();
             return userId;
         }
+    }
+
+    public long addStartClientSession(ClientSession session) {
+        ContentValues values = new ContentValues();
+        values.put(CLIENT_TRACKER_C_START, session.getStartDateTime());
+        values.put(CLIENT_TRACKER_C_CLIENT, session.getClientId());
+        values.put(CLIENT_TRACKER_C_USER, session.getHealthWorker());
+        if (session.getIsSynced()) {
+            values.put(CLIENT_TRACKER_C_CLIENTSTATUS, 1);
+        } else {
+            values.put(CLIENT_TRACKER_C_CLIENTSTATUS, 0);
+        }
+        values.put(CLIENT_TRACKER_C_USER, session.getHealthWorker());
+        Log.v(TAG, "Client Record added");
+        return db.insertOrThrow(CLIENT_TRACKER_TABLE, null, values);
+    }
+
+    public void addEndClientSession(long id,long endtime) {
+        ContentValues values = new ContentValues();
+        values.put(CLIENT_TRACKER_C_END, endtime);
+        db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + " = ?",new String[] { Long.toString(id) });
+    }
+
+    public ArrayList<ClientSession> getUnsentClientTrackers(String userName) {
+        ClientSession clientSession;
+        ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
+
+//        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
+//                " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " +
+//                CLIENT_TRACKER_C_ISSENT + " =  0 AND " + CLIENT_TRACKER_C_END + " > 0;";
+
+        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
+                " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " + CLIENT_TRACKER_C_END + " > 0;";
+        Cursor c = db.rawQuery(sql,new String[] { userName });
+
+        c.moveToFirst();
+
+        while (c.isAfterLast() == false) {
+            clientSession = new ClientSession();
+            clientSession.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_TRACKER_C_USER)));
+            clientSession.setStartDateTime(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_START)));
+            clientSession.setEndDateTime(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_END)));
+            clientSession.setId(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID)));
+            clientSession.setClientId(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_CLIENT)));
+
+            if (c.getInt(c.getColumnIndex(CLIENT_TRACKER_C_CLIENTSTATUS)) > 0)
+                clientSession.setIsSynced(true);
+            else
+                clientSession.setIsSynced(false);
+
+            clientSessions.add(clientSession);
+            c.moveToNext();
+        }
+
+        return clientSessions;
+    }
+
+//    public void setClientSession(long clientSessionId){
+//        ContentValues values = new ContentValues();
+//        values.put(CLIENT_TRACKER_C_ISSENT, 1);
+//        db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + clientSessionId, null);
+//    }
+
+    public void deleteClientSession(long clientSessionId){
+        db.delete(CLIENT_TRACKER_TABLE, CLIENT_TRACKER_C_ID + " = ?" ,new String[] { Long.toString(clientSessionId) });
     }
 }
