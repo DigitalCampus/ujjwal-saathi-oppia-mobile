@@ -31,7 +31,7 @@ public class TrackerScheduleReceiver extends BroadcastReceiver {
 
 	// Restart service every 1 hour
 	private static final long REPEAT_TIME = 1000 * 3600;
-    
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -42,7 +42,7 @@ public class TrackerScheduleReceiver extends BroadcastReceiver {
 		
 		// Start 30 seconds after boot completed
 		cal.add(Calendar.SECOND, 30);
-		
+
 		// every 1 hour
 		// InexactRepeating allows Android to optimize the energy consumption
 		service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REPEAT_TIME, pending);

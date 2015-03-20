@@ -283,6 +283,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Media> getMedia(){
 		ArrayList<Media> media = new ArrayList<Media>();
+		if (document == null) {
+			return media;
+		}
 		NodeList m = document.getFirstChild().getChildNodes();
 		for (int i=0; i<m.getLength(); i++) {
 			if(m.item(i).getNodeName().equals("media")){

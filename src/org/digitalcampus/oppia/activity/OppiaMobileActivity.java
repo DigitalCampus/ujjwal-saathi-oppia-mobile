@@ -99,6 +99,7 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 		super.onStart();
 		DbHelper db = new DbHelper(this);
 		userId = db.getUserId(prefs.getString("prefUsername", ""));
+        courses = db.getAllCourses();
 		DatabaseManager.getInstance().closeDatabase();
 		displayCourses(userId);		
 	}
@@ -124,6 +125,7 @@ public class OppiaMobileActivity extends AppActivity implements OnSharedPreferen
 			Log.d(TAG,"in learning");
 			courses = db.getLearningCourses(userId);
 		} else {
+            courses = new ArrayList<Course>();
 			Log.d(TAG,"in nothing");
 		}
 		DatabaseManager.getInstance().closeDatabase();

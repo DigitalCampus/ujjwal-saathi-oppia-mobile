@@ -17,26 +17,23 @@
 
 package org.digitalcampus.oppia.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
+import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 
-import org.ujjwal.saathi.oppia.mobile.learning.R;
 import org.digitalcampus.oppia.utils.ImageUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.ujjwal.saathi.oppia.mobile.learning.R;
 
-import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Activity implements Serializable{
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1548943805902073988L;
+
+    private static final long serialVersionUID = -1548943805902073988L;
 
 	public static final String TAG = Activity.class.getSimpleName();
 	

@@ -215,8 +215,8 @@ public class CourseActivity extends SherlockFragmentActivity implements ActionBa
             db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();
-            DatabaseManager.getInstance().closeDatabase();
         }
+        DatabaseManager.getInstance().closeDatabase();
 		super.onDestroy();
 	}
 	

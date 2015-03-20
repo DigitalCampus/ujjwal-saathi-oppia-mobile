@@ -91,7 +91,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
 
                 clientSession.setHealthWorker(prefs.getString("prefUsername", ""));
                 clientSession.setStartDateTime(System.currentTimeMillis()/1000);
-                if (db.isClientSyncedWithServer(client.getClientServerId(), client.getClientId(),client.getHealthWorker()) > 0) {
+                if (client.getClientServerId() != 0) {
                     clientSession.setClientId(client.getClientServerId());
                     clientSession.setIsSynced(true);
                 } else {
@@ -106,7 +106,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
                 editor.commit();
 
                 startActivity(i);
-//                ClientInfoActivity.this.finish();
+                ClientInfoActivity.this.finish();
             }
         });
         editClientInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -138,11 +138,6 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
     }
 
-//    @Override
-//    public void drawReminders(ArrayList<Activity> activities) {
-//        super.drawReminders(activities);
-//    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -172,7 +167,7 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
             } else if (year == 0) {
                 clientChildAgeTextView.setText(Integer.toString(month) + " month");
             } else {
-                clientChildAgeTextView.setText(Integer.toString(year) + " year" + Integer.toString(month) + " month");
+                clientChildAgeTextView.setText(Integer.toString(year) + "year " + Integer.toString(month) + "month");
             }
             clientChildAgeRelativeLayout.setVisibility(View.VISIBLE);
         } else {
@@ -259,7 +254,6 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
             editor.putInt("prefBadges", 0);
             editor.putInt("prefPoints", 0);
             editor.putLong("lastClientSync", 0L);
-            editor.putLong("lastClientTracker", 0L);
             editor.commit();
 
             ClientInfoActivity.this.startActivity(new Intent(ClientInfoActivity.this, StartUpActivity.class));
@@ -277,11 +271,12 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
     @Override
     public void onResume() {
         super.onResume();
-
+        
         if (prefs.getInt("prefClientSessionActive", 0) == 1) {
 //            if counselling is on(1) and we come back to the routing screen , save session
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt("prefClientSessionActive", 0);
+            db = new DbHelper(ctx);
             db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();

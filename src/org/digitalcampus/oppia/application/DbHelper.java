@@ -53,8 +53,16 @@ public class DbHelper extends SQLiteOpenHelper {
 	static final int DB_VERSION = 20;
 
 	private static SQLiteDatabase db;
+
 	private SharedPreferences prefs;
-	
+    // Constructor
+    public DbHelper(Context ctx) { //
+        super(ctx, DB_NAME, null, DB_VERSION);
+        prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        DatabaseManager.initializeInstance(this);
+        db = DatabaseManager.getInstance().openDatabase();
+
+    }
 	private static final String COURSE_TABLE = "Module";
 	private static final String COURSE_C_ID = BaseColumns._ID;
 	private static final String COURSE_C_VERSIONID = "versionid";
@@ -136,17 +144,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLIENT_TRACKER_C_END = "clienttrackerend";
     private static final String CLIENT_TRACKER_C_CLIENT = "clienttrackerclient";
     private static final String CLIENT_TRACKER_C_USER = "clienttrackeruser";
-//    private static final String CLIENT_TRACKER_C_ISSENT = "clienttrackerissent";
     private static final String CLIENT_TRACKER_C_CLIENTSTATUS = "clienttrackerisclientsynced";
-
-	// Constructor
-	public DbHelper(Context ctx) { //
-		super(ctx, DB_NAME, null, DB_VERSION);
-		prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-		DatabaseManager.initializeInstance(this);
-		db = DatabaseManager.getInstance().openDatabase();
-
-	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
@@ -375,6 +373,10 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         if(oldVersion <= 19 && newVersion >= 20){
+
+            db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TRACKER_TABLE);
+            this.createClientTrackerTable(db);
+
             String sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_C_AGEYOUNGESTCHILD + " integer default 0;";
             try {
                 db.execSQL(sql);
@@ -794,20 +796,6 @@ public class DbHelper extends SQLiteOpenHelper {
 		c.close();
 		return userId;
 	}
-
-    public long getClientId(String username){
-        String s = CLIENT_C_NAME + "=? ";
-        String[] args = new String[] { username };
-        Cursor c = db.query(CLIENT_TABLE , null, s, args, null, null, null);
-        c.moveToFirst();
-        long clientId = -1;
-        while (c.isAfterLast() == false) {
-            clientId = c.getLong(c.getColumnIndex(CLIENT_C_ID));
-            c.moveToNext();
-        }
-        c.close();
-        return clientId;
-    }
 	
 	public ArrayList<User> getAllUsers(){
 		Cursor c = db.query(USER_TABLE, null, null, null, null, null, null);
@@ -1353,7 +1341,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	    }
 	}
 
-    // sync-up process, select clients for update for given user
+    // client sync process, select clients for update for given user
     public ArrayList<Client> getClientsForUpdates(String userName, long previousSyncTime){
         ArrayList<Client> clients = new ArrayList<Client>();
         Client client;
@@ -1377,9 +1365,10 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
             client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
+
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
-
+            client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
             clients.add(client);
             c.moveToNext();
         }
@@ -1389,9 +1378,7 @@ public class DbHelper extends SQLiteOpenHelper {
     // add or update clients
     public void addOrUpdateClientAfterSync(ArrayList<Client> ClientList){
         ContentValues values;
-        long localId;
         for (Client client: ClientList) {
-            localId = isClientSyncedWithServer(client.getClientServerId(), client.getClientId(), client.getHealthWorker());
             values = new ContentValues();
             values.put(CLIENT_C_NAME, client.getClientName());
             values.put(CLIENT_C_MOBILENUMBER, client.getClientMobileNumber());
@@ -1415,10 +1402,15 @@ public class DbHelper extends SQLiteOpenHelper {
             else
                 values.put(CLIENT_C_HUSBANDNAME, "");
 
-            if (localId == -1) {
-                db.insertOrThrow(CLIENT_TABLE, null, values);
+            if (client.getClientId() == -1) {
+                long localId = isClientSyncedWithServer(client.getClientServerId(), client.getHealthWorker());
+                if (localId == -1) {
+                    db.insertOrThrow(CLIENT_TABLE, null, values);
+                } else {
+                    db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + localId, null);
+                }
             } else {
-                db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + localId, null);
+                db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
             }
         }
     }
@@ -1447,7 +1439,7 @@ public class DbHelper extends SQLiteOpenHelper {
             c.close();
             return -1;
         } else {
-            c.moveToFirst();
+            c.moveToLast();
             long userId = c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID));
             c.close();
             return userId;
@@ -1480,31 +1472,20 @@ public class DbHelper extends SQLiteOpenHelper {
 
         db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
     }
-
-//    deleting clients newly created clients and replacing them with registered clients
-    public void deleteUnregisteredClients(long clientId){
-        String s = CLIENT_C_ID+"=?";
-        String[] args = new String[] { String.valueOf(clientId) };
-        db.delete(CLIENT_TABLE, s, args);
-    }
-
+    
     // check if registered client or not, return local id
-    public long isClientSyncedWithServer(long clientServerId, long clientLocalId, String username){
-//        String s = CLIENT_C_SERVER_ID + "=?";
-//        String[] args = new String[] { String.valueOf(clientServerId) };
-//        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
-
+    public long isClientSyncedWithServer(long clientServerId, String username){
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
-                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND (" + CLIENT_C_SERVER_ID + " = ? or " + CLIENT_C_ID + " = ? );";
+                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND " + CLIENT_C_SERVER_ID + " = ? ;";
 
-        Cursor c = db.rawQuery(sql,new String[] { username, Long.toString(clientServerId), Long.toString(clientLocalId)});
+        Cursor c = db.rawQuery(sql,new String[] { username, Long.toString(clientServerId)});
 
         if(c.getCount() == 0){
             c.close();
             return -1;
         } else {
-            c.moveToFirst();
-            int userId = c.getInt(c.getColumnIndex(CLIENT_C_ID));
+            c.moveToLast();
+            long userId = c.getInt(c.getColumnIndex(CLIENT_C_ID));
             c.close();
             return userId;
         }
@@ -1535,10 +1516,6 @@ public class DbHelper extends SQLiteOpenHelper {
         ClientSession clientSession;
         ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
 
-//        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
-//                " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " +
-//                CLIENT_TRACKER_C_ISSENT + " =  0 AND " + CLIENT_TRACKER_C_END + " > 0;";
-
         String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
                 " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " + CLIENT_TRACKER_C_END + " > 0;";
         Cursor c = db.rawQuery(sql,new String[] { userName });
@@ -1564,12 +1541,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
         return clientSessions;
     }
-
-//    public void setClientSession(long clientSessionId){
-//        ContentValues values = new ContentValues();
-//        values.put(CLIENT_TRACKER_C_ISSENT, 1);
-//        db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + clientSessionId, null);
-//    }
 
     public void deleteClientSession(long clientSessionId){
         db.delete(CLIENT_TRACKER_TABLE, CLIENT_TRACKER_C_ID + " = ?" ,new String[] { Long.toString(clientSessionId) });

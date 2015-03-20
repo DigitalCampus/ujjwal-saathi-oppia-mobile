@@ -93,11 +93,11 @@ public class CourseMetaPageActivity extends AppActivity {
         if (prefs.getInt("prefClientSessionActive", 0) == 1) {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt("prefClientSessionActive", 0);
-            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId", 0L), System.currentTimeMillis() / 1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();
-            DatabaseManager.getInstance().closeDatabase();
         }
+        DatabaseManager.getInstance().closeDatabase();
         super.onPause();
     }
 	

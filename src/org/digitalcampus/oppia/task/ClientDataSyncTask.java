@@ -19,6 +19,7 @@ import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.ClientDataSyncListener;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientDTO;
+import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.utils.HTTPConnectionUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
@@ -85,8 +86,17 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
 //                    }
                     ArrayList<Client> clients2 = clientDTO2.getClients();
                     db.addOrUpdateClientAfterSync(clients2);
-//                    db.updateClientSession(clients2);
+                    db.updateClientSession(clients2);
                     DatabaseManager.getInstance().closeDatabase();
+
+                    long previousClientTracker = prefs.getLong("lastClientTracker", 0L);
+                    long now = System.currentTimeMillis()/1000;
+                    MobileLearning app = (MobileLearning) ctx.getApplicationContext();
+                    if (app.omSubmitClientTrackerTask == null && (previousClientTracker + 120) < now) {
+                        Log.d("client tracker","client tracker");
+                        app.omSubmitClientTrackerTask = new ClientTrackerTask(ctx);
+                        app.omSubmitClientTrackerTask.execute();
+                    }
 
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong("lastClientSync", System.currentTimeMillis()/1000);

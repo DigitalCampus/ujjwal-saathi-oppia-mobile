@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,8 +34,11 @@ import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.service.TrackerService;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
+
+import java.util.Map;
 
 public class ClientRegActivity extends AppActivity {
 	
@@ -120,7 +124,28 @@ public class ClientRegActivity extends AppActivity {
         // Apply the adapter to the spinner
         methodNameSpinner.setAdapter(cwfadapter6);
 
-        db = new DbHelper(ClientRegActivity.this);
+        db = new DbHelper(context);
+
+        usingMethodSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // position 0 is null
+            // position 1 is yes
+            // position 2 is no
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                if (position == 1) {
+                    methodNameSpinner.setEnabled(true);
+                    methodNameSpinner.setClickable(true);
+                } else {
+                    methodNameSpinner.setEnabled(false);
+                    methodNameSpinner.setClickable(false);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+         });
 
         counsellingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -236,12 +261,15 @@ public class ClientRegActivity extends AppActivity {
             if (client.getMethodName().equals("")) {
                 usingMethodSpinner.setSelection(0);
                 methodNameSpinner.setSelection(0);
+                methodNameSpinner.setEnabled(false);
+                methodNameSpinner.setClickable(false);
             } else {
                 usingMethodSpinner.setSelection(1);
                 spinnerPosition = cwfadapter6.getPosition(client.getMethodName());
                 methodNameSpinner.setSelection(spinnerPosition);
+                methodNameSpinner.setEnabled(true);
+                methodNameSpinner.setClickable(true);
             }
-
 
             husbandNameClientEditText.setText(client.getHusbandName());
 
@@ -316,5 +344,36 @@ public class ClientRegActivity extends AppActivity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
+//            if counselling is on(1) and we come back to the routing screen , save session
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("prefClientSessionActive", 0);
+            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
+            editor.putLong("prefClientSessionId", 0L);
+            editor.commit();
+            DatabaseManager.getInstance().closeDatabase();
+        }
+        // start a new tracker service
+        Intent service = new Intent(this, TrackerService.class);
+
+        Bundle tb = new Bundle();
+        tb.putBoolean("backgroundData", true);
+        service.putExtras(tb);
+        this.startService(service);
+        // remove any saved state info from shared prefs in case they interfere with subsequent page views
+        SharedPreferences.Editor editor = prefs.edit();
+        Map<String,?> keys = prefs.getAll();
+
+        for(Map.Entry<String,?> entry : keys.entrySet()){
+            if (entry.getKey().startsWith("widget_")){
+                editor.remove(entry.getKey());
+            }
+        }
+        editor.commit();
     }
 }

@@ -13,9 +13,6 @@ import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
 
-/**
- * Created by raunak on 2/2/15.
- */
 public class ClientListAdapter extends ArrayAdapter {
     public static final String TAG = ClientListAdapter.class.getSimpleName();
 

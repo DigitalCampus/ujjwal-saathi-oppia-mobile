@@ -184,8 +184,8 @@ public class AboutActivity extends SherlockFragmentActivity implements ActionBar
             db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();
-            DatabaseManager.getInstance().closeDatabase();
         }
+        DatabaseManager.getInstance().closeDatabase();
         super.onPause();
     }
 }
