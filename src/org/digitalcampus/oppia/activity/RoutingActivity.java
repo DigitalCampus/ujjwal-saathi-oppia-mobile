@@ -46,6 +46,7 @@ import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class RoutingActivity extends AppActivity implements ScanMediaListener {
@@ -61,9 +62,13 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		setContentView(R.layout.activity_routing);
 	    prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
-		
-		
-		Button mLearning = (Button) findViewById(R.id.button_learning);
+
+        if (prefs.getString("prefLanguage", "").equals("")) {
+            Editor editor = prefs.edit();
+            editor.putString("prefLanguage", Locale.getDefault().getLanguage());
+            editor.commit();
+        }
+        Button mLearning = (Button) findViewById(R.id.button_learning);
 		mLearning.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent i = new Intent(RoutingActivity.this, OppiaMobileActivity.class);
@@ -89,7 +94,7 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		db = new DbHelper(this);
 		courses = db.getAllCourses();
 		this.scanMedia();
-        DatabaseManager.getInstance().closeDatabase();
+         DatabaseManager.getInstance().closeDatabase();
     }
 	
 	@Override
@@ -247,17 +252,4 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
         service.putExtras(tb);
         this.startService(service);
     }
-
-//    public static void completeClientSession(SharedPreferences prefs,DbHelper db ) {
-//        if (prefs.getInt("prefClientSessionActive", 0) == 1) {
-////            if counselling is on(1) and we come back to the routing screen , save session
-//            SharedPreferences.Editor editor = prefs.edit();
-//            editor.putInt("prefClientSessionActive", 0);
-////            db = new DbHelper(ctx);
-//            db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
-//            editor.putLong("prefClientSessionId", 0L);
-//            editor.commit();
-//            DatabaseManager.getInstance().closeDatabase();
-//        }
-//    }
 }

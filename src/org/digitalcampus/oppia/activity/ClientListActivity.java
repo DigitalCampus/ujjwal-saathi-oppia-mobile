@@ -45,11 +45,14 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         context = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
         clientRegistrationButton = (Button) findViewById(R.id.list_create_client);
         noClientsText = (TextView)findViewById(R.id.tv_no_clients);
         listView = (ListView) findViewById(R.id.list_lv_clients);
+
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
+
         clientRegistrationButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 //            startActivity(new Intent(ClientListActivity.this, ClientRegActivity.class));

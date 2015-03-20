@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -29,13 +30,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.digitalcampus.oppia.adapter.ClientListAdapter;
 import org.digitalcampus.oppia.adapter.SearchResultsListAdapter;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.SearchResult;
+import org.digitalcampus.oppia.model.SearchOutput;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
@@ -46,11 +46,9 @@ public class SearchActivity extends AppActivity {
 
 	private EditText searchText;
 	private SearchResultsListAdapter srla;
-    private ClientListAdapter cla;
-	private TextView summary;
+    private TextView summary;
 	private SharedPreferences prefs;
 	private long userId = 0;
-    private ListView listViewClientSearch;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,21 +83,16 @@ public class SearchActivity extends AppActivity {
 		String searchString = searchText.getText().toString().trim();
 		DbHelper db = new DbHelper(this);
         String userName = prefs.getString("prefUsername", "");
-		ArrayList<SearchResult> results = db.search(searchString, 100, userId, this);
-        ArrayList<Client> clients = db.searchClients(searchString, 100, userName );
-		DatabaseManager.getInstance().closeDatabase();
+		ArrayList<SearchOutput> results = db.search(searchString, 100, userId, this, userName);
+        DatabaseManager.getInstance().closeDatabase();
+        Log.d("test3", "test3");
 	
 		srla = new SearchResultsListAdapter(this, results);
 		ListView listView = (ListView) findViewById(R.id.search_results_list);
 		listView.setAdapter(srla);
 
-        listViewClientSearch = (ListView) findViewById(R.id.search_client_results_list);
-        cla = new ClientListAdapter(this, clients);
-        listViewClientSearch.setAdapter(cla);
-//        if(results.size() > 0){
-		if(results.size() + clients.size() > 0){
-			summary.setText(getString(R.string.search_result_summary, results.size() + clients.size(), searchString));
-//            summary.setText(getString(R.string.search_result_summary, results.size(), searchString));
+        if(results.size()  > 0){
+			summary.setText(getString(R.string.search_result_summary, results.size() , searchString));
 			summary.setVisibility(View.VISIBLE);
 		} else {
 			summary.setText(getString(R.string.search_no_results, searchString));
@@ -109,26 +102,24 @@ public class SearchActivity extends AppActivity {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Course course = (Course) view.getTag(R.id.TAG_COURSE);
-				String digest = (String) view.getTag(R.id.TAG_ACTIVITY_DIGEST);
-				Intent i = new Intent(SearchActivity.this, CourseIndexActivity.class);
-				Bundle tb = new Bundle();
-				tb.putSerializable(Course.TAG, course);
-				tb.putSerializable("JumpTo", digest);
-				i.putExtras(tb);
-				SearchActivity.this.startActivity(i);
-			}
-		});
-        listViewClientSearch.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
-                Client client = (Client) listViewClientSearch.getItemAtPosition(position);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong("prefClientLocalID",client.getClientId() );
-                editor.commit();
-                startActivity(new Intent(SearchActivity.this, ClientInfoActivity.class));
-                SearchActivity.this.finish();
+                Course course = (Course) view.getTag(R.id.TAG_COURSE);
+				if (course != null) {
+                    String digest = (String) view.getTag(R.id.TAG_ACTIVITY_DIGEST);
+                    Intent i = new Intent(SearchActivity.this, CourseIndexActivity.class);
+                    Bundle tb = new Bundle();
+                    tb.putSerializable(Course.TAG, course);
+                    tb.putSerializable("JumpTo", digest);
+                    i.putExtras(tb);
+                    SearchActivity.this.startActivity(i);
+                } else {
+                    Client client = (Client) view.getTag(R.id.TAG_CLIENT);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putLong("prefClientLocalID", client.getClientId());
+                    editor.commit();
+                    startActivity(new Intent(SearchActivity.this, ClientInfoActivity.class));
+                    SearchActivity.this.finish();
+                }
             }
-        });
+		});
 	}
 }

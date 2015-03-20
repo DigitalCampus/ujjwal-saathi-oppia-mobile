@@ -2,12 +2,10 @@ package org.digitalcampus.oppia.model;
 
 import java.io.Serializable;
 
-/**
- * Created by ronak on 30/1/15.
- */
-public class Client implements Serializable{
+public class Client implements Serializable, SearchOutput{
 
     private long clientId;
+
     private String clientName;
     private long clientMobileNumber;
     private String clientGender;
@@ -15,11 +13,12 @@ public class Client implements Serializable{
     private int clientAge;
     private String clientParity;
     private String clientLifeStage;
-    private String healthWorker; // User
-    private long clientServerId;
     private int ageYoungestChild; //  take the input in no. of months
     private String husbandName;
     private String methodName;
+
+    private String healthWorker; // User or ASHA worker
+    private long clientServerId;
 
     public String getMethodName() {
         return methodName;

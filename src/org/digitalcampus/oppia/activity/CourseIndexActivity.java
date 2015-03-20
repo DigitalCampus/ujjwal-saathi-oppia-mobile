@@ -175,11 +175,12 @@ public class CourseIndexActivity extends AppActivity implements OnSharedPreferen
 
     @Override
     public void onDestroy() {
-        DbHelper db = new DbHelper(this);
+        DbHelper db = new DbHelper(context);
         if (prefs.getInt("prefClientSessionActive", 0) == 1) {
 //            if counselling is on(1) and we come back to the routing screen , save session
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt("prefClientSessionActive", 0);
+//            db = new DbHelper(ctx);
             db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();

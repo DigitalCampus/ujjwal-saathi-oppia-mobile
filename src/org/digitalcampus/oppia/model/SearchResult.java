@@ -19,7 +19,7 @@ package org.digitalcampus.oppia.model;
 
 import java.io.Serializable;
 
-public class SearchResult implements Serializable{
+public class SearchResult implements Serializable, SearchOutput{
 
 	/**
 	 * 
@@ -31,8 +31,7 @@ public class SearchResult implements Serializable{
 	private Course course;
 	private Activity activity;
 	private Section section;
-	
-	private float rank;
+    private float rank;
 	
 	public Course getCourse() {
 		return course;

@@ -3,7 +3,6 @@ package org.digitalcampus.oppia.activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -15,24 +14,19 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
-import org.digitalcampus.oppia.model.Lang;
 import org.digitalcampus.oppia.service.TrackerService;
-import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ClientInfoActivity extends AppActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ClientInfoActivity extends AppActivity {
     public static final String TAG = ClientInfoActivity.class.getSimpleName();
     private DbHelper db;
     private Client client;
@@ -192,85 +186,10 @@ public class ClientInfoActivity extends AppActivity implements SharedPreferences
         super.onPause();
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equalsIgnoreCase("prefPoints")
-                || key.equalsIgnoreCase("prefBadges")) {
-            supportInvalidateOptionsMenu();
-        }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        UIUtils.showUserData(menu, this);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        Log.d(TAG, "selected:" + item.getItemId());
-        switch (item.getItemId()) {
-            case R.id.menu_about:
-                startActivity(new Intent(this, AboutActivity.class));
-                return true;
-            case R.id.menu_download:
-                startActivity(new Intent(this, TagSelectActivity.class));
-                return true;
-            case R.id.menu_settings:
-                Intent i = new Intent(this, PrefsActivity.class);
-                Bundle tb = new Bundle();
-                ArrayList<Lang> langs = new ArrayList<Lang>();
-                tb.putSerializable("langs", langs);
-                i.putExtras(tb);
-                startActivity(i);
-                return true;
-            case R.id.menu_search:
-                startActivity(new Intent(this, SearchActivity.class));
-                return true;
-            case R.id.menu_logout:
-                logout();
-                return true;
-        }
-        return true;
-    }
-
-    private void logout() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-        builder.setTitle(R.string.logout);
-        builder.setMessage(R.string.logout_confirm);
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-            // wipe user prefs
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("prefUsername", "");
-            editor.putString("prefApiKey", "");
-            editor.putInt("prefBadges", 0);
-            editor.putInt("prefPoints", 0);
-            editor.putLong("lastClientSync", 0L);
-            editor.commit();
-
-            ClientInfoActivity.this.startActivity(new Intent(ClientInfoActivity.this, StartUpActivity.class));
-                ClientInfoActivity.this.finish();
-            }
-        });
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                return; // do nothing
-            }
-        });
-        builder.show();
-    }
-
     @Override
     public void onResume() {
         super.onResume();
+        db = new DbHelper(ctx);
         
         if (prefs.getInt("prefClientSessionActive", 0) == 1) {
 //            if counselling is on(1) and we come back to the routing screen , save session

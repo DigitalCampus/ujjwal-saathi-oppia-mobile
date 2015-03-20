@@ -66,10 +66,6 @@ public class HTTPConnectionUtils extends DefaultHttpClient {
 		return prefs.getString("prefServer", ctx.getString(R.string.prefServerDefault)) + apiPath;
 	}
 
-    public String getFullURLClientSync(String apiPath){
-        return prefs.getString("prefServerClient", ctx.getString(R.string.prefServerClientSync)) + apiPath;
-    }
-
 	public String createUrlWithCredentials(String baseUrl){
 		List<NameValuePair> pairs = new LinkedList<NameValuePair>();
 		pairs.add(new BasicNameValuePair("username", prefs.getString("prefUsername", "")));

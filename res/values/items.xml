@@ -4,4 +4,5 @@
     <item type="id" name="TAG_PLACEHOLDER_ID"/> 
     <item type="id" name="TAG_COURSE"/> 
     <item type="id" name="TAG_ACTIVITY_DIGEST"/> 
+    <item type="id" name="TAG_CLIENT"/>
 </resources>

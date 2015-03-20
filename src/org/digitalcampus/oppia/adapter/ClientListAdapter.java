@@ -26,6 +26,7 @@ public class ClientListAdapter extends ArrayAdapter {
         this.clientList = clientList;
     }
 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // populating the adapter
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

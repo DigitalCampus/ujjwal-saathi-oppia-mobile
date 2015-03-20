@@ -35,6 +35,7 @@ import org.digitalcampus.oppia.model.ActivitySchedule;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
+import org.digitalcampus.oppia.model.SearchOutput;
 import org.digitalcampus.oppia.model.SearchResult;
 import org.digitalcampus.oppia.model.TrackerLog;
 import org.digitalcampus.oppia.model.User;
@@ -144,7 +145,10 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLIENT_TRACKER_C_END = "clienttrackerend";
     private static final String CLIENT_TRACKER_C_CLIENT = "clienttrackerclient";
     private static final String CLIENT_TRACKER_C_USER = "clienttrackeruser";
+//    private static final String CLIENT_TRACKER_C_ISSENT = "clienttrackerissent";
     private static final String CLIENT_TRACKER_C_CLIENTSTATUS = "clienttrackerisclientsynced";
+
+
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
@@ -821,9 +825,9 @@ public class DbHelper extends SQLiteOpenHelper {
         String s = CLIENT_C_HEALTHWORKER + "=? ";
         String[] args = new String[] { userName };
         Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
-        c.moveToFirst();
         Client client;
         ArrayList<Client> clients = new ArrayList<Client>();
+        c.moveToFirst();
         while (c.isAfterLast() == false) {
             client = new Client();
             client.setClientId(c.getInt(c.getColumnIndex(CLIENT_C_ID)));
@@ -845,6 +849,29 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         c.close();
         return clients;
+    }
+
+    public ArrayList<ClientSession> getAllClientSessions(String userName){
+        String s = CLIENT_TRACKER_C_USER + "=? ";
+        String[] args = new String[] { userName };
+        Cursor c = db.query(CLIENT_TRACKER_TABLE, null, s, args, null, null, null);
+        c.moveToFirst();
+        ClientSession clientSession;
+        ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
+        while (c.isAfterLast() == false) {
+            clientSession = new ClientSession();
+            clientSession.setId(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID)));
+            clientSession.setStartDateTime(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_START)));
+            clientSession.setClientId(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_CLIENT)));
+            clientSession.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_TRACKER_C_USER)));
+            clientSession.setEndDateTime(c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_END)));
+
+
+            clientSessions.add(clientSession);
+            c.moveToNext();
+        }
+        c.close();
+        return clientSessions;
     }
 
     // return client based on local client id
@@ -1136,111 +1163,105 @@ public class DbHelper extends SQLiteOpenHelper {
 	/*
 	 * Perform a search
 	 */
-	public ArrayList<SearchResult> search(String searchText, int limit, long userId, Context ctx){
-		ArrayList<SearchResult> results = new ArrayList<SearchResult>();
-		String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 1 AS ranking FROM %s ft " +
-									" INNER JOIN %s a ON a.%s = ft.docid" +
-									" INNER JOIN %s c ON a.%s = c.%s " +
-									" WHERE %s MATCH '%s' ",
-										COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE, 
-										ACTIVITY_TABLE, ACTIVITY_C_ID, 
-										COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-										SEARCH_C_TEXT, searchText);
-		String sqlActivityTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 5 AS ranking FROM %s ft " +
-				" INNER JOIN %s a ON a.%s = ft.docid" +
-				" INNER JOIN %s c ON a.%s = c.%s " +
-				" WHERE %s MATCH '%s' ",
-					COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE, 
-					ACTIVITY_TABLE, ACTIVITY_C_ID, 
-					COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-					SEARCH_C_ACTIVITYTITLE, searchText);
-		
-		String sqlSectionTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 10 AS ranking FROM %s ft " +
-				" INNER JOIN %s a ON a.%s = ft.docid" +
-				" INNER JOIN %s c ON a.%s = c.%s " +
-				" WHERE %s MATCH '%s' ",
-					COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE, 
-					ACTIVITY_TABLE, ACTIVITY_C_ID, 
-					COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-					SEARCH_C_SECTIONTITLE, searchText);
-		String sqlCourseTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 15 AS ranking FROM %s ft " +
-				" INNER JOIN %s a ON a.%s = ft.docid" +
-				" INNER JOIN %s c ON a.%s = c.%s " +
-				" WHERE %s MATCH '%s' ",
-					COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE, 
-					ACTIVITY_TABLE, ACTIVITY_C_ID, 
-					COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-					SEARCH_C_COURSETITLE, searchText);
-		
-		String sql = String.format("SELECT * FROM (" +
-				"%s UNION %s UNION %s UNION %s) ORDER BY ranking DESC LIMIT 0,%d", 
-				sqlSeachFullText, sqlActivityTitle, sqlSectionTitle, sqlCourseTitle, limit);
-		
-		Cursor c = db.rawQuery(sql,null);
-	    if(c !=null && c.getCount()>0){
-	    	c.moveToFirst();
-	    	while (c.isAfterLast() == false) {
-	    		SearchResult result = new SearchResult();
-	    		
-	    		int courseId = c.getColumnIndex("courseid");
-	    		Course course = this.getCourse(c.getLong(courseId),userId);
-	    		result.setCourse(course);
-	    		
-	    		int digest = c.getColumnIndex("activitydigest");
-	    		Activity activity = this.getActivityByDigest(c.getString(digest));
-	    		result.setActivity(activity);
-				
-	    		int sectionOrderId = activity.getSectionId();
-	    		CourseXMLReader cxr;
-				try {
-					cxr = new CourseXMLReader(course.getCourseXMLLocation(), ctx);
-					result.setSection(cxr.getSection(sectionOrderId));
-		    		results.add(result);
-				} catch (InvalidXMLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		
-	    		c.moveToNext();
-			}
-	    }
-	    c.close();
-	    return results;
 
-	}
+    public ArrayList<SearchOutput> search(String searchText, int limit, long userId, Context ctx, String userName){
+        ArrayList<SearchOutput> results = new ArrayList<SearchOutput>();
+        String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 1 AS ranking FROM %s ft " +
+                        " INNER JOIN %s a ON a.%s = ft.docid" +
+                        " INNER JOIN %s c ON a.%s = c.%s " +
+                        " WHERE %s MATCH '%s' ",
+                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+                ACTIVITY_TABLE, ACTIVITY_C_ID,
+                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+                SEARCH_C_TEXT, searchText);
+        String sqlActivityTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 5 AS ranking FROM %s ft " +
+                        " INNER JOIN %s a ON a.%s = ft.docid" +
+                        " INNER JOIN %s c ON a.%s = c.%s " +
+                        " WHERE %s MATCH '%s' ",
+                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+                ACTIVITY_TABLE, ACTIVITY_C_ID,
+                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+                SEARCH_C_ACTIVITYTITLE, searchText);
 
-    public ArrayList<Client> searchClients(String searchText, int limit, String userName){
-        ArrayList<Client> clients = new ArrayList<Client>();
-        Client client;
-        String sql = String.format("SELECT * FROM %s where %s == %s AND %s like '%s' ;",
-                CLIENT_TABLE,CLIENT_C_HEALTHWORKER,userName,CLIENT_C_NAME, searchText);
-        Log.d("query", sql);
-        String sql1 = "SELECT * FROM  "+ CLIENT_TABLE +
-                " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND " +
-                CLIENT_C_NAME + " match '?' ;";
+        String sqlSectionTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 10 AS ranking FROM %s ft " +
+                        " INNER JOIN %s a ON a.%s = ft.docid" +
+                        " INNER JOIN %s c ON a.%s = c.%s " +
+                        " WHERE %s MATCH '%s' ",
+                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+                ACTIVITY_TABLE, ACTIVITY_C_ID,
+                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+                SEARCH_C_SECTIONTITLE, searchText);
+        String sqlCourseTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 15 AS ranking FROM %s ft " +
+                        " INNER JOIN %s a ON a.%s = ft.docid" +
+                        " INNER JOIN %s c ON a.%s = c.%s " +
+                        " WHERE %s MATCH '%s' ",
+                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+                ACTIVITY_TABLE, ACTIVITY_C_ID,
+                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+                SEARCH_C_COURSETITLE, searchText);
 
-//        Cursor c = db.rawQuery(sql,new String[] { userName,searchText});
+        String sql = String.format("SELECT * FROM (" +
+                        "%s UNION %s UNION %s UNION %s) ORDER BY ranking DESC LIMIT 0,%d",
+                sqlSeachFullText, sqlActivityTitle, sqlSectionTitle, sqlCourseTitle, limit);
+
         Cursor c = db.rawQuery(sql,null);
-        c.moveToFirst();
+        if(c !=null && c.getCount()>0){
+            c.moveToFirst();
+            while (c.isAfterLast() == false) {
+                SearchResult result = new SearchResult();
 
+                int courseId = c.getColumnIndex("courseid");
+                Course course = this.getCourse(c.getLong(courseId),userId);
+                result.setCourse(course);
+
+                int digest = c.getColumnIndex("activitydigest");
+                Activity activity = this.getActivityByDigest(c.getString(digest));
+                result.setActivity(activity);
+
+                int sectionOrderId = activity.getSectionId();
+                CourseXMLReader cxr;
+                try {
+                    cxr = new CourseXMLReader(course.getCourseXMLLocation(), ctx);
+                    result.setSection(cxr.getSection(sectionOrderId));
+                    results.add(result);
+                } catch (InvalidXMLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                c.moveToNext();
+            }
+        }
+        c.close();
+        Log.d("test1","test1");
+        Client client;
+        String sqlClientTitle = "SELECT * FROM "+CLIENT_TABLE+" WHERE "+CLIENT_C_NAME+" LIKE '%"+searchText+"%' AND " +
+                CLIENT_C_HEALTHWORKER+" = '"+userName + "';";
+        c = db.rawQuery(sqlClientTitle,null);
+        c.moveToFirst();
         while (c.isAfterLast() == false) {
             client = new Client();
-            client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
-            client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
-            client.setClientId(c.getLong(c.getColumnIndex(CLIENT_C_ID)));
+            client.setClientId(c.getInt(c.getColumnIndex(CLIENT_C_ID)));
             client.setClientName(c.getString(c.getColumnIndex(CLIENT_C_NAME)));
             client.setClientMobileNumber(c.getLong(c.getColumnIndex(CLIENT_C_MOBILENUMBER)));
             client.setClientGender(c.getString(c.getColumnIndex(CLIENT_C_GENDER)));
             client.setClientMaritalStatus(c.getString(c.getColumnIndex(CLIENT_C_MARITALSTATUS)));
             client.setClientAge(c.getInt(c.getColumnIndex(CLIENT_C_AGE)));
-            client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
             client.setClientLifeStage(c.getString(c.getColumnIndex(CLIENT_C_LIFESTAGE)));
-            clients.add(client);
+            client.setClientParity(c.getString(c.getColumnIndex(CLIENT_C_PARITY)));
+            client.setHealthWorker(c.getString(c.getColumnIndex(CLIENT_C_HEALTHWORKER)));
+            client.setClientServerId(c.getLong(c.getColumnIndex(CLIENT_C_SERVER_ID)));
+            client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
+            client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
+            client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
+
+            results.add(client);
             c.moveToNext();
         }
-        return clients;
+        Log.d("test2","test2");
+        c.close();
+        return results;
     }
-	/*
+    /*
 	 * Delete the entire search index
 	 */
 	public void deleteSearchIndex(){
@@ -1472,7 +1493,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
         db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
     }
-    
+
+//    deleting clients newly created clients and replacing them with registered clients
+    public void deleteUnregisteredClients(long clientId){
+        String s = CLIENT_C_ID+"=?";
+        String[] args = new String[] { String.valueOf(clientId) };
+        db.delete(CLIENT_TABLE, s, args);
+    }
+
     // check if registered client or not, return local id
     public long isClientSyncedWithServer(long clientServerId, String username){
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
@@ -1515,6 +1543,10 @@ public class DbHelper extends SQLiteOpenHelper {
     public ArrayList<ClientSession> getUnsentClientTrackers(String userName) {
         ClientSession clientSession;
         ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
+
+//        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
+//                " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " +
+//                CLIENT_TRACKER_C_ISSENT + " =  0 AND " + CLIENT_TRACKER_C_END + " > 0;";
 
         String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
                 " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " + CLIENT_TRACKER_C_END + " > 0;";
