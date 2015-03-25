@@ -66,15 +66,14 @@ public class MobileLearning extends Application {
     public static final String CLIENT_TRACKER_DATA = OPPIAMOBILE_API + "clienttracker/";
 	
 	// general other settings
-//	public static final String BUGSENSE_API_KEY = "d023ff88";
-//  Mint.initAndStartSession(MyActivity.this, "4e0b90e1");
-    public static final String BUGSENSE_API_KEY = "4e0b90e1";
+//	public static final String BUGSENSE_API_KEY = "d023ff88";// of Alex
+    public static final String BUGSENSE_API_KEY = "f19579d9"; // T Sharma
     public static final int DOWNLOAD_COURSES_DISPLAY = 1; //this no of courses must be displayed for the 'download more courses' option to disappear
 	public static final int PASSWORD_MIN_LENGTH = 6;
 	public static final int PAGE_READ_TIME = 3;
 	public static final int RESOURCE_READ_TIME = 3;
 	public static final String USER_AGENT = "Ujjwal Saathi Android: ";
-	
+
 	public static final boolean DEFAULT_DISPLAY_COMPLETED = false;
 	public static final boolean DEFAULT_DISPLAY_PROGRESS_BAR = false;
 	

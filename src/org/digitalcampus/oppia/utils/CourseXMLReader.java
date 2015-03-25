@@ -17,6 +17,26 @@
 
 package org.digitalcampus.oppia.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import org.digitalcampus.oppia.application.DatabaseManager;
+import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.exception.InvalidXMLException;
+import org.digitalcampus.oppia.model.Activity;
+import org.digitalcampus.oppia.model.CourseMetaPage;
+import org.digitalcampus.oppia.model.Lang;
+import org.digitalcampus.oppia.model.Media;
+import org.digitalcampus.oppia.model.Section;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,26 +45,6 @@ import java.util.Locale;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.digitalcampus.oppia.application.DatabaseManager;
-import org.digitalcampus.oppia.application.DbHelper;
-import org.digitalcampus.oppia.application.MobileLearning;
-import org.digitalcampus.oppia.exception.InvalidXMLException;
-import org.digitalcampus.oppia.model.Activity;
-import org.digitalcampus.oppia.model.Lang;
-import org.digitalcampus.oppia.model.Media;
-import org.digitalcampus.oppia.model.CourseMetaPage;
-import org.digitalcampus.oppia.model.Section;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 public class CourseXMLReader {
 
@@ -78,6 +78,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Lang> getTitles(){
 		ArrayList<Lang> titles = new ArrayList<Lang>();
+        if (document == null) {
+            return titles;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -95,6 +98,9 @@ public class CourseXMLReader {
 	}
 	
 	public int getPriority(){
+        if (document == null) {
+            return 0;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -109,6 +115,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Lang> getDescriptions(){
 		ArrayList<Lang> descriptions = new ArrayList<Lang>();
+        if (document == null) {
+            return descriptions;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -127,6 +136,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Lang> getLangs(){
 		ArrayList<Lang> langs = new ArrayList<Lang>();
+        if (document == null) {
+            return langs;
+        }
 		NodeList ls = document.getElementsByTagName("langs").item(0).getChildNodes();
 		for (int j=0; j<ls.getLength(); j++) {
 			Lang l = new Lang(ls.item(j).getTextContent(),"");
@@ -136,6 +148,9 @@ public class CourseXMLReader {
 	}
 	
 	public double getVersionId(){
+        if (document == null) {
+            return 0;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -148,6 +163,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<CourseMetaPage> getMetaPages(){
 		ArrayList<CourseMetaPage> ammp = new ArrayList<CourseMetaPage>();
+        if (document == null) {
+            return ammp;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -199,6 +217,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Activity> getBaselineActivities(long modId){
 		ArrayList<Activity>  acts = new ArrayList<Activity>();
+        if (document == null) {
+            return acts;
+        }
 		Node docMeta = document.getFirstChild().getFirstChild();
 		NodeList meta = docMeta.getChildNodes();
 		DbHelper db = new DbHelper(ctx);
@@ -283,10 +304,12 @@ public class CourseXMLReader {
 	
 	public ArrayList<Media> getMedia(){
 		ArrayList<Media> media = new ArrayList<Media>();
-		if (document == null) {
-			return media;
-		}
+        document = null;
+        if (document == null) {
+            return media;
+        }
 		NodeList m = document.getFirstChild().getChildNodes();
+//        if (document == null)
 		for (int i=0; i<m.getLength(); i++) {
 			if(m.item(i).getNodeName().equals("media")){
 				NodeList files = m.item(i).getChildNodes();
@@ -314,8 +337,12 @@ public class CourseXMLReader {
 		}
 		return media;
 	}
+
 	public String getCourseImage(){
 		String image = null;
+        if (document == null) {
+            return image;
+        }
 		Node m = document.getFirstChild().getFirstChild();
 		NodeList meta = m.getChildNodes();
 		for (int j=0; j<meta.getLength(); j++) {
@@ -333,6 +360,9 @@ public class CourseXMLReader {
 	 */
 	public ArrayList<Activity> getActivities(long modId){
 		ArrayList<Activity>  acts = new ArrayList<Activity>();
+        if (document == null) {
+            return acts;
+        }
 		Node struct = document.getFirstChild().getFirstChild().getNextSibling();
 		NodeList s = struct.getChildNodes();
 		for (int i=0; i<s.getLength(); i++) {
@@ -388,6 +418,9 @@ public class CourseXMLReader {
 	}
 	
 	public int getNoActivities(long modId){
+        if (document == null) {
+            return 0;
+        }
 		Node struct = document.getFirstChild().getFirstChild().getNextSibling();
 		NodeList s = struct.getChildNodes();
 		return s.getLength();
@@ -395,6 +428,9 @@ public class CourseXMLReader {
 	
 	public ArrayList<Section> getSections(int modId){
 		ArrayList<Section> sections = new ArrayList<Section>();
+        if (document == null) {
+            return sections;
+        }
 		NodeList sects = document.getFirstChild().getFirstChild().getNextSibling().getChildNodes();
 		DbHelper db = new DbHelper(ctx);
 		
@@ -510,6 +546,9 @@ public class CourseXMLReader {
 	
 	public Section getSection(int order){
 		Section section = new Section();
+        if (document == null) {
+            return section;
+        }
 		NodeList sects = document.getFirstChild().getFirstChild().getNextSibling().getChildNodes();
 		for (int i=0; i<sects.getLength(); i++){
 			NamedNodeMap sectionAttrs = sects.item(i).getAttributes();

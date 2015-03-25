@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -85,8 +84,7 @@ public class SearchActivity extends AppActivity {
         String userName = prefs.getString("prefUsername", "");
 		ArrayList<SearchOutput> results = db.search(searchString, 100, userId, this, userName);
         DatabaseManager.getInstance().closeDatabase();
-        Log.d("test3", "test3");
-	
+
 		srla = new SearchResultsListAdapter(this, results);
 		ListView listView = (ListView) findViewById(R.id.search_results_list);
 		listView.setAdapter(srla);
@@ -112,6 +110,7 @@ public class SearchActivity extends AppActivity {
                     i.putExtras(tb);
                     SearchActivity.this.startActivity(i);
                 } else {
+//                    this list item is a client
                     Client client = (Client) view.getTag(R.id.TAG_CLIENT);
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong("prefClientLocalID", client.getClientId());
@@ -119,7 +118,7 @@ public class SearchActivity extends AppActivity {
                     startActivity(new Intent(SearchActivity.this, ClientInfoActivity.class));
                     SearchActivity.this.finish();
                 }
-            }
+			}
 		});
 	}
 }

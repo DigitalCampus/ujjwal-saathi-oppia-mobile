@@ -46,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DbHelper extends SQLiteOpenHelper {
 
@@ -479,16 +480,10 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
-        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
-        if (client.getMethodName() != null)
-            values.put(CLIENT_C_METHODNAME, client.getMethodName());
-        else
-            values.put(CLIENT_C_METHODNAME, "");
 
-        if (client.getHusbandName() != null)
-            values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
-        else
-            values.put(CLIENT_C_HUSBANDNAME, "");
+        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
+        values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
 
         Log.v(TAG, "Client Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
@@ -1203,6 +1198,7 @@ public class DbHelper extends SQLiteOpenHelper {
         String sql = String.format("SELECT * FROM (" +
                         "%s UNION %s UNION %s UNION %s) ORDER BY ranking DESC LIMIT 0,%d",
                 sqlSeachFullText, sqlActivityTitle, sqlSectionTitle, sqlCourseTitle, limit);
+        // till this part search is being implemented for Courses, Activities and Sections
 
         Cursor c = db.rawQuery(sql,null);
         if(c !=null && c.getCount()>0){
@@ -1232,7 +1228,7 @@ public class DbHelper extends SQLiteOpenHelper {
             }
         }
         c.close();
-        Log.d("test1","test1");
+        // Search items for courses, activities and sections added to the SearchOutput arraylist
         Client client;
         String sqlClientTitle = "SELECT * FROM "+CLIENT_TABLE+" WHERE "+CLIENT_C_NAME+" LIKE '%"+searchText+"%' AND " +
                 CLIENT_C_HEALTHWORKER+" = '"+userName + "';";
@@ -1257,7 +1253,6 @@ public class DbHelper extends SQLiteOpenHelper {
             results.add(client);
             c.moveToNext();
         }
-        Log.d("test2","test2");
         c.close();
         return results;
     }
@@ -1390,6 +1385,7 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
             client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
+
             clients.add(client);
             c.moveToNext();
         }
@@ -1411,26 +1407,22 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
             values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
             values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
+
             values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
-
-            if (client.getMethodName() != null)
-                values.put(CLIENT_C_METHODNAME, client.getMethodName());
-            else
-                values.put(CLIENT_C_METHODNAME, "");
-
-            if (client.getHusbandName() != null)
-                values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
-            else
-                values.put(CLIENT_C_HUSBANDNAME, "");
+            values.put(CLIENT_C_METHODNAME, client.getMethodName());
+            values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
 
             if (client.getClientId() == -1) {
                 long localId = isClientSyncedWithServer(client.getClientServerId(), client.getHealthWorker());
                 if (localId == -1) {
+                    // local data has been wiped out
                     db.insertOrThrow(CLIENT_TABLE, null, values);
                 } else {
+                    // not possible as there is no option to edit clients on server
                     db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + localId, null);
                 }
             } else {
+                // update the client serverID
                 db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
             }
         }
@@ -1438,32 +1430,39 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public void updateClientSession(ArrayList<Client> ClientList){
         ContentValues values;
-        long localId;
+        List<Long> sessionsToBeCorrected;
         for (Client client: ClientList) {
-            localId = checkSessionCorrected(client.getClientId(), client.getHealthWorker());
-            values = new ContentValues();
-            values.put(CLIENT_TRACKER_C_CLIENT, client.getClientServerId());
-            if (localId > 0) {
-                db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + localId, null);
+            sessionsToBeCorrected = checkSessionCorrected(client.getClientId(), client.getHealthWorker());
+            for (long localId: sessionsToBeCorrected) {
+                values = new ContentValues();
+                values.put(CLIENT_TRACKER_C_CLIENT, client.getClientServerId());
+                if (localId > 0) {
+                    db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + localId, null);
+                }
             }
         }
     }
 
-    public long checkSessionCorrected(long clientId, String username) {
+    public List<Long> checkSessionCorrected(long clientId, String username) {
         String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
                 " WHERE (" + CLIENT_TRACKER_C_CLIENTSTATUS + " = 0 AND " + CLIENT_TRACKER_C_CLIENT + " = ? AND " +
                 CLIENT_TRACKER_C_USER + " = ? );";
-
+        long trackerId;
         Cursor c = db.rawQuery(sql,new String[] { Long.toString(clientId), username});
-
+        List<Long> sessionsToBeCorrected = new ArrayList<Long>();
         if(c.getCount() == 0){
             c.close();
-            return -1;
+            return sessionsToBeCorrected;
         } else {
-            c.moveToLast();
-            long userId = c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID));
+            c.moveToFirst();
+            while (c.isAfterLast() == false) {
+                trackerId = c.getLong(c.getColumnIndex(CLIENT_TRACKER_C_ID));
+                sessionsToBeCorrected.add(trackerId);
+                c.moveToNext();
+            }
+
             c.close();
-            return userId;
+            return sessionsToBeCorrected;
         }
     }
 
@@ -1480,16 +1479,10 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_HEALTHWORKER, client.getHealthWorker());
         values.put(CLIENT_C_SERVER_ID, client.getClientServerId());
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
-        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
-        if (client.getMethodName() != null)
-            values.put(CLIENT_C_METHODNAME, client.getMethodName());
-        else
-            values.put(CLIENT_C_METHODNAME, "");
 
-        if (client.getHusbandName() != null)
-            values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
-        else
-            values.put(CLIENT_C_HUSBANDNAME, "");
+        values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
+        values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
 
         db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
     }
@@ -1529,7 +1522,7 @@ public class DbHelper extends SQLiteOpenHelper {
         } else {
             values.put(CLIENT_TRACKER_C_CLIENTSTATUS, 0);
         }
-        values.put(CLIENT_TRACKER_C_USER, session.getHealthWorker());
+
         Log.v(TAG, "Client Record added");
         return db.insertOrThrow(CLIENT_TRACKER_TABLE, null, values);
     }
@@ -1543,10 +1536,6 @@ public class DbHelper extends SQLiteOpenHelper {
     public ArrayList<ClientSession> getUnsentClientTrackers(String userName) {
         ClientSession clientSession;
         ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>();
-
-//        String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
-//                " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " +
-//                CLIENT_TRACKER_C_ISSENT + " =  0 AND " + CLIENT_TRACKER_C_END + " > 0;";
 
         String sql = "SELECT * FROM  "+ CLIENT_TRACKER_TABLE +
                 " WHERE " + CLIENT_TRACKER_C_USER + " = ? AND " + CLIENT_TRACKER_C_END + " > 0;";

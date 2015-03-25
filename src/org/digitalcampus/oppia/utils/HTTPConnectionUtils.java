@@ -1,9 +1,7 @@
 package org.digitalcampus.oppia.utils;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.preference.PreferenceManager;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -14,11 +12,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.digitalcampus.oppia.application.MobileLearning;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
+import org.digitalcampus.oppia.application.MobileLearning;
 
-import java.util.LinkedList;
-import java.util.List;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.preference.PreferenceManager;
 
 public class HTTPConnectionUtils extends DefaultHttpClient {
 	

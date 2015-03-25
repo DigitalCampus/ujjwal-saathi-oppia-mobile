@@ -49,7 +49,7 @@ public class ClientRegActivity extends AppActivity {
     private EditText nameClientEditText, phoneNumberClientEditText, ageClientEditText, husbandNameClientEditText, youngestChildAgeYearClientEditText, youngestChildAgeMonthClientEditText;
     private Context context;
     public long clientId;
-    public boolean husbandNameRequired, childAgeRequired, methodRequired;
+    public boolean husbandNameRequired, childAgeRequired, methodRequired, genderSpecified, paritySpecified, maritalStatusSpecified;
 
     String clientName, clientPhoneNumber, clientAge, clientGender, clientMarried, clientParity, clientLifeStage, clientHusbandName, clientChildAgeYear, clientChildAgeMonth;
     String usingMethod, methodName;
@@ -61,6 +61,7 @@ public class ClientRegActivity extends AppActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_clientreg);
         context = this;
+        genderSpecified = paritySpecified = maritalStatusSpecified = false;
 
         sexSpinner = (Spinner) findViewById(R.id.clientreg_form_sex_spinner);
         marriedSpinner = (Spinner) findViewById(R.id.clientreg_form_married_spinner);
@@ -145,7 +146,95 @@ public class ClientRegActivity extends AppActivity {
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
             }
-         });
+        });
+
+        marriedSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // position 0 is null
+            // position 1 is yes
+            // position 2 is no
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                if (position == 1) {
+                    maritalStatusSpecified = true;
+                    if (genderSpecified) {
+                        maritalStatusSpecified = true;
+                        husbandNameClientEditText.setFocusableInTouchMode(true);
+                    }
+                } else {
+                    maritalStatusSpecified = false;
+                    husbandNameClientEditText.setFocusable(false);
+                    husbandNameClientEditText.setText("");
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        paritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // position 0 is null
+            // position 1 is yes
+            // position 2 is no
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                if (position != 0) {
+                    paritySpecified = true;
+                    if (genderSpecified) {
+                        youngestChildAgeYearClientEditText.setFocusableInTouchMode(true);
+                        youngestChildAgeMonthClientEditText.setFocusableInTouchMode(true);
+                    }
+                } else {
+                    paritySpecified = false;
+                    youngestChildAgeYearClientEditText.setFocusable(false);
+                    youngestChildAgeMonthClientEditText.setFocusable(false);
+                    youngestChildAgeYearClientEditText.setText("");
+                    youngestChildAgeMonthClientEditText.setText("");
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+
+        sexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            // position 0 is null
+            // position 1 is yes
+            // position 2 is no
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+
+                if (position == 1) {
+                    genderSpecified = true;
+                    if (maritalStatusSpecified) {
+                        husbandNameClientEditText.setFocusableInTouchMode(true);
+                        husbandNameRequired = true;
+                    }
+                    if (paritySpecified) {
+                        youngestChildAgeYearClientEditText.setFocusableInTouchMode(true);
+                        youngestChildAgeMonthClientEditText.setFocusableInTouchMode(true);
+                        childAgeRequired = true;
+                    }
+                } else {
+                    genderSpecified = false;
+                    husbandNameClientEditText.setFocusable(false);
+                    youngestChildAgeYearClientEditText.setFocusable(false);
+                    youngestChildAgeMonthClientEditText.setFocusable(false);
+                    husbandNameClientEditText.setText("");
+                    youngestChildAgeYearClientEditText.setText("");
+                    youngestChildAgeMonthClientEditText.setText("");
+                    husbandNameRequired = false;
+                    childAgeRequired = false;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
 
         counsellingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -162,6 +251,7 @@ public class ClientRegActivity extends AppActivity {
                 clientHusbandName = (String) husbandNameClientEditText.getText().toString().trim();
                 clientChildAgeYear = (String) youngestChildAgeYearClientEditText.getText().toString().trim();
                 clientChildAgeMonth = (String) youngestChildAgeMonthClientEditText.getText().toString().trim();
+
                 if (sexSpinner.getSelectedItemPosition() == 1) {
                     if (marriedSpinner.getSelectedItemPosition() == 1) {
                         husbandNameRequired = true;
@@ -173,6 +263,9 @@ public class ClientRegActivity extends AppActivity {
                     } else {
                         childAgeRequired = false;
                     }
+                } else {
+                    husbandNameRequired = false;
+                    childAgeRequired = false;
                 }
                 if (usingMethodSpinner.getSelectedItemPosition() == 1) {
                     methodRequired = true;
@@ -193,19 +286,13 @@ public class ClientRegActivity extends AppActivity {
 
                     if (childAgeRequired) {
                         client.setAgeYoungestChild(Integer.parseInt(clientChildAgeMonth) + Integer.parseInt(clientChildAgeYear)*12);
-                    } else {
-                        client.setAgeYoungestChild(0);
                     }
                     if (husbandNameRequired) {
                         client.setHusbandName(clientHusbandName);
-                    } else {
-                        client.setHusbandName("");
                     }
                     if (methodRequired) {
                         client.setMethodName(methodName);
-                    } else
-                        client.setMethodName("");
-
+                    }
                     Intent intent = getIntent();
                     Bundle bundle=intent.getExtras();
                     Boolean b = bundle.getBoolean("editClient");
@@ -257,18 +344,17 @@ public class ClientRegActivity extends AppActivity {
             paritySpinner.setSelection(spinnerPosition);
             spinnerPosition = cwfadapter4.getPosition(client.getClientLifeStage());
             plsSpinner.setSelection(spinnerPosition);
-
-            if (client.getMethodName().equals("")) {
-                usingMethodSpinner.setSelection(0);
-                methodNameSpinner.setSelection(0);
-                methodNameSpinner.setEnabled(false);
-                methodNameSpinner.setClickable(false);
-            } else {
+            if (client.getMethodName() != null && client.getMethodName().length() != 0) {
                 usingMethodSpinner.setSelection(1);
                 spinnerPosition = cwfadapter6.getPosition(client.getMethodName());
                 methodNameSpinner.setSelection(spinnerPosition);
                 methodNameSpinner.setEnabled(true);
                 methodNameSpinner.setClickable(true);
+            } else {
+                usingMethodSpinner.setSelection(0);
+                methodNameSpinner.setSelection(0);
+                methodNameSpinner.setEnabled(false);
+                methodNameSpinner.setClickable(false);
             }
 
             husbandNameClientEditText.setText(client.getHusbandName());
@@ -319,6 +405,7 @@ public class ClientRegActivity extends AppActivity {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_lifestage);
             return false;
         }
+
         if (husbandNameRequired && clientHusbandName.length() == 0) {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_husband_name);
             return false;

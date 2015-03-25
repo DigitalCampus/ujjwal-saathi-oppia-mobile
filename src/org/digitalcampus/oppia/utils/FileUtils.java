@@ -17,6 +17,13 @@
 
 package org.digitalcampus.oppia.utils;
 
+import android.app.Activity;
+import android.webkit.MimeTypeMap;
+
+import com.bugsense.trace.BugSenseHandler;
+
+import org.digitalcampus.oppia.application.MobileLearning;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -31,13 +38,6 @@ import java.io.InputStreamReader;
 import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import org.digitalcampus.oppia.application.MobileLearning;
-
-import android.app.Activity;
-import android.webkit.MimeTypeMap;
-
-import com.bugsense.trace.BugSenseHandler;
 
 public class FileUtils {
 

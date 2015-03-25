@@ -100,7 +100,7 @@ public class ClientInfoActivity extends AppActivity {
                 editor.commit();
 
                 startActivity(i);
-                ClientInfoActivity.this.finish();
+//                ClientInfoActivity.this.finish();
             }
         });
         editClientInfoButton.setOnClickListener(new View.OnClickListener() {
@@ -145,12 +145,12 @@ public class ClientInfoActivity extends AppActivity {
         clientAgeTextView.setText(Integer.toString(client.getClientAge()));
         clientParityTextView.setText(client.getClientParity());
         clientLifeStageTextView.setText(client.getClientLifeStage());
-        if (client.getHusbandName().equals("")) {
-            husbandNameRelativeLayout.setVisibility(View.GONE);
-            clientHusbandNameTextView.setText("");
-        } else {
+        if (client.getHusbandName() != null && client.getHusbandName().length() != 0) {
             husbandNameRelativeLayout.setVisibility(View.VISIBLE);
             clientHusbandNameTextView.setText(client.getHusbandName());
+        } else {
+            husbandNameRelativeLayout.setVisibility(View.GONE);
+            clientHusbandNameTextView.setText("");
         }
         if (client.getAgeYoungestChild() > 0) {
             int year, month;
@@ -168,12 +168,12 @@ public class ClientInfoActivity extends AppActivity {
             clientChildAgeRelativeLayout.setVisibility(View.GONE);
             clientChildAgeTextView.setText("0");
         }
-        if (client.getMethodName().equals("")) {
-            methodNameRelativeLayout.setVisibility(View.GONE);
-            clientMethodNameTextView.setText("");
-        } else {
+        if (client.getMethodName() != null && client.getMethodName().length() != 0) {
             methodNameRelativeLayout.setVisibility(View.VISIBLE);
             clientMethodNameTextView.setText(client.getMethodName());
+        } else {
+            methodNameRelativeLayout.setVisibility(View.GONE);
+            clientMethodNameTextView.setText("");
         }
     }
 
@@ -190,7 +190,11 @@ public class ClientInfoActivity extends AppActivity {
     public void onResume() {
         super.onResume();
         db = new DbHelper(ctx);
-        
+        ArrayList<Client> clients3 = db.getAllClients(prefs.getString("prefUsername", ""));
+        ArrayList<ClientSession> clientSessions2 = db.getAllClientSessions(prefs.getString("prefUsername", ""));
+
+        DatabaseManager.getInstance().closeDatabase();
+
         if (prefs.getInt("prefClientSessionActive", 0) == 1) {
 //            if counselling is on(1) and we come back to the routing screen , save session
             SharedPreferences.Editor editor = prefs.edit();

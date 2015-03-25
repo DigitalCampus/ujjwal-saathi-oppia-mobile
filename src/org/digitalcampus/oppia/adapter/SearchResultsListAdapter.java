@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,9 +57,8 @@ public class SearchResultsListAdapter  extends ArrayAdapter<SearchOutput>{
 	public View getView(int position, View convertView, ViewGroup parent) {
         View rowView;
         SearchOutput sr = searchResultList.get(position);
-//        if (sr instanceof Client) {
+        // identify which instance of SearchOutput is in context
         if (sr.getClass().equals(Client.class)) {
-            Log.d("test4", "test4");
             Client client = (Client)sr;
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.client_list_row, parent, false);
@@ -69,7 +67,6 @@ public class SearchResultsListAdapter  extends ArrayAdapter<SearchOutput>{
             clientTitle.setText(title);
             rowView.setTag(R.id.TAG_CLIENT,client);
         } else {
-            Log.d("test5","test5");
             SearchResult searchResult = (SearchResult)sr;
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.search_results_row, parent, false);
