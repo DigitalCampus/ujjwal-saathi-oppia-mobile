@@ -48,7 +48,7 @@ public class DownloadMediaTask extends AsyncTask<Payload, DownloadProgress, Payl
 	private Context ctx;
 	private SharedPreferences prefs;
 
-	public DownloadMediaTask(Context ctzzx) {
+	public DownloadMediaTask(Context ctx) {
 		this.ctx = ctx;
 		prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 	}

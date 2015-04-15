@@ -94,12 +94,13 @@ public class TrackerService extends Service implements APIRequestListener {
                 editor.putLong("lastCourseUpdateCheck", now);
                 editor.commit();
 			}
-            if (app.omSubmitClientSyncTask == null && (lastSyncDate + 3600 * 12) < now) {
+            
+            if (app.omSubmitClientSyncTask == null ) {
                 Log.d(TAG,"Syncing and updating client task");
                 app.omSubmitClientSyncTask = new ClientDataSyncTask(this);
                 app.omSubmitClientSyncTask.execute();
             }
-			// send activity trackers
+            // send activity trackers
             if(app.omSubmitTrackerMultipleTask == null){
 				Log.d(TAG,"Sumitting trackers multiple task");
 				app.omSubmitTrackerMultipleTask = new SubmitTrackerMultipleTask(this);

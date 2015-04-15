@@ -21,6 +21,7 @@ import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.service.TrackerService;
+import org.digitalcampus.oppia.task.ClientDataSyncTask;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
@@ -135,6 +136,7 @@ public class ClientInfoActivity extends AppActivity {
     @Override
     public void onStart() {
         super.onStart();
+
         db = new DbHelper(this);
         long clientId = prefs.getLong("prefClientLocalID", 0L);
         client = db.getClient(clientId);
