@@ -1436,11 +1436,20 @@ public class DbHelper extends SQLiteOpenHelper {
             for (long localId: sessionsToBeCorrected) {
                 values = new ContentValues();
                 values.put(CLIENT_TRACKER_C_CLIENT, client.getClientServerId());
+                values.put(CLIENT_TRACKER_C_CLIENTSTATUS, 1);
                 if (localId > 0) {
                     db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_ID + "=" + localId, null);
                 }
             }
         }
+    }
+    
+    public void updateClientSession(Client client){
+        ContentValues values;
+        values = new ContentValues();
+        values.put(CLIENT_TRACKER_C_CLIENT, client.getClientServerId());
+        values.put(CLIENT_TRACKER_C_CLIENTSTATUS, 1);
+        db.update(CLIENT_TRACKER_TABLE, values, CLIENT_TRACKER_C_CLIENT + "=" + client.getClientId(), null);
     }
 
     public List<Long> checkSessionCorrected(long clientId, String username) {

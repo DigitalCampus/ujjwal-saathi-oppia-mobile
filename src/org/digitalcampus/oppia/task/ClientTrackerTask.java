@@ -17,6 +17,7 @@ import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.ClientTrackerListener;
+import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.ClientSessionDTO;
 import org.digitalcampus.oppia.utils.HTTPConnectionUtils;
@@ -47,7 +48,17 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
         DbHelper db = new DbHelper(ctx);
         Payload payload = new Payload();
         ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>(db.getUnsentClientTrackers(prefs.getString("prefUsername", "")));
-        if (clientSessions.size() > 0) {
+        boolean sessionsReadyForSync = true;
+    	for(int i= 0; i<clientSessions.size(); i++) {
+    		if(!clientSessions.get(i).getIsSynced()) {
+    			sessionsReadyForSync = false; // sessions needs to be corrected before sending request
+    			// try update session
+    	        Client clientDetail = db.getClient(clientSessions.get(i).getClientId());
+    	        db.updateClientSession(clientDetail);
+       		}
+    	}
+    		
+        	if (clientSessions.size() > 0 && sessionsReadyForSync) {
             String url = client.getFullURL(MobileLearning.CLIENT_TRACKER_DATA);
             HttpPost httpPost = new HttpPost(url);
             ObjectMapper mapper = new ObjectMapper();
@@ -77,10 +88,10 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
                         break;
                     case 201: // logged in
                         for (ClientSession session: clientSessions) {
-//                            db.setClientSession(session.getId());
+                        //      db.setClientSession(session.getId());
                             db.deleteClientSession(session.getId());
                         }
-                        DatabaseManager.getInstance().closeDatabase();
+                    	DatabaseManager.getInstance().closeDatabase();
                         break;
                     default:
                         payload.setResult(false);
@@ -98,8 +109,8 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
                 payload.setResultResponse(ctx.getString(R.string.error_connection));
             } finally {
             }
+       		
         }
-
 
         return payload;
     }
