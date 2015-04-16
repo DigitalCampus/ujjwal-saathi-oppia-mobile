@@ -17,7 +17,7 @@
     
     <string name="service_tracker">Ujjwal Saathi Tracker Service</string>
     
-    <string name="fragment_welcome_title">उज्जवल साथी प्रोग्राम में आपका स्वागत है</string>
+    <string name="fragment_welcome_title">ज्ञानज्योति प्रोग्राम में आपका स्वागत है</string>
     <string name="fragment_welcome_desc">यह प्रोग्राम के माध्यम से आप अपने मोबाइल के ज़रिये स्वास्थ्य सम्बंधित जानकारी प्राप्त कर सकते हैं एवं स्वस्थ्य सम्बंधित फिल्में देख सकतें हैं और दूसरों को दिखा भी सकते हैं.</string>
     <string name="fragment_welcome_login_info">इस प्रोग्राम को शुरू करने से पहले आपको अपना रजिस्ट्रेशन करना होगा.</string>
     <string name="fragment_welcome_privacy">हम आपकी निजिता का ख़याल रखतें हैं, </string>
@@ -50,7 +50,7 @@
     <string name="title_scorecard">स्कोरकार्ड</string>
     <string name="title_search">खोज</string>
     <string name="title_tag_select_activity">Select Category</string>
-    <string name="title_welcome">उज्जवल साथी </string>
+    <string name="title_welcome">ज्ञानज्योति </string>
     <string name="version">Version: %1$s</string>
     <string name="title_download_media">फिल्में डाउनलोड करें</string>
 
