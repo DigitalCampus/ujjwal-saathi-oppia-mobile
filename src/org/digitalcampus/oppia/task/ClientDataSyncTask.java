@@ -47,6 +47,8 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         ClientDTO clientDTO = new ClientDTO();
         DbHelper db = new DbHelper(ctx);
         long lastRun = prefs.getLong("lastClientSync", 0L);
+		int clientSentCount = prefs.getInt("prefClientSentCount", 0);
+
         ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), lastRun));
         Payload payload = new Payload();
         String url = client.getFullURL(MobileLearning.SYNC_CLIENTS_DATA);
@@ -94,9 +96,9 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
                         app.omSubmitClientTrackerTask = new ClientTrackerTask(ctx);
                         app.omSubmitClientTrackerTask.execute();
                     }
-
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong("lastClientSync", System.currentTimeMillis()/1000);
+                    editor.putInt("prefClientSentCount", (clientSentCount+clients.size()));
                     editor.commit();
                     break;
                 default:
@@ -128,5 +130,9 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         // reset submit task back to null after completion - so next call can run properly
         MobileLearning app = (MobileLearning) ctx.getApplicationContext();
         app.omSubmitClientSyncTask = null;
+    }
+    
+	public void setClientDataSyncListener(ClientDataSyncListener cdsl) {
+		clientDataSyncListener = cdsl;
     }
 }

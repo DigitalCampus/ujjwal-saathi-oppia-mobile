@@ -66,7 +66,8 @@ public class MobileLearning extends Application {
     public static final String CLIENT_TRACKER_DATA = OPPIAMOBILE_API + "clienttracker/";
 	
 	// general other settings
-//	public static final String BUGSENSE_API_KEY = "d023ff88";// of Alex
+    //public static final String BUGSENSE_API_KEY = "d023ff88";// of Alex 
+    //public static final String BUGSENSE_API_KEY = "5cf3dfdc";  //  of Ganesh B
     public static final String BUGSENSE_API_KEY = "f19579d9"; // T Sharma
     public static final int DOWNLOAD_COURSES_DISPLAY = 1; //this no of courses must be displayed for the 'download more courses' option to disappear
 	public static final int PASSWORD_MIN_LENGTH = 6;

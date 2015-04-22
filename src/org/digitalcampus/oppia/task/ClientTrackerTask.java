@@ -48,6 +48,7 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
         DbHelper db = new DbHelper(ctx);
         Payload payload = new Payload();
         ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>(db.getUnsentClientTrackers(prefs.getString("prefUsername", "")));
+		int clientSessionSentCount = prefs.getInt("prefSessionSentCount", 0);
         boolean sessionsReadyForSync = true;
     	for(int i= 0; i<clientSessions.size(); i++) {
     		if(!clientSessions.get(i).getIsSynced()) {
@@ -87,6 +88,9 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
                         payload.setResultResponse(ctx.getString(R.string.error_login));
                         break;
                     case 201: // logged in
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.putInt("prefSessionSentCount", (clientSessionSentCount+clientSessions.size()));
+                        editor.commit();
                         for (ClientSession session: clientSessions) {
                         //      db.setClientSession(session.getId());
                             db.deleteClientSession(session.getId());
@@ -97,7 +101,7 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
                         payload.setResult(false);
                         payload.setResultResponse(ctx.getString(R.string.error_connection));
                 }
-
+               
             } catch (UnsupportedEncodingException e) {
                 payload.setResult(false);
                 payload.setResultResponse(ctx.getString(R.string.error_connection));
@@ -111,7 +115,6 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
             }
        		
         }
-
         return payload;
     }
 
@@ -125,5 +128,10 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
         // reset submit task back to null after completion - so next call can run properly
         MobileLearning app = (MobileLearning) ctx.getApplicationContext();
         app.omSubmitClientTrackerTask = null;
+    }
+    
+    
+	public void setClientTrackerListener(ClientTrackerListener ctl) {
+		clientTrackerListener = ctl;
     }
 }

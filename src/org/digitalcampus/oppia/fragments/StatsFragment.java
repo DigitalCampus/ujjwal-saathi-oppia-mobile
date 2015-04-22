@@ -17,10 +17,19 @@
 
 package org.digitalcampus.oppia.fragments;
 
+import java.util.ArrayList;
+
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.listener.ClientDataSyncListener;
+import org.digitalcampus.oppia.listener.ClientTrackerListener;
 import org.digitalcampus.oppia.listener.TrackerServiceListener;
+import org.digitalcampus.oppia.model.Client;
+import org.digitalcampus.oppia.model.ClientSession;
+import org.digitalcampus.oppia.task.ClientDataSyncTask;
+import org.digitalcampus.oppia.task.ClientTrackerTask;
+import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
@@ -36,7 +45,7 @@ import android.widget.Button;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
-public class StatsFragment extends Fragment implements TrackerServiceListener {
+public class StatsFragment extends Fragment implements TrackerServiceListener, ClientDataSyncListener, ClientTrackerListener {
 
 	public static final String TAG = StatsFragment.class.getSimpleName();
 	private SharedPreferences prefs;
@@ -96,23 +105,41 @@ public class StatsFragment extends Fragment implements TrackerServiceListener {
 	protected void onSendClick(){
 		sendBtn.setEnabled(false);
 		MobileLearning app = (MobileLearning) super.getActivity().getApplication();
+		
+		if (app.omSubmitClientSyncTask == null ) {
+            Log.d(TAG,"Syncing and updating client task");
+            app.omSubmitClientSyncTask = new ClientDataSyncTask(this.getActivity());
+            app.omSubmitClientSyncTask.setClientDataSyncListener(this);
+            app.omSubmitClientSyncTask.execute();
+        }
+		
+        if (app.omSubmitClientTrackerTask == null) {
+            Log.d("client tracker","client tracker");
+            app.omSubmitClientTrackerTask = new ClientTrackerTask(this.getActivity());
+            app.omSubmitClientTrackerTask.setClientTrackerListener(this);
+            app.omSubmitClientTrackerTask.execute();
+        }
+		
 		if(app.omSubmitTrackerMultipleTask == null){
 			Log.d(TAG,"Sumitting trackers multiple task");
 			app.omSubmitTrackerMultipleTask = new SubmitTrackerMultipleTask(this.getActivity());
 			app.omSubmitTrackerMultipleTask.setTrackerServiceListener(this);
 			app.omSubmitTrackerMultipleTask.execute();
 		}
+
 	}
 	
 	private void updateSent(){
 		DbHelper db = new DbHelper(super.getActivity());
-		sentTV.setText(String.valueOf(db.getSentTrackersCount(userId)));
+		sentTV.setText(String.valueOf( (db.getSentTrackersCount(userId) + prefs.getInt("prefClientSentCount", 0) + prefs.getInt("prefSessionSentCount", 0) )));
 		DatabaseManager.getInstance().closeDatabase();
 	}
 	
 	private void updateUnsent(){
 		DbHelper db = new DbHelper(super.getActivity());
-		unsentTV.setText(String.valueOf(db.getUnsentTrackersCount(userId)));
+		ArrayList<ClientSession> clientSessions = new ArrayList<ClientSession>(db.getUnsentClientTrackers(prefs.getString("prefUsername", "")));
+		ArrayList<Client> clientsUnsent = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString("prefUsername",""), prefs.getLong("lastClientSync", 0L)));
+		unsentTV.setText(String.valueOf( (db.getUnsentTrackersCount(userId) + clientsUnsent.size() + clientSessions.size() ) ));
 		DatabaseManager.getInstance().closeDatabase();
 	}
 
@@ -124,6 +151,18 @@ public class StatsFragment extends Fragment implements TrackerServiceListener {
 	}
 
 	public void trackerProgressUpdate() {
+		this.updateSent();
+		this.updateUnsent();	
+	}
+
+	@Override
+	public void clientDataSyncComplete(Payload response) {
+		this.updateSent();
+		this.updateUnsent();	
+	}
+
+	@Override
+	public void clientTrackerComplete(Payload response) {
 		this.updateSent();
 		this.updateUnsent();	
 	}
