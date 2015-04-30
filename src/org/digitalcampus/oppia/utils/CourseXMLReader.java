@@ -304,7 +304,6 @@ public class CourseXMLReader {
 	
 	public ArrayList<Media> getMedia(){
 		ArrayList<Media> media = new ArrayList<Media>();
-        document = null;
         if (document == null) {
             return media;
         }
