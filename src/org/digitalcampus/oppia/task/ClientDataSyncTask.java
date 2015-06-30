@@ -61,6 +61,7 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
             publishProgress(ctx.getString(R.string.client_data_sync));
             String str = mapper.writeValueAsString(clientDTO);
             StringEntity se = new StringEntity( str,"utf8");
+            Log.d("JSONRequestToServer", str);
             se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
             httpPost.addHeader(client.getAuthHeader()); // authorization
             httpPost.setEntity(se);
@@ -82,9 +83,9 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
                 case 201: // logged in
                     ClientDTO clientDTO2 = mapper.readValue(responseStr,ClientDTO.class);
 
-//                    for (Client client1: clients) {
-//                        db.deleteUnregisteredClients(client1.getClientId());
-//                    }
+                    for (Client client1: clients) {
+                        db.deleteUnregisteredClients(client1.getClientId());
+                    }
                     ArrayList<Client> clients2 = clientDTO2.getClients();
                     db.addOrUpdateClientAfterSync(clients2);
                     db.updateClientSession(clients2);
@@ -119,6 +120,15 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         }
         return payload;
     }
+    
+   @Override 
+   protected void onProgressUpdate(Object... obj) {
+		synchronized (this) {
+            if (clientDataSyncListener != null) {
+            	clientDataSyncListener.clientDataSyncProgress();
+            }
+        }
+	}
 
     @Override
     protected void onPostExecute(Payload response) {

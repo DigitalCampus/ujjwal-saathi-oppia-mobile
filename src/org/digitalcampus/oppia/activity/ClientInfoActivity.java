@@ -1,8 +1,10 @@
 package org.digitalcampus.oppia.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,17 +19,20 @@ import android.widget.TextView;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
 import org.digitalcampus.oppia.application.MobileLearning;
+import org.digitalcampus.oppia.listener.ClientDataSyncListener;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Course;
 import org.digitalcampus.oppia.service.TrackerService;
 import org.digitalcampus.oppia.task.ClientDataSyncTask;
+import org.digitalcampus.oppia.task.Payload;
+import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class ClientInfoActivity extends AppActivity {
+public class ClientInfoActivity extends AppActivity implements ClientDataSyncListener {
     public static final String TAG = ClientInfoActivity.class.getSimpleName();
     private DbHelper db;
     private Client client;
@@ -43,10 +48,13 @@ public class ClientInfoActivity extends AppActivity {
     private TextView clientParityTextView;
     private TextView clientLifeStageTextView;
     private TextView clientChildAgeTextView;
-    private TextView clientHusbandNameTextView, clientMethodNameTextView;
-    private RelativeLayout clientChildAgeRelativeLayout, husbandNameRelativeLayout, methodNameRelativeLayout;
+    private TextView clientHusbandNameTextView, clientMethodNameTextView, adaptedMethodNameTextView;
+    private RelativeLayout clientChildAgeRelativeLayout, husbandNameRelativeLayout, methodNameRelativeLayout, AdaptedethodNameRelativeLayout;
     private Button makeVisitButton, editClientInfoButton, makeCallButton;//button_client_edit
-
+    private Button closeCase, deleteClient;
+    private ProgressDialog dialog;
+    private boolean isButtonDeleteClient;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +70,7 @@ public class ClientInfoActivity extends AppActivity {
         clientChildAgeTextView = (TextView) findViewById(R.id.client_youngest_child_age_value);
         clientHusbandNameTextView = (TextView) findViewById(R.id.client_husband_value);
         clientMethodNameTextView = (TextView) findViewById(R.id.client_method_name_value);
+        adaptedMethodNameTextView = (TextView) findViewById(R.id.adapted_method_name_value);
 
         makeVisitButton = (Button) findViewById(R.id.client_detail_visit_button);
         editClientInfoButton = (Button) findViewById(R.id.client_edit_info_button);
@@ -70,6 +79,101 @@ public class ClientInfoActivity extends AppActivity {
         clientChildAgeRelativeLayout = (RelativeLayout) findViewById(R.id.child_age_layout);
         husbandNameRelativeLayout = (RelativeLayout) findViewById(R.id.husband_name_layout);
         methodNameRelativeLayout = (RelativeLayout) findViewById(R.id.method_name_layout);
+        AdaptedethodNameRelativeLayout = (RelativeLayout) findViewById(R.id.adapted_method_name_layout);
+        
+        closeCase = (Button) findViewById(R.id.close_client_case);
+        deleteClient = (Button) findViewById(R.id.delete_client_record);
+       
+        closeCase.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new AlertDialog.Builder(ctx)
+			    .setTitle("Close Client Case")
+			    .setMessage("Are you sure you want to close this client?")
+			    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int which) {
+			        	//check for client sync status.
+			            // synced, continue with close case
+			        	if(client.getClientServerId() > 0) {
+				        	isButtonDeleteClient = false;
+				        	closeCase.setEnabled(false);
+				        	db = new DbHelper(ctx);
+							client.setClientCloseCase(1);
+							db.updateClientAfterSync(client);
+			                MobileLearning app = (MobileLearning) ctx.getApplicationContext();
+			                if (app.omSubmitClientTrackerTask == null) {
+			                    Log.d(TAG,"Syncing and updating client task");
+			                    app.omSubmitClientSyncTask = new ClientDataSyncTask(ctx);
+			                    app.omSubmitClientSyncTask.setClientDataSyncListener((ClientDataSyncListener) ctx);
+			                    app.omSubmitClientSyncTask.execute();
+			                }
+			                else {
+			                	// previous data sync is not completed. try after some time.
+			                	//return;
+			                }
+				        }
+			        	else {
+			        		//client is not synced, can't close. Please try after some time. 
+			        		UIUtils.showAlert(ctx, "Can't close", "Please try after some time");
+			        	}
+			        }
+			     })
+			    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int which) { 
+			            // do nothing
+			        }
+			     })
+			    .setIcon(android.R.drawable.ic_dialog_alert)
+			    .show();
+			}
+		});
+        
+        deleteClient.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new AlertDialog.Builder(ctx)
+			    .setTitle("Delete Client Record")
+			    .setMessage("Are you sure you want to delete this client?")
+			    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int which) {
+			        	//check for client sync status.
+			            // synced, delete request to server. not synced delete it from local.
+			        	if(client.getClientServerId() > 0) {
+				        	isButtonDeleteClient = true;
+				        	deleteClient.setEnabled(false);
+				        	db = new DbHelper(ctx);
+				        	client.setClientDeleteRecord(1);
+							db.updateClientAfterSync(client);
+							MobileLearning app = (MobileLearning) ctx.getApplicationContext();
+			                if (app.omSubmitClientTrackerTask == null) {
+			                    Log.d(TAG,"Syncing and updating client task");
+			                    app.omSubmitClientSyncTask = new ClientDataSyncTask(ctx);
+			                    app.omSubmitClientSyncTask.setClientDataSyncListener((ClientDataSyncListener) ctx);
+			                    app.omSubmitClientSyncTask.execute();
+			                }
+			                else {
+			                	// previous data sync is not completed. try after some time.
+			                	//return;
+			                }
+				        }
+			        	else {
+			        		// not synced, delete it from local db.
+			        		clientDataSyncProgress();
+			        		db.deleteUnregisteredClients(client.getClientId());
+			        		clientDataSyncComplete(null);
+			        	}
+			        }
+			     })
+			    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int which) { 
+			            // do nothing
+			        }
+			     })
+			    .setIcon(android.R.drawable.ic_dialog_alert)
+			    .show();
+				
+			}
+		});
 
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,6 +281,13 @@ public class ClientInfoActivity extends AppActivity {
             methodNameRelativeLayout.setVisibility(View.GONE);
             clientMethodNameTextView.setText("");
         }
+        if (client.getAdaptedMethodName() != null && client.getAdaptedMethodName().length() != 0) {
+        	AdaptedethodNameRelativeLayout.setVisibility(View.VISIBLE);
+        	adaptedMethodNameTextView.setText(client.getAdaptedMethodName());
+        } else {
+        	AdaptedethodNameRelativeLayout.setVisibility(View.GONE);
+        	adaptedMethodNameTextView.setText("");
+        }
     }
 
     @Override
@@ -225,4 +336,34 @@ public class ClientInfoActivity extends AppActivity {
         }
         editor.commit();
     }
+
+	@Override
+	public void clientDataSyncComplete(Payload response) {
+		if(dialog != null){
+			dialog.dismiss();
+		}
+		
+	    Intent i = new Intent(ClientInfoActivity.this, ClientListActivity.class);
+	    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bundle tb = new Bundle();
+        //tb.putBoolean("editClient", true);
+        tb.putLong("localClientID", client.getClientId());
+        i.putExtras(tb);
+        startActivity(i);
+        ClientInfoActivity.this.finish();
+	}
+
+	@Override
+	public void clientDataSyncProgress() {
+		String header;
+		if(isButtonDeleteClient) {
+			header="Deleting Client";
+			//db.deleteUnregisteredClients(client.getClientId());
+		}
+		else {
+			header="Closing Case";
+		}
+		dialog = ProgressDialog.show(ctx, header,
+			    "Please Wait...", true);
+	}
 }

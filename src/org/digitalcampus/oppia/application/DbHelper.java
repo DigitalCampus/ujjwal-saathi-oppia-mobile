@@ -52,7 +52,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	static final String TAG = DbHelper.class.getSimpleName();
 	static final String DB_NAME = "ujjwal-sathi.db";
-	static final int DB_VERSION = 20;
+	static final int DB_VERSION = 21;
 
 	private static SQLiteDatabase db;
 
@@ -138,8 +138,12 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String CLIENT_C_HEALTHWORKER = "clienthealthworker";
     private static final String CLIENT_C_HUSBANDNAME = "clienthusbandname";
     private static final String CLIENT_C_METHODNAME = "clientmethodname";
+    private static final String CLIENT_CLOSE_CASE = "clientclosecase";
+    private static final String CLIENT_DELETE_RECORD = "clientdeleterecord";
+    private static final String CLIENT_ADAPTED_METHOD_NAME="clientadaptedmethodname";
+    private static final String CLIENT_ADAPTED_METHOD_TIME="clientadaptedmethodtime";
 
-    // string constants for database client table
+    // string constants for database clienttracker table
     private static final String CLIENT_TRACKER_TABLE = "clienttracker";
     private static final String CLIENT_TRACKER_C_ID = BaseColumns._ID;
     private static final String CLIENT_TRACKER_C_START = "clienttrackerstart";
@@ -251,7 +255,11 @@ public class DbHelper extends SQLiteOpenHelper {
                 "["+CLIENT_C_HEALTHWORKER+"] TEXT ,"+
                 "["+CLIENT_C_AGEYOUNGESTCHILD+"] integer default 0 ,"+
                 "["+CLIENT_C_HUSBANDNAME+"] TEXT null , "+
-                "["+CLIENT_C_METHODNAME+"] TEXT null  "+
+                "["+CLIENT_C_METHODNAME+"] TEXT null  ,"+
+                "["+CLIENT_CLOSE_CASE+"] integer default 0 ,"+
+                "["+CLIENT_DELETE_RECORD+"] integer default 0 ,"+
+                "["+CLIENT_ADAPTED_METHOD_NAME+"] TEXT null ,"+
+                "["+CLIENT_ADAPTED_METHOD_TIME+"] integer "+
                 ");";
         db.execSQL(sql);
     }
@@ -397,6 +405,34 @@ public class DbHelper extends SQLiteOpenHelper {
                 db.execSQL(sql);
             } catch (Exception e){
             }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_CLOSE_CASE + " integer default 0;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            	Log.d(TAG, e.getMessage());
+            }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_DELETE_RECORD + " integer default 0;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            	Log.d(TAG, e.getMessage());
+            }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_ADAPTED_METHOD_NAME + " TEXT null;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            	Log.d(TAG, e.getMessage());
+            }
+            sql = "ALTER TABLE " + CLIENT_TABLE + " ADD COLUMN " + CLIENT_ADAPTED_METHOD_TIME + " integer;";
+            try {
+                db.execSQL(sql);
+            } catch (Exception e){
+            	Log.d(TAG, e.getMessage());
+            }
+        }
+        if(oldVersion <= 20 && newVersion >= 21){
+        	 db.execSQL("DROP TABLE IF EXISTS " + CLIENT_TABLE);
+             this.createClientTable(db);
         }
     }
 
@@ -485,6 +521,11 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_METHODNAME, client.getMethodName());
         values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
 
+        values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
+        values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
+        values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+        values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
+        
         Log.v(TAG, "Client Record added");
         return db.insertOrThrow(CLIENT_TABLE, null, values);
     }
@@ -838,7 +879,10 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
             client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
-
+            client.setClientDeleteRecord(c.getInt(c.getColumnIndex(CLIENT_DELETE_RECORD)));
+            client.setClientCloseCase(c.getInt(c.getColumnIndex(CLIENT_CLOSE_CASE)));
+            client.setAdaptedMethodName( ( (c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0] != null)?(c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0]:"");
+     
             clients.add(client);
             c.moveToNext();
         }
@@ -890,7 +934,8 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
             client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
-
+            client.setAdaptedMethodName(( (c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0] != null)?(c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0]:"");
+            
             c.moveToNext();
         }
         c.close();
@@ -1152,82 +1197,89 @@ public class DbHelper extends SQLiteOpenHelper {
 		values.put(SEARCH_C_COURSETITLE, courseTitle);
 		values.put(SEARCH_C_SECTIONTITLE, sectionTitle);
 		values.put(SEARCH_C_ACTIVITYTITLE, activityTitle);
-		db.insertOrThrow(SEARCH_TABLE, null, values);
+		try {
+			db.insertOrThrow(SEARCH_TABLE, null, values);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	/*
 	 * Perform a search
 	 */
 
-    public ArrayList<SearchOutput> search(String searchText, int limit, long userId, Context ctx, String userName){
+    public ArrayList<SearchOutput> search(String searchText, int limit, long userId, Context ctx, String userName, boolean isOnlyClientSearch){
         ArrayList<SearchOutput> results = new ArrayList<SearchOutput>();
-        String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 1 AS ranking FROM %s ft " +
-                        " INNER JOIN %s a ON a.%s = ft.docid" +
-                        " INNER JOIN %s c ON a.%s = c.%s " +
-                        " WHERE %s MATCH '%s' ",
-                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
-                ACTIVITY_TABLE, ACTIVITY_C_ID,
-                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-                SEARCH_C_TEXT, searchText);
-        String sqlActivityTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 5 AS ranking FROM %s ft " +
-                        " INNER JOIN %s a ON a.%s = ft.docid" +
-                        " INNER JOIN %s c ON a.%s = c.%s " +
-                        " WHERE %s MATCH '%s' ",
-                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
-                ACTIVITY_TABLE, ACTIVITY_C_ID,
-                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-                SEARCH_C_ACTIVITYTITLE, searchText);
-
-        String sqlSectionTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 10 AS ranking FROM %s ft " +
-                        " INNER JOIN %s a ON a.%s = ft.docid" +
-                        " INNER JOIN %s c ON a.%s = c.%s " +
-                        " WHERE %s MATCH '%s' ",
-                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
-                ACTIVITY_TABLE, ACTIVITY_C_ID,
-                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-                SEARCH_C_SECTIONTITLE, searchText);
-        String sqlCourseTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 15 AS ranking FROM %s ft " +
-                        " INNER JOIN %s a ON a.%s = ft.docid" +
-                        " INNER JOIN %s c ON a.%s = c.%s " +
-                        " WHERE %s MATCH '%s' ",
-                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
-                ACTIVITY_TABLE, ACTIVITY_C_ID,
-                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
-                SEARCH_C_COURSETITLE, searchText);
-
-        String sql = String.format("SELECT * FROM (" +
-                        "%s UNION %s UNION %s UNION %s) ORDER BY ranking DESC LIMIT 0,%d",
-                sqlSeachFullText, sqlActivityTitle, sqlSectionTitle, sqlCourseTitle, limit);
-        // till this part search is being implemented for Courses, Activities and Sections
-
-        Cursor c = db.rawQuery(sql,null);
-        if(c !=null && c.getCount()>0){
-            c.moveToFirst();
-            while (c.isAfterLast() == false) {
-                SearchResult result = new SearchResult();
-
-                int courseId = c.getColumnIndex("courseid");
-                Course course = this.getCourse(c.getLong(courseId),userId);
-                result.setCourse(course);
-
-                int digest = c.getColumnIndex("activitydigest");
-                Activity activity = this.getActivityByDigest(c.getString(digest));
-                result.setActivity(activity);
-
-                int sectionOrderId = activity.getSectionId();
-                CourseXMLReader cxr;
-                try {
-                    cxr = new CourseXMLReader(course.getCourseXMLLocation(), ctx);
-                    result.setSection(cxr.getSection(sectionOrderId));
-                    results.add(result);
-                } catch (InvalidXMLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                c.moveToNext();
-            }
-        }
-        c.close();
+        Cursor c;
+        if(!isOnlyClientSearch) {
+	        String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 1 AS ranking FROM %s ft " +
+	                        " INNER JOIN %s a ON a.%s = ft.docid" +
+	                        " INNER JOIN %s c ON a.%s = c.%s " +
+	                        " WHERE %s MATCH '%s' ",
+	                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+	                ACTIVITY_TABLE, ACTIVITY_C_ID,
+	                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+	                SEARCH_C_TEXT, searchText);
+	        String sqlActivityTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 5 AS ranking FROM %s ft " +
+	                        " INNER JOIN %s a ON a.%s = ft.docid" +
+	                        " INNER JOIN %s c ON a.%s = c.%s " +
+	                        " WHERE %s MATCH '%s' ",
+	                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+	                ACTIVITY_TABLE, ACTIVITY_C_ID,
+	                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+	                SEARCH_C_ACTIVITYTITLE, searchText);
+	
+	        String sqlSectionTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 10 AS ranking FROM %s ft " +
+	                        " INNER JOIN %s a ON a.%s = ft.docid" +
+	                        " INNER JOIN %s c ON a.%s = c.%s " +
+	                        " WHERE %s MATCH '%s' ",
+	                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+	                ACTIVITY_TABLE, ACTIVITY_C_ID,
+	                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+	                SEARCH_C_SECTIONTITLE, searchText);
+	        String sqlCourseTitle = String.format("SELECT c.%s AS courseid, a.%s as activitydigest, a.%s as sectionid, 15 AS ranking FROM %s ft " +
+	                        " INNER JOIN %s a ON a.%s = ft.docid" +
+	                        " INNER JOIN %s c ON a.%s = c.%s " +
+	                        " WHERE %s MATCH '%s' ",
+	                COURSE_C_ID, ACTIVITY_C_ACTIVITYDIGEST, ACTIVITY_C_SECTIONID, SEARCH_TABLE,
+	                ACTIVITY_TABLE, ACTIVITY_C_ID,
+	                COURSE_TABLE, ACTIVITY_C_COURSEID, COURSE_C_ID,
+	                SEARCH_C_COURSETITLE, searchText);
+	
+	        String sql = String.format("SELECT * FROM (" +
+	                        "%s UNION %s UNION %s UNION %s) ORDER BY ranking DESC LIMIT 0,%d",
+	                sqlSeachFullText, sqlActivityTitle, sqlSectionTitle, sqlCourseTitle, limit);
+	        // till this part search is being implemented for Courses, Activities and Sections
+	
+	        c = db.rawQuery(sql,null);
+	        if(c !=null && c.getCount()>0){
+	            c.moveToFirst();
+	            while (c.isAfterLast() == false) {
+	                SearchResult result = new SearchResult();
+	
+	                int courseId = c.getColumnIndex("courseid");
+	                Course course = this.getCourse(c.getLong(courseId),userId);
+	                result.setCourse(course);
+	
+	                int digest = c.getColumnIndex("activitydigest");
+	                Activity activity = this.getActivityByDigest(c.getString(digest));
+	                result.setActivity(activity);
+	
+	                int sectionOrderId = activity.getSectionId();
+	                CourseXMLReader cxr;
+	                try {
+	                    cxr = new CourseXMLReader(course.getCourseXMLLocation(), ctx);
+	                    result.setSection(cxr.getSection(sectionOrderId));
+	                    results.add(result);
+	                } catch (InvalidXMLException e) {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+	                }
+	                c.moveToNext();
+	            }
+	        }
+	        c.close();
+    	}
         // Search items for courses, activities and sections added to the SearchOutput arraylist
         Client client;
         String sqlClientTitle = "SELECT * FROM "+CLIENT_TABLE+" WHERE "+CLIENT_C_NAME+" LIKE '%"+searchText+"%' AND " +
@@ -1249,6 +1301,7 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
             client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
+            client.setAdaptedMethodName(( (c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0] != null)?(c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0]:"");
 
             results.add(client);
             c.moveToNext();
@@ -1364,7 +1417,8 @@ public class DbHelper extends SQLiteOpenHelper {
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
                 " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND (" +
                 CLIENT_C_SERVER_ID + " is null or " + CLIENT_C_MODIFIED_DATE + " > " +
-                Long.toString(previousSyncTime) + ");";
+                Long.toString(previousSyncTime) + " or " + CLIENT_DELETE_RECORD + " > 0 "+ 
+                " or "+ CLIENT_CLOSE_CASE + " > 0 " + ");";
 
         Cursor c = db.rawQuery(sql,new String[] { userName });
         c.moveToFirst();
@@ -1385,7 +1439,12 @@ public class DbHelper extends SQLiteOpenHelper {
             client.setAgeYoungestChild(c.getInt(c.getColumnIndex(CLIENT_C_AGEYOUNGESTCHILD)));
             client.setHusbandName(c.getString(c.getColumnIndex(CLIENT_C_HUSBANDNAME)));
             client.setMethodName(c.getString(c.getColumnIndex(CLIENT_C_METHODNAME)));
-
+            
+            client.setClientDeleteRecord(c.getInt(c.getColumnIndex(CLIENT_DELETE_RECORD)));
+            client.setClientCloseCase(c.getInt(c.getColumnIndex(CLIENT_CLOSE_CASE)));
+            
+            client.setAdaptedMethodName( ( (c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0] != null)?(c.getString(c.getColumnIndex(CLIENT_ADAPTED_METHOD_NAME))).split("_")[0]:"" );
+            
             clients.add(client);
             c.moveToNext();
         }
@@ -1411,7 +1470,11 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
             values.put(CLIENT_C_METHODNAME, client.getMethodName());
             values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
-
+            values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
+            values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
+            values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+            values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
+            
             if (client.getClientId() == -1) {
                 long localId = isClientSyncedWithServer(client.getClientServerId(), client.getHealthWorker());
                 if (localId == -1) {
@@ -1492,10 +1555,25 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
         values.put(CLIENT_C_METHODNAME, client.getMethodName());
         values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
+        
+        values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
+        values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
+        
+        values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+        values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
 
         db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
     }
 
+    public void updateClientAfterSync(Client client){
+        ContentValues values;
+        values = new ContentValues();
+        
+        values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
+        values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
+
+        db.update(CLIENT_TABLE, values, CLIENT_C_SERVER_ID + "=" + client.getClientServerId(), null);
+    }
 //    deleting clients newly created clients and replacing them with registered clients
     public void deleteUnregisteredClients(long clientId){
         String s = CLIENT_C_ID+"=?";
