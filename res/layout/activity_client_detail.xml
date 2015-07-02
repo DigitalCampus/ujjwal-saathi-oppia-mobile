@@ -330,7 +330,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="Close Case" />
+                    android:text="@string/close_client_case" />
 
                 <Button
                     android:id="@+id/delete_client_record"
@@ -338,7 +338,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="Delete Client" />
+                    android:text="@string/delete_client_record" />
             </LinearLayout>
 
         </LinearLayout>
