@@ -58,15 +58,14 @@ public class ClientRegActivity extends AppActivity {
     DbHelper db;
     String adaptedMethodName;
     private LinearLayout methodNameLayout, adaptedMethodLayout;
+	//private Client client;
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_clientreg);
         context = this;
         genderSpecified = paritySpecified = maritalStatusSpecified = false;
-        Intent intent = getIntent();
-        Bundle bundle=intent.getExtras();
-        isEditClient = bundle.getBoolean("editClient");
+
         sexSpinner = (Spinner) findViewById(R.id.clientreg_form_sex_spinner);
         marriedSpinner = (Spinner) findViewById(R.id.clientreg_form_married_spinner);
         paritySpinner = (Spinner) findViewById(R.id.clientreg_form_parity_spinner);
@@ -307,21 +306,20 @@ public class ClientRegActivity extends AppActivity {
                     }
 
                     client.setAdaptedMethodName(adaptedMethodName);
-				    Intent intent = getIntent();
-                    Bundle bundle=intent.getExtras();
-                    isEditClient = bundle.getBoolean("editClient");
+			
+                    
+                    SharedPreferences.Editor editor = prefs.edit();
                     
                     if (isEditClient != null && isEditClient) {
                         client.setClientId(clientId);
-                        client.setClientServerId(db.getClient(clientId).getClientServerId());
+                        client.setClientServerId(prefs.getLong("prefClientServerID", 0L));
                         db.addOrUpdateClient(client);
+                        editor.putLong("prefClientServerID", client.getClientServerId());
                     } else {
                         client.setClientId(db.addClient(client));
                     }
 
                     DatabaseManager.getInstance().closeDatabase();
-
-                    SharedPreferences.Editor editor = prefs.edit();
                     editor.putLong("prefClientLocalID", client.getClientId());
                     editor.commit();
 
@@ -329,6 +327,9 @@ public class ClientRegActivity extends AppActivity {
                     Bundle tb = new Bundle();
                     tb.putSerializable(Course.TAG, c);
                     tb.putInt(MobileLearning.UJJWAL_COMPONENT_TAG, MobileLearning.CLIENT_COUNSELLING_COMPONENT);
+                    if (isEditClient != null && isEditClient) {
+                    	tb.putBoolean("isFromClientReg", true);
+                    }
                     i.putExtras(tb);
                     startActivity(i);
                     ClientRegActivity.this.finish();
@@ -348,7 +349,12 @@ public class ClientRegActivity extends AppActivity {
         isEditClient = bundle.getBoolean("editClient");
         
         if (clientId > 0) {
-            Client client = db.getClient(clientId);
+        	Client client = db.getClient(clientId);
+            if(isEditClient!=null && isEditClient) {
+            	long clientServerId=prefs.getLong("prefClientServerID", 0L);
+            	if(clientServerId > 0)
+            		client = db.getServerClient(clientServerId);
+            }
             nameClientEditText.setText(client.getClientName());
             phoneNumberClientEditText.setText(Long.toString(client.getClientMobileNumber()));
             ageClientEditText.setText(Integer.toString(client.getClientAge()));
