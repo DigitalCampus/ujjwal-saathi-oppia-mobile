@@ -95,7 +95,10 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
     public void onStart() {
         super.onStart();
         db = new DbHelper(this);
-        clients = db.getAllClients(prefs.getString("prefUsername", ""));
+        //update all old client status to 0.
+    	db.updateClientCreatedStatus();
+        
+    	clients = db.getAllClients(prefs.getString("prefUsername", ""));
         DatabaseManager.getInstance().closeDatabase();
         Log.i("info", Integer.toString(clients.size()) );
         if (clients.size() < 1) {

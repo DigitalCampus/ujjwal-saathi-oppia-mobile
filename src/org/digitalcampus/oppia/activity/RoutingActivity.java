@@ -93,6 +93,8 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		super.onStart();
 		db = new DbHelper(this);
 		courses = db.getAllCourses();
+        //update all old client status to 0.
+    	db.updateClientCreatedStatus();
 		this.scanMedia();
          DatabaseManager.getInstance().closeDatabase();
     }
