@@ -85,7 +85,7 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
             SharedPreferences.Editor editor = prefs.edit();
             editor.putLong("prefClientLocalID",client.getClientId() );
             editor.commit();
-            startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class));
+            startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
 //            ClientListActivity.this.finish();
             }
         });

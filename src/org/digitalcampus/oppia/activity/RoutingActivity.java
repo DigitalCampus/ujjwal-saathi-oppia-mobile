@@ -83,8 +83,8 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		counselling.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 //				startActivity(new Intent(RoutingActivity.this, ClientRegActivity.class));
-                startActivity(new Intent(RoutingActivity.this, ClientListActivity.class));
-			}
+                startActivity(new Intent(RoutingActivity.this, ClientListActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+      	}
 		});
 	}
 	
