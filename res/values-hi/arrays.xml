@@ -71,6 +71,7 @@
         <item name="7">आपातकालीन गोली</item>
         <item name="8">गर्भपात उपरांत</item>
         <item name="9">प्रसव उपरांत</item>
+        <item name="10">पारंपरिक विधि</item>
     </string-array>
 
 </resources>

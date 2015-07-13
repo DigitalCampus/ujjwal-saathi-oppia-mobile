@@ -184,9 +184,7 @@ public class ClientRegActivity extends AppActivity {
         });
 
         paritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            // position 0 is null
-            // position 1 is yes
-            // position 2 is no
+            
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
@@ -212,8 +210,8 @@ public class ClientRegActivity extends AppActivity {
 
         sexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             // position 0 is null
-            // position 1 is yes
-            // position 2 is no
+            // position 1 is female
+            // position 2 is male
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
@@ -262,6 +260,10 @@ public class ClientRegActivity extends AppActivity {
                 clientChildAgeYear = (String) youngestChildAgeYearClientEditText.getText().toString().trim();
                 clientChildAgeMonth = (String) youngestChildAgeMonthClientEditText.getText().toString().trim();
                 adaptedMethodName = (String) adaptedMethodNameSpinner.getSelectedItem().toString(); 
+                
+                if(clientParity.equalsIgnoreCase("5+")) {
+                	clientParity="5";
+                }
                 
                 if (sexSpinner.getSelectedItemPosition() == 1) {
                     if (marriedSpinner.getSelectedItemPosition() == 1) {
@@ -372,7 +374,7 @@ public class ClientRegActivity extends AppActivity {
             sexSpinner.setSelection(spinnerPosition);
             spinnerPosition = cwfadapter2.getPosition(client.getClientMaritalStatus());
             marriedSpinner.setSelection(spinnerPosition);
-            spinnerPosition = cwfadapter3.getPosition(client.getClientParity());
+            spinnerPosition = cwfadapter3.getPosition(((client.getClientParity()).equalsIgnoreCase("5"))?"5+": client.getClientParity());
             paritySpinner.setSelection(spinnerPosition);
             spinnerPosition = cwfadapter4.getPosition(client.getClientLifeStage());
             plsSpinner.setSelection(spinnerPosition);
@@ -439,7 +441,7 @@ public class ClientRegActivity extends AppActivity {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_marital_status);
             return false;
         }
-        if (clientAge.length() == 0 || Integer.parseInt(clientAge) > 100) {
+        if ( clientAge.length() == 0 || Integer.parseInt(clientAge) < 15 || Integer.parseInt(clientAge) > 49 ) {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_age);
             return false;
         }
@@ -451,6 +453,18 @@ public class ClientRegActivity extends AppActivity {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_lifestage);
             return false;
         }
+        
+        if (( clientLifeStage.equalsIgnoreCase("One child") && Integer.parseInt(clientParity) != 1 )
+        	|| ( !clientLifeStage.equalsIgnoreCase("One child") && Integer.parseInt(clientParity) == 1 ) ) {
+        	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_parity);
+            return false;
+        }
+        
+        if ( ( clientLifeStage.equalsIgnoreCase("Two or more children") && Integer.parseInt(clientParity) < 2 ) 
+        	||(!clientLifeStage.equalsIgnoreCase("Two or more children") && Integer.parseInt(clientParity) >= 2 ) ) {
+        	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_parity);
+            return false;
+        }
 
         if (husbandNameRequired && clientHusbandName.length() == 0) {
             UIUtils.showAlert(context, R.string.error, R.string.error_register_no_husband_name);
@@ -460,6 +474,10 @@ public class ClientRegActivity extends AppActivity {
             if (clientChildAgeYear.length() == 0 && clientChildAgeMonth.length() == 0) {
                 UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
                 return false;
+            }
+            if( (Integer.parseInt(clientAge) - Integer.parseInt(clientChildAgeYear)) < 15 ) {
+            	 UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
+                 return false;
             }
             if (clientChildAgeYear.length() == 0) {
                 clientChildAgeYear = "0";
