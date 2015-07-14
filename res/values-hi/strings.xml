@@ -292,7 +292,7 @@
 	<string name="media_player_description">Oppia Media Player</string>
     <string name="client_tracker">Client Tracker info being sent</string>
     
-    <string name="clientreg_method_adapted_title">अनुकूलित विधि</string>
+    <string name="clientreg_method_adapted_title">अपनाया विधि</string>
     <string name="close_client_case">बंद केस</string>
     <string name="delete_client_record">क्लाइंट हटाएं</string>
 </resources>
