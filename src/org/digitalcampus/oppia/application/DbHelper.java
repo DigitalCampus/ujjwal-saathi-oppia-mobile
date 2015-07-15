@@ -531,7 +531,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
         values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
-        values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+        values.put(CLIENT_ADAPTED_METHOD_NAME, (client.getAdaptedMethodName()!=null) ? ( ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"") : "" );
         values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
         values.put(CLIENT_LAST_CREATED, 1);
         
@@ -1549,7 +1549,7 @@ public class DbHelper extends SQLiteOpenHelper {
             values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
             values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
             values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
-            values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+            values.put(CLIENT_ADAPTED_METHOD_NAME, (client.getAdaptedMethodName()!=null) ? ( ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"") : "" );
             values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
       
             if (client.getClientId() == -1) {
@@ -1650,11 +1650,16 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
         values.put(CLIENT_DELETE_RECORD, client.getClientDeleteRecord());
         
-        values.put(CLIENT_ADAPTED_METHOD_NAME, ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"");
+        values.put(CLIENT_ADAPTED_METHOD_NAME, (client.getAdaptedMethodName()!=null) ? ( ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"") : "" );
         values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
         values.put(CLIENT_LAST_CREATED, client.getClientDeleteRecord());
         values.put(CLIENT_LAST_CREATED, isNewClient);
-        db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
+        if(client.getClientServerId() > 0) {
+        	db.update(CLIENT_TABLE, values, CLIENT_C_SERVER_ID + "=" + client.getClientServerId(), null);
+        }
+        else {
+        	db.update(CLIENT_TABLE, values, CLIENT_C_ID + "=" + client.getClientId(), null);
+        }
     }
 
     public void updateClientAfterSync(Client client){
