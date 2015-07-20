@@ -494,7 +494,7 @@ public class ClientRegActivity extends AppActivity {
                 UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
                 return false;
             }
-            if( (Integer.parseInt(clientAge) - Integer.parseInt(clientChildAgeYear)) < 15 ) {
+            if( Integer.parseInt(clientAge) - ( (clientChildAgeYear.equalsIgnoreCase("") ) ? 0:Integer.parseInt(clientChildAgeYear) ) < 15 ) {
             	 UIUtils.showAlert(context, R.string.error, R.string.error_register_no_child_age);
                  return false;
             }

@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.ujjwal.saathi.oppia.mobile.learning"
-    android:versionCode="63"
-    android:versionName="1.2.5">
+    android:versionCode="64"
+    android:versionName="1.2.6">
  
 
     <uses-sdk
