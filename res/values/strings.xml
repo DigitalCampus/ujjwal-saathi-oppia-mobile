@@ -255,7 +255,7 @@
 	<string name="clientreg_form_parity_title">Parity</string>
 	<string name="clientreg_form_lifestage_title">Life Stage</string>
     <string name="clientreg_form_husband_title">Husband\'s name (For female)</string>
-    <string name="clientreg_form_childage_title">Age of Youngest Child (For female)</string>
+    <string name="clientreg_form_childage_title">Age of Youngest Child</string>
     <string name="clientreg_form_husband_title_info_page">Husband\'s name </string>
     <string name="clientreg_form_childage_title_info_page">Youngest Child </string>
     <string name="clientreg_form_method_name_title">Method name</string>
@@ -287,6 +287,7 @@
     <string name="error_register_no_husband_name">Please take client\'s husband\'s name</string>
     <string name="error_register_no_child_age">Please take valid client\'s youngest child\'s age</string>
     <string name="error_register_mismatch_parity">Please cross verify client\'s lifestage and parity entered</string>
+    <string name="error_register_mismatch_life_stage">Please cross verify client\'s lifestage and marital status</string>
     <string name="edit_information">Edit Information</string>
     <string name="make_call">Start call</string>
 

@@ -243,7 +243,7 @@
 	<string name="clientreg_form_parity_title">बच्चों की संख्या </string>
 	<string name="clientreg_form_lifestage_title">जीवनशैली</string>
     <string name="clientreg_form_husband_title">पति का नाम (महिला के लिए)</string>
-    <string name="clientreg_form_childage_title">सबसे छोटे बच्चे की आयु (महिला के लिए)</string>
+    <string name="clientreg_form_childage_title">सबसे छोटे बच्चे की आयु </string>
     <string name="clientreg_form_husband_title_info_page">पति का नाम </string>
     <string name="clientreg_form_childage_title_info_page">सबसे छोटा बच्चा </string>
     <string name="year">साल</string>

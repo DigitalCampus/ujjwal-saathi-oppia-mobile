@@ -58,6 +58,7 @@ public class ClientRegActivity extends AppActivity {
     DbHelper db;
     String adaptedMethodName;
     private LinearLayout methodNameLayout, adaptedMethodLayout;
+    private int marriedselectedPosition=0, lifeStageSelectedPosition;
 	//private Client client;
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -164,7 +165,7 @@ public class ClientRegActivity extends AppActivity {
             // position 2 is no
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
+            	marriedselectedPosition=position;
                 if (position == 1) {
                     maritalStatusSpecified = true;
                     if (genderSpecified) {
@@ -208,6 +209,15 @@ public class ClientRegActivity extends AppActivity {
             }
         });
 
+        plsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+            	lifeStageSelectedPosition=position;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
         sexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             // position 0 is null
             // position 1 is female
@@ -215,9 +225,9 @@ public class ClientRegActivity extends AppActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
-                if (position == 1) {
+                if (position > 0) {
                     genderSpecified = true;
-                    if (maritalStatusSpecified) {
+                    if (maritalStatusSpecified && position == 1) {
                         husbandNameClientEditText.setFocusableInTouchMode(true);
                         husbandNameRequired = true;
                     }
@@ -265,8 +275,8 @@ public class ClientRegActivity extends AppActivity {
                 	clientParity="5";
                 }
                 
-                if (sexSpinner.getSelectedItemPosition() == 1) {
-                    if (marriedSpinner.getSelectedItemPosition() == 1) {
+                if (sexSpinner.getSelectedItemPosition() > 0) {
+                    if (marriedSpinner.getSelectedItemPosition() == 1 && sexSpinner.getSelectedItemPosition() == 1) {
                         husbandNameRequired = true;
                     } else {
                         husbandNameRequired = false;
@@ -454,14 +464,23 @@ public class ClientRegActivity extends AppActivity {
             return false;
         }
         
-        if (( clientLifeStage.equalsIgnoreCase("One child") && Integer.parseInt(clientParity) != 1 )
-        	|| ( !clientLifeStage.equalsIgnoreCase("One child") && Integer.parseInt(clientParity) == 1 ) ) {
+        if(lifeStageSelectedPosition==1 && marriedselectedPosition==1) {
+        	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_life_stage);
+            return false;
+        }
+        if(lifeStageSelectedPosition==2 && marriedselectedPosition==2) {
+        	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_life_stage);
+            return false;
+        }
+        
+        if (( lifeStageSelectedPosition==4 && Integer.parseInt(clientParity) != 1 )
+        	|| ( lifeStageSelectedPosition!=4 && Integer.parseInt(clientParity) == 1 ) ) {
         	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_parity);
             return false;
         }
         
-        if ( ( clientLifeStage.equalsIgnoreCase("Two or more children") && Integer.parseInt(clientParity) < 2 ) 
-        	||(!clientLifeStage.equalsIgnoreCase("Two or more children") && Integer.parseInt(clientParity) >= 2 ) ) {
+        if ( ( lifeStageSelectedPosition==6 && Integer.parseInt(clientParity) < 2 ) 
+        	||(lifeStageSelectedPosition!=6 && Integer.parseInt(clientParity) >= 2 ) ) {
         	UIUtils.showAlert(context, R.string.error, R.string.error_register_mismatch_parity);
             return false;
         }
