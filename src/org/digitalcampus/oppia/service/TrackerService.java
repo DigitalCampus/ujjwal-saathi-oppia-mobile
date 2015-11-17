@@ -27,6 +27,7 @@ import org.digitalcampus.oppia.application.MobileLearning;
 import org.digitalcampus.oppia.listener.APIRequestListener;
 import org.digitalcampus.oppia.model.QuizAttempt;
 import org.digitalcampus.oppia.task.APIRequestTask;
+import org.digitalcampus.oppia.task.ClientDataSyncTask;
 import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.task.SubmitQuizAttemptsTask;
 import org.digitalcampus.oppia.task.SubmitTrackerMultipleTask;
@@ -52,7 +53,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import org.digitalcampus.oppia.task.ClientDataSyncTask;
+
 import com.splunk.mint.Mint;
 
 public class TrackerService extends Service implements APIRequestListener {

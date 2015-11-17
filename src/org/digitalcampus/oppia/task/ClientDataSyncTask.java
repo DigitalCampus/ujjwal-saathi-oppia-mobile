@@ -51,7 +51,8 @@ public class ClientDataSyncTask extends AsyncTask<Payload, Object, Payload> {
         DbHelper db = new DbHelper(ctx);
         long lastRun = prefs.getLong("lastClientSync", 0L);
 		int clientSentCount = prefs.getInt("prefClientSentCount", 0);
-
+		//update all old client status to 0.
+    	db.updateClientCreatedStatus();
         ArrayList<Client> clients = new ArrayList<Client>(db.getClientsForUpdates(prefs.getString(PrefsActivity.PREF_USER_NAME, ""), lastRun));
         Payload payload = new Payload();
         String url = client.getFullURL(MobileLearning.SYNC_CLIENTS_DATA);
