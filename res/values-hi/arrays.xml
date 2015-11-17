@@ -73,5 +73,12 @@
         <item name="9">प्रसव उपरांत</item>
         <item name="10">पारंपरिक विधि</item>
     </string-array>
-
+    <string-array name="StorageOptions">
+        <item name="internal">@string/prefStorageOptionInternal</item>
+        <item name="external">@string/prefStorageOptionExternal</item>
+    </string-array>
+    <string-array name="StorageOptionValues">
+        <item name="internal">internal</item>
+        <item name="external">external</item>
+    </string-array>
 </resources>

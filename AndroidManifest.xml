@@ -5,15 +5,12 @@
  
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="14"
         android:targetSdkVersion="19" />
 
-    <uses-permission
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -61,19 +58,14 @@
         <activity
             android:name="org.digitalcampus.oppia.activity.CourseActivity"
             android:label="@string/title_activity_course" 
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name="org.digitalcampus.oppia.activity.DownloadActivity"
-            android:label="@string/title_download_activity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout"
-            android:screenOrientation="portrait">
-        </activity>
+            android:label="@string/title_download_activity" />
          <activity
             android:name="org.digitalcampus.oppia.activity.TagSelectActivity"
             android:label="@string/title_tag_select_activity"
-            android:screenOrientation="portrait"
-   			android:configChanges="orientation|keyboardHidden">
+   			android:configChanges="keyboardHidden">
         </activity>
         <activity
             android:name="org.digitalcampus.oppia.activity.PrefsActivity"
@@ -93,9 +85,7 @@
             android:label="@string/title_course_meta" />
          <activity
             android:name="org.digitalcampus.oppia.activity.DownloadMediaActivity"
-            android:label="@string/title_download_media"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout" 
-            android:screenOrientation="portrait"/>
+            android:label="@string/title_download_media" />
          <activity
             android:name="org.digitalcampus.oppia.activity.ScorecardActivity"
             android:label="@string/title_scorecard" />
@@ -119,23 +109,30 @@
             android:label="@string/media_player_description"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
         <service
             android:name="org.digitalcampus.oppia.service.TrackerService"
             android:icon="@drawable/ujjwal_logo"
             android:label="@string/service_tracker" >
         </service>
+
+        <service
+            android:name="org.digitalcampus.oppia.service.DownloadService"
+            android:icon="@drawable/dc_logo"
+            android:exported="false"/>
+
+        <service
+            android:name="org.digitalcampus.oppia.service.CourseIntallerService"
+            android:icon="@drawable/dc_logo"
+            android:exported="false"/>
         
 		<receiver android:name="org.digitalcampus.oppia.service.TrackerScheduleReceiver" >
             <intent-filter>                
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <!--<action android:name="android.net.wifi.WIFI_STATE_CHANGED" />-->
-                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
             </intent-filter>
         </receiver>
-
         <receiver android:name="org.digitalcampus.oppia.service.TrackerStartServiceReceiver" >
         </receiver>
+
     </application>
 
 </manifest>
