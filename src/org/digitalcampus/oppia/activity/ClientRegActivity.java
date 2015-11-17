@@ -333,7 +333,7 @@ public class ClientRegActivity extends AppActivity {
                         editor.putLong("prefClientServerID", client.getClientServerId());
                     } else {
                     	//update all old client status to 0.
-                    	db.updateClientCreatedStatus();
+                    	//db.updateClientCreatedStatus();
                         client.setClientId(db.addClient(client));
                     }
 

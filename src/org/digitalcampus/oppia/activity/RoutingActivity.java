@@ -17,6 +17,7 @@
 package org.digitalcampus.oppia.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -55,10 +56,11 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 	private SharedPreferences prefs;
 	private ArrayList<Course> courses = new ArrayList<Course>() ;
 	private DbHelper db;
+	private Context ctx;
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		ctx=this;
 		setContentView(R.layout.activity_routing);
 	    prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		PreferenceManager.setDefaultValues(this, R.xml.prefs, false);
@@ -94,7 +96,7 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 		db = new DbHelper(this);
 		courses = db.getAllCourses();
         //update all old client status to 0.
-    	db.updateClientCreatedStatus();
+    	//db.updateClientCreatedStatus();
 		this.scanMedia();
          DatabaseManager.getInstance().closeDatabase();
     }
@@ -240,7 +242,7 @@ public class RoutingActivity extends AppActivity implements ScanMediaListener {
 //            if counselling is on(1) and we come back to the routing screen , save session
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt("prefClientSessionActive", 0);
-//            db = new DbHelper(ctx);
+            db = new DbHelper(ctx);
             db.addEndClientSession(prefs.getLong("prefClientSessionId",0L), System.currentTimeMillis()/1000);
             editor.putLong("prefClientSessionId", 0L);
             editor.commit();

@@ -38,12 +38,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.SearchOutput;
-import org.digitalcampus.oppia.model.SearchResult;
-import org.digitalcampus.oppia.utils.ImageUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
-
-import java.util.ArrayList;
-import java.util.Locale;
 
 public class SearchResultsListAdapter  extends ArrayAdapter<SearchOutput>{
 
@@ -81,21 +76,22 @@ public class SearchResultsListAdapter  extends ArrayAdapter<SearchOutput>{
             clientTitle.setText(title);
             convertView.setTag(R.id.TAG_CLIENT,client);
         } else {
-	        if (convertView == null) {
+			//SearchResult searchResult = (SearchResult)sr;
+	        //if (convertView == null) {
 	            LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	            convertView  = inflater.inflate(R.layout.search_results_row, parent, false);
-	            viewHolder = new SearchResultsViewHolder();
+				viewHolder = new SearchResultsViewHolder();
 	            viewHolder.activityTitle = (TextView) convertView.findViewById(R.id.activity_title);
 	            viewHolder.sectionTitle = (TextView) convertView.findViewById(R.id.section_title);
 	            viewHolder.courseTitle = (TextView) convertView.findViewById(R.id.course_title);
 	            viewHolder.courseImage = (ImageView) convertView.findViewById(R.id.course_image);
 	            convertView.setTag(viewHolder);
-	        }
-	        else{
-	            viewHolder = (SearchResultsViewHolder) convertView.getTag();
-	        }
-	
+	        //}
+	        //else{
+	        //    viewHolder = (SearchResultsViewHolder) convertView.getTag();
+	        //}
 	        SearchResult searchResult = (SearchResult)sr;
+	        //SearchResult sr = searchResultList.get(position);
 	
 		    String cTitle = searchResult.getCourse().getTitle(prefs.getString(PrefsActivity.PREF_LANGUAGE, Locale.getDefault().getLanguage()));
 		    String sTitle = searchResult.getSection().getTitle(prefs.getString(PrefsActivity.PREF_LANGUAGE, Locale.getDefault().getLanguage()));

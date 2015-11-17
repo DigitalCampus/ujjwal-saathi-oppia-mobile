@@ -90,7 +90,7 @@ public class ScorecardActivity extends FragmentActivity implements ActionBar.Tab
 			fScorecard = ScorecardFragment.newInstance(course);
             if (course.getImageFile() != null) {
                 BitmapDrawable bm = ImageUtils.LoadBMPsdcard(course.getImageFileFromRoot(), this.getResources(),
-                        R.drawable.dc_logo);
+                        R.drawable.ujjwal_logo);
                 actionBar.setIcon(bm);
             }
 		} else {

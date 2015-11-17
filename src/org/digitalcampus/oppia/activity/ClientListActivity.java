@@ -20,10 +20,12 @@ import android.view.MenuItem;
 import org.digitalcampus.oppia.adapter.ClientListAdapter;
 import org.digitalcampus.oppia.application.DatabaseManager;
 import org.digitalcampus.oppia.application.DbHelper;
+import org.digitalcampus.oppia.listener.ClientDataSyncListener;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.ClientSession;
 import org.digitalcampus.oppia.model.Lang;
 import org.digitalcampus.oppia.service.TrackerService;
+import org.digitalcampus.oppia.task.Payload;
 import org.digitalcampus.oppia.utils.UIUtils;
 import org.ujjwal.saathi.oppia.mobile.learning.R;
 
@@ -84,12 +86,13 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
             Client client = (Client) listView.getItemAtPosition(position);
             SharedPreferences.Editor editor = prefs.edit();
             editor.putLong("prefClientLocalID",client.getClientId() );
-            if(client.getClientServerId() > 0) {
+            /*if(client.getClientServerId() > 0) {
             	editor.putLong("prefClientServerID", client.getClientServerId() );
-            }
+            }*/
+            editor.putLong("prefClientServerID", client.getClientServerId() );
             editor.commit();
             startActivity(new Intent(ClientListActivity.this, ClientInfoActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//            ClientListActivity.this.finish();
+            ClientListActivity.this.finish();
             }
         });
     }
@@ -99,7 +102,7 @@ public class ClientListActivity extends AppActivity implements SharedPreferences
         super.onStart();
         db = new DbHelper(this);
         //update all old client status to 0.
-    	db.updateClientCreatedStatus();
+    	//db.updateClientCreatedStatus();
         
     	clients = db.getAllClients(prefs.getString(PrefsActivity.PREF_USER_NAME, ""));
         DatabaseManager.getInstance().closeDatabase();

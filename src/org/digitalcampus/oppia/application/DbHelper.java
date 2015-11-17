@@ -764,6 +764,32 @@ public class DbHelper extends SQLiteOpenHelper {
 		return courses;
 	}
 	
+	public ArrayList<Course> getLearningCourses(long userId) {
+		ArrayList<Course> courses = new ArrayList<Course>();
+		String order = COURSE_C_ORDER_PRIORITY + " DESC, " + COURSE_C_TITLE + " ASC";
+		String where = COURSE_C_SHORTNAME + " NOT IN ("+MobileLearning.CLIENT_COUNSELLING_COURSES+")";
+		Cursor c = db.query(COURSE_TABLE, null, where, null, null, null, order);
+		//Cursor c = db.query(COURSE_TABLE, null, null, null, null, null, order);
+		c.moveToFirst();
+		while (c.isAfterLast() == false) {
+			
+			Course course = new Course(prefs.getString(PrefsActivity.PREF_STORAGE_LOCATION, ""));
+			course.setCourseId(c.getInt(c.getColumnIndex(COURSE_C_ID)));
+			course.setVersionId(c.getDouble(c.getColumnIndex(COURSE_C_VERSIONID)));
+			course.setTitlesFromJSONString(c.getString(c.getColumnIndex(COURSE_C_TITLE)));
+			course.setImageFile(c.getString(c.getColumnIndex(COURSE_C_IMAGE)));
+			course.setLangsFromJSONString(c.getString(c.getColumnIndex(COURSE_C_LANGS)));
+			course.setShortname(c.getString(c.getColumnIndex(COURSE_C_SHORTNAME)));
+			course.setPriority(c.getInt(c.getColumnIndex(COURSE_C_ORDER_PRIORITY)));
+			course.setDescriptionsFromJSONString(c.getString(c.getColumnIndex(COURSE_C_DESC)));
+			course = this.courseSetProgress(course, userId);
+			courses.add(course);
+			c.moveToNext();
+		}
+		c.close();
+		return courses;
+	}
+	
 	public Course getCourse(long courseId, long userId) {
 		Course course = null;
 		String s = COURSE_C_ID + "=?";
@@ -1188,9 +1214,9 @@ public class DbHelper extends SQLiteOpenHelper {
     
     // return last created client
     public Client getLastCreatedClient(){
-        String s = CLIENT_LAST_CREATED + "=? ";
-        String[] args = new String[] { Integer.toString(1) };
-        Cursor c = db.query(CLIENT_TABLE, null, s, args, null, null, null);
+        String s = CLIENT_C_ID + "= (SELECT MAX("+ CLIENT_C_ID+") FROM"+CLIENT_TABLE+" )";
+        //String[] args = new String[] { Integer.toString(1) };
+        Cursor c = db.query(CLIENT_TABLE, null, s, null, null, null, null);
         c.moveToFirst();
         Client client = new Client();
         while (c.isAfterLast() == false) {
@@ -1606,7 +1632,11 @@ public class DbHelper extends SQLiteOpenHelper {
 		values.put(SEARCH_C_COURSETITLE, courseTitle);
 		values.put(SEARCH_C_SECTIONTITLE, sectionTitle);
 		values.put(SEARCH_C_ACTIVITYTITLE, activityTitle);
-		db.insertOrThrow(SEARCH_TABLE, null, values);
+		try {
+			db.insertOrThrow(SEARCH_TABLE, null, values);
+		}catch(Exception e){
+			
+		}
 	}
 	
 	/*
@@ -1841,7 +1871,7 @@ String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activi
         Client client;
         String sql = "SELECT * FROM  "+ CLIENT_TABLE +
                 " WHERE " + CLIENT_C_HEALTHWORKER + " = ? AND (" +
-                CLIENT_C_SERVER_ID + " is null or " + CLIENT_C_MODIFIED_DATE + " > " +
+                CLIENT_C_SERVER_ID + " = 0 or " + CLIENT_C_MODIFIED_DATE + " > " +
                 Long.toString(previousSyncTime) + " or " + CLIENT_DELETE_RECORD + " > 0 "+ 
                 " or "+ CLIENT_CLOSE_CASE + " > 0 " + ") AND " + CLIENT_LAST_CREATED + " = 0;";
 
@@ -1992,7 +2022,9 @@ String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activi
         values.put(CLIENT_C_MODIFIED_DATE, System.currentTimeMillis()/1000);
 
         values.put(CLIENT_C_AGEYOUNGESTCHILD, client.getAgeYoungestChild());
-        values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        if(isNewClient == 1) {
+        	values.put(CLIENT_C_METHODNAME, client.getMethodName());
+        }
         values.put(CLIENT_C_HUSBANDNAME, client.getHusbandName());
         
         values.put(CLIENT_CLOSE_CASE, client.getClientCloseCase());
@@ -2000,7 +2032,7 @@ String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activi
         
         values.put(CLIENT_ADAPTED_METHOD_NAME, (client.getAdaptedMethodName()!=null) ? ( ((client.getAdaptedMethodName()).split("_")[0] != null )?((client.getAdaptedMethodName()).split("_")[0]):"") : "" );
         values.put(CLIENT_ADAPTED_METHOD_TIME, System.currentTimeMillis()/1000);
-        values.put(CLIENT_LAST_CREATED, client.getClientDeleteRecord());
+        //values.put(CLIENT_LAST_CREATED, client.getClientDeleteRecord());
         values.put(CLIENT_LAST_CREATED, isNewClient);
         if(client.getClientServerId() > 0) {
         	db.update(CLIENT_TABLE, values, CLIENT_C_SERVER_ID + "=" + client.getClientServerId(), null);
@@ -2021,7 +2053,7 @@ String sqlSeachFullText = String.format("SELECT c.%s AS courseid, a.%s as activi
     }
 //    deleting clients newly created clients and replacing them with registered clients
     public void deleteUnregisteredClients(long clientId){
-        String s = CLIENT_C_ID+"=?";
+        String s = CLIENT_C_ID+"=? AND (" + CLIENT_CLOSE_CASE + " = 1 OR "+CLIENT_DELETE_RECORD+" = 1 )";
         String[] args = new String[] { String.valueOf(clientId) };
         db.delete(CLIENT_TABLE, s, args);
     }
