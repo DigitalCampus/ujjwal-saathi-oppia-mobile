@@ -181,7 +181,7 @@ public class ClientInfoActivity extends AppActivity implements ClientDataSyncLis
         makeVisitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString(PrefsActivity.PREF_USER_NAME, "")));
                 Intent i = new Intent(ClientInfoActivity.this, CourseIndexActivity.class);
                 Bundle tb = new Bundle();
                 tb.putSerializable(Course.TAG, c);
@@ -191,7 +191,7 @@ public class ClientInfoActivity extends AppActivity implements ClientDataSyncLis
                 db = new DbHelper(ctx);
                 ClientSession clientSession = new ClientSession();
 
-                clientSession.setHealthWorker(prefs.getString("prefUsername", ""));
+                clientSession.setHealthWorker(prefs.getString(PrefsActivity.PREF_USER_NAME, ""));
                 clientSession.setStartDateTime(System.currentTimeMillis()/1000);
                 if (client.getClientServerId() != 0) {
                     clientSession.setClientId(client.getClientServerId());
@@ -323,8 +323,8 @@ public class ClientInfoActivity extends AppActivity implements ClientDataSyncLis
     public void onResume() {
         super.onResume();
         db = new DbHelper(ctx);
-        ArrayList<Client> clients3 = db.getAllClients(prefs.getString("prefUsername", ""));
-        ArrayList<ClientSession> clientSessions2 = db.getAllClientSessions(prefs.getString("prefUsername", ""));
+        ArrayList<Client> clients3 = db.getAllClients(prefs.getString(PrefsActivity.PREF_USER_NAME, ""));
+        ArrayList<ClientSession> clientSessions2 = db.getAllClientSessions(prefs.getString(PrefsActivity.PREF_USER_NAME, ""));
 
         DatabaseManager.getInstance().closeDatabase();
 

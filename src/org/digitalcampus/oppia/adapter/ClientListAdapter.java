@@ -13,7 +13,7 @@ import org.ujjwal.saathi.oppia.mobile.learning.R;
 
 import java.util.ArrayList;
 
-public class ClientListAdapter extends ArrayAdapter {
+public class ClientListAdapter extends ArrayAdapter<Client> {
     public static final String TAG = ClientListAdapter.class.getSimpleName();
 
     private final Context ctx;

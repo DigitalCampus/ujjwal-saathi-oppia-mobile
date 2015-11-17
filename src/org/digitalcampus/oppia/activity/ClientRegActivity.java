@@ -256,7 +256,7 @@ public class ClientRegActivity extends AppActivity {
 
         counsellingButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString("prefUsername", "")));
+                Course c = (Course) db.getCourse(db.getCourseID("us-counsel"), db.getUserId(prefs.getString(PrefsActivity.PREF_USER_NAME, "")));
                 clientName = (String) nameClientEditText.getText().toString().trim();
                 clientPhoneNumber = (String) phoneNumberClientEditText.getText().toString();
                 clientAge = (String) ageClientEditText.getText().toString();
@@ -304,7 +304,7 @@ public class ClientRegActivity extends AppActivity {
                     client.setClientMaritalStatus(clientMarried);
                     client.setClientParity(clientParity);
                     client.setClientLifeStage(clientLifeStage);
-                    client.setHealthWorker(prefs.getString("prefUsername", "")); //USER
+                    client.setHealthWorker(prefs.getString(PrefsActivity.PREF_USER_NAME, "")); //USER
 
 
                     if (childAgeRequired) {

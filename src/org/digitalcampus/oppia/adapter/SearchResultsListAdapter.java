@@ -17,10 +17,16 @@
 
 package org.digitalcampus.oppia.adapter;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import org.digitalcampus.oppia.activity.PrefsActivity;
+import org.digitalcampus.oppia.model.SearchResult;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.BitmapDrawable;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import org.digitalcampus.oppia.model.Client;
 import org.digitalcampus.oppia.model.SearchOutput;
 import org.digitalcampus.oppia.model.SearchResult;
@@ -53,46 +60,62 @@ public class SearchResultsListAdapter  extends ArrayAdapter<SearchOutput>{
 		prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 	}
 
+    static class SearchResultsViewHolder{
+        TextView activityTitle;
+        TextView sectionTitle;
+        TextView courseTitle;
+        ImageView courseImage;
+    }
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView;
+
+        SearchResultsViewHolder viewHolder;
         SearchOutput sr = searchResultList.get(position);
-        // identify which instance of SearchOutput is in context
         if (sr.getClass().equals(Client.class)) {
             Client client = (Client)sr;
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.client_list_row, parent, false);
-            TextView clientTitle = (TextView) rowView.findViewById(R.id.client_title);
+            convertView = inflater.inflate(R.layout.client_list_row, parent, false);
+            TextView clientTitle = (TextView) convertView.findViewById(R.id.client_title);
             String title = client.getClientName();
             clientTitle.setText(title);
-            rowView.setTag(R.id.TAG_CLIENT,client);
+            convertView.setTag(R.id.TAG_CLIENT,client);
         } else {
-            SearchResult searchResult = (SearchResult)sr;
-            LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.search_results_row, parent, false);
-            rowView.setTag(sr);
-
-            TextView activityTitle = (TextView) rowView.findViewById(R.id.activity_title);
-            TextView sectionTitle = (TextView) rowView.findViewById(R.id.section_title);
-            TextView courseTitle = (TextView) rowView.findViewById(R.id.course_title);
-
-            String cTitle = searchResult.getCourse().getTitle(prefs.getString("prefLanguage", Locale.getDefault().getLanguage()));
-            String sTitle = searchResult.getSection().getTitle(prefs.getString("prefLanguage", Locale.getDefault().getLanguage()));
-            String aTitle = searchResult.getActivity().getTitle(prefs.getString("prefLanguage", Locale.getDefault().getLanguage()));
-
-            activityTitle.setText(aTitle);
-            sectionTitle.setText(sTitle);
-            courseTitle.setText(cTitle);
-
-            rowView.setTag(R.id.TAG_COURSE,searchResult.getCourse());
-            rowView.setTag(R.id.TAG_ACTIVITY_DIGEST,searchResult.getActivity().getDigest());
-
-            if(searchResult.getCourse().getImageFile() != null){
-                ImageView iv = (ImageView) rowView.findViewById(R.id.course_image);
-                BitmapDrawable bm = ImageUtils.LoadBMPsdcard(searchResult.getCourse().getImageFile(), ctx.getResources(), R.drawable.ujjwal_logo);
-                iv.setImageDrawable(bm);
-            }
+	        if (convertView == null) {
+	            LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	            convertView  = inflater.inflate(R.layout.search_results_row, parent, false);
+	            viewHolder = new SearchResultsViewHolder();
+	            viewHolder.activityTitle = (TextView) convertView.findViewById(R.id.activity_title);
+	            viewHolder.sectionTitle = (TextView) convertView.findViewById(R.id.section_title);
+	            viewHolder.courseTitle = (TextView) convertView.findViewById(R.id.course_title);
+	            viewHolder.courseImage = (ImageView) convertView.findViewById(R.id.course_image);
+	            convertView.setTag(viewHolder);
+	        }
+	        else{
+	            viewHolder = (SearchResultsViewHolder) convertView.getTag();
+	        }
+	
+	        SearchResult searchResult = (SearchResult)sr;
+	
+		    String cTitle = searchResult.getCourse().getTitle(prefs.getString(PrefsActivity.PREF_LANGUAGE, Locale.getDefault().getLanguage()));
+		    String sTitle = searchResult.getSection().getTitle(prefs.getString(PrefsActivity.PREF_LANGUAGE, Locale.getDefault().getLanguage()));
+		    String aTitle = searchResult.getActivity().getTitle(prefs.getString(PrefsActivity.PREF_LANGUAGE, Locale.getDefault().getLanguage()));
+	
+		    // app crashed here
+	        viewHolder.activityTitle.setText(aTitle);
+	        viewHolder.sectionTitle.setText(sTitle);
+	        viewHolder.courseTitle.setText(cTitle);
+	
+	        convertView.setTag(R.id.TAG_COURSE,searchResult.getCourse());
+	        convertView.setTag(R.id.TAG_ACTIVITY_DIGEST,searchResult.getActivity().getDigest());
+	
+	        if(searchResult.getCourse().getImageFile() != null){
+	            String image = searchResult.getCourse().getImageFileFromRoot();
+	            Picasso.with(ctx).load(new File(image))
+	                    .placeholder(R.drawable.ujjwal_logo)
+	                    .into(viewHolder.courseImage);
+	        }
         }
-	    return rowView;
+	    return convertView;
 	}
 }
