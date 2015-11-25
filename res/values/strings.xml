@@ -4,7 +4,7 @@
     <string name="app_logo_alt">Digital Campus Logo</string>
     
     
-    <string name="gcm_defaultSenderId">1084526475504</string>
+    <string name="gcm_defaultSenderId">963661721628</string>
     <!-- string name="gcm_defaultSenderId">admin-api-cc4ba</string -->
     
     <string name="about_logged_in">Logged in as: %1$s</string>
