@@ -54,11 +54,11 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
 		int clientSessionSentCount = prefs.getInt("prefSessionSentCount", 0);
         boolean sessionsReadyForSync = true;
     	for(int i= 0; i<clientSessions.size(); i++) {
-    		if(!clientSessions.get(i).getIsSynced()) {
+    		if(!clientSessions.get(i).getIsSynced() || clientSessions.get(i).getClientId()==0 ) {
     			sessionsReadyForSync = false; // sessions needs to be corrected before sending request
     			// try update session
     	        Client clientDetail = db.getClient(clientSessions.get(i).getClientId());
-    	        db.updateClientSession(clientDetail);
+    	        db.updateClientSession(clientDetail, clientSessions.get(i).getId());
        		}
     	}
     		
@@ -73,6 +73,7 @@ public class ClientTrackerTask extends AsyncTask<Payload, Object, Payload> {
                 publishProgress(ctx.getString(R.string.client_tracker));
                 String str = mapper.writeValueAsString(clientSessionDTO);
                 StringEntity se = new StringEntity( str,"utf8");
+                Log.d("sessionJSONRequestToServer", str);
                 se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
                 httpPost.addHeader(client.getAuthHeader(u.getUsername(), u.getApiKey())); // authorization
                 httpPost.setEntity(se);
