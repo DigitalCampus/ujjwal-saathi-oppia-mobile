@@ -256,7 +256,7 @@ public class DownloadService extends IntentService {
             }
             f.close();
 
-            if (fileDigest != null){
+            /*if (fileDigest != null){
                 // check the file digest matches, otherwise delete the file
                 // (it's either been a corrupted download or it's the wrong file)
                 byte[] digest = mDigest.digest();
@@ -271,7 +271,7 @@ public class DownloadService extends IntentService {
                     removeDownloading(fileUrl);
                     return;
                 }
-            }
+            }*/
 
         } catch (MalformedURLException e) {
             logAndNotifyError(fileUrl, e);
